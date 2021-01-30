@@ -4,7 +4,7 @@
   "description": "Server side code for leon",
   "main": "app.js",
   "scripts": {
-    "dev": "nodemon build/app.js",
+    "dev": "nodemon -r dotenv/config build/app.js",
     "tsc": "tsc",
     "sequelize": "sequelize"
   },
