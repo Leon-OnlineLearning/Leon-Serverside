@@ -5,7 +5,8 @@
   "main": "app.js",
   "scripts": {
     "dev": "nodemon build/app.js",
-    "tsc": "tsc"
+    "tsc": "tsc",
+    "sequelize": "sequelize"
   },
   "repository": {
     "type": "git",
