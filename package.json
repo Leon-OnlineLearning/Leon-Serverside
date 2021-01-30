@@ -4,8 +4,8 @@
   "description": "Server side code for leon",
   "main": "app.js",
   "scripts": {
-    "dev": "nodemon -r dotenv/config  build/app.js",
-    "tsc": "tsc",
+    "dev": "tsc && ef-tspm && nodemon -r dotenv/config build/app.js",
+    "tsc": "tsc && ef-tspm",
     "sequelize": "sequelize"
   },
   "repository": {
