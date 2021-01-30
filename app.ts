@@ -1,5 +1,5 @@
 import express from "express"
-import sequelize, { connectionInfo } from "./utils/database-connection"
+import sequelize, { connectionInfo } from "@utils/database-connection"
 
 const app = express()
 
