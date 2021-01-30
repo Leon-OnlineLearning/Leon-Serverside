@@ -1,5 +1,6 @@
 import express from "express"
 import sequelize, { connectionInfo } from "@utils/database-connection"
+import 'module-alias/register';
 
 const app = express()
 

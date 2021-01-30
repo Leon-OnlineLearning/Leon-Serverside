@@ -4,7 +4,7 @@
   "description": "Server side code for leon",
   "main": "app.js",
   "scripts": {
-    "dev": "nodemon -r dotenv/config -r module-alias/register build/app.js",
+    "dev": "nodemon -r dotenv/config  build/app.js",
     "tsc": "tsc",
     "sequelize": "sequelize"
   },
@@ -41,7 +41,7 @@
   "devDependencies": {
     "nodemon": "^2.0.7"
   },
-  "_module_aliases" : {
+  "_moduleAliases" : {
       "@models": ["build/models"],
       "@services": ["build/services"],
       "@controller": ["build/controller"],
