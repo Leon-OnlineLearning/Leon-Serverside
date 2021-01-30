@@ -1,6 +1,7 @@
 # Leon-Serverside
 
 ## .env example 
+root/.env
 ```
 DATABASE_NAME=leon
 USERNAME=leon
