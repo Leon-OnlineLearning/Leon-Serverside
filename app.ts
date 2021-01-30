@@ -15,8 +15,8 @@ app.listen(PORT, async () => {
     console.log(`u1 was created and it's password is ${u1}`);
     await u1.save();
     console.log('testing password')
-    const correctPassword = await User.correctPassword('email','password')
+    const correctPassword = await User.verifyPassword('email','password')
     console.log(correctPassword)
-    const correctPassword2 = await User.correctPassword('email','pssword')
+    const correctPassword2 = await User.verifyPassword('email','pssword')
     console.log(correctPassword2)
 })

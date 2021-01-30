@@ -2,14 +2,42 @@ import { DataTypes, Model } from "sequelize"
 import sequelize from "@utils/database-connection"
 import { hashPassword, comparePasswords } from "@utils/passwords"
 
+export class NonExistingUser extends Error {
+    constructor(message: string) {
+        super(message)
+        this.message = message
+        this.name = 'NonExistingUser'
+    }
+}
+
 class User extends Model {
-    static correctPassword = async (email: string, password: string) => {
-        const user: any = await User.findOne({
-            where: {
-                email: email
+    /**
+     * return user if credentials were correct, return false in case of incorrect password 
+     * 
+     * @param email 
+     * @param password 
+     */
+    // NOTE: it was this to return user in the case of correctness to follow the standards 
+    static verifyPassword = async (email: string, password: string) => {
+        let user: any;
+        try {
+            user = await User.findOne({
+                where: {
+                    email: email
+                }
+            })
+            if (!user) {
+                throw new NonExistingUser("Invalid Email!")
             }
-        })
-        return await comparePasswords(password, user["password"])
+        } catch (error) {
+            throw error
+        }
+        let correctPassword = await comparePasswords(password, user["password"])
+        if (!correctPassword) {
+           return false 
+        } else {
+            return user
+        }
     }
 }
 
@@ -41,7 +69,7 @@ User.init({
         //     this.setDataValue('password',await hashPassword(value))
         // }
     }
-},{
+}, {
     sequelize,
     modelName: 'User',
     hooks: {
