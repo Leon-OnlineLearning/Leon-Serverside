@@ -1,6 +1,7 @@
 import User, { NonExistingUser } from "@models/User";
-import passport from "passport"
-import passportLocal from "passport-local"
+import passport from "passport";
+import passportLocal from "passport-local";
+import jwt from "jsonwebtoken";
 
 const LocalStrategy = passportLocal.Strategy;
 
@@ -32,7 +33,7 @@ passport.use(
         { usernameField: 'email', passwordField: 'password', passReqToCallback: true },
         async (req, email, password, done) => {
             try {
-                const user = await User.create({firstName: req.body.firstName, lastName: req.body.lastName, email:email, password: password})
+                const user = await User.create({ firstName: req.body.firstName, lastName: req.body.lastName, email: email, password: password })
                 return done(null, user)
             } catch (e) {
                 return done(e)
@@ -40,5 +41,16 @@ passport.use(
         }
     )
 )
+
+passport.serializeUser((user: any, done) => {
+    const token = jwt.sign({ email: user["email"], id: user["id"], firstName: user["firstName"], lastName: user["lastName"] }, process.env.JWT_SECRET || 'leon')
+
+    done(null, { token })
+})
+
+passport.deserializeUser((user, done) => {
+    console.log(user);
+    done(null)
+})
 
 export default passport;

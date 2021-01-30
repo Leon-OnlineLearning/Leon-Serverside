@@ -50,7 +50,10 @@ User.init({
     email: {
         type: DataTypes.STRING,
         allowNull: false,
-        unique: true
+        unique: true,
+        validate : {
+            isEmail: true
+        }
     },
     firstName: {
         type: DataTypes.STRING,

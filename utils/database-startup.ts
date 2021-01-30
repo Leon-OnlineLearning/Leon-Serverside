@@ -8,7 +8,7 @@ export default async function databaseStartup() {
         console.error('Couldn\'t connect to database', error);
     }
     try {
-        await sequelize.sync({ force: true })
+        await sequelize.sync({ alter: true })
         console.log('sync to database: DONE');
 
     } catch (error) {
