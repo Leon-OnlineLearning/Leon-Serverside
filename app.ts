@@ -1,14 +1,17 @@
 import express from "express"
-import dotenv from "dotenv"
-import sequelize, {connectionInfo} from "./utils/database-connection"
+import sequelize, { connectionInfo } from "./utils/database-connection"
 
 const app = express()
 
-const PORT =  process.env.PORT || 3333
+const PORT = process.env.PORT || 3333
 // start listening on 3333
-app.listen( PORT , async () => {
+app.listen(PORT, async () => {
     console.log(`username ${connectionInfo.username} password ${connectionInfo.password}`)
-    console.log(`listening on port ${PORT} @ ${connectionInfo.host}`);
-    await sequelize.authenticate()
-    console.log('database connected successfully');
+    console.log(`listening on port ${PORT}`);
+    try {
+        await sequelize.authenticate()
+        console.log('database connected successfully');
+    } catch (error) {
+        console.error('Couldn\'t connect to database', error);
+    }
 })
