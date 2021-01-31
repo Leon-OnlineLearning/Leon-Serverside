@@ -63,14 +63,14 @@ passport.use(
     )
 )
 
-export const JWTMiddleware = async (req: any, res: any, next: any) => {
+export const BlockedJWTMiddleware = async (req: any, res: any, next: any) => {
     // get the token from request cookies
     let token; 
     if (req && req.cookies) token = req.cookies['jwt'];
     if (!token) res.status(401).send("Token not found")
     // if blocked:token exist in cache 
     if (await isTokenBlocked(token)) 
-        res.status(401).send("Token expired")
+        res.status(401).send("Token Blocked!")
     // return 401 unauthorized
     next()
 }
