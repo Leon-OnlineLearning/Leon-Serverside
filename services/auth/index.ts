@@ -1,8 +1,7 @@
 import User, { NonExistingUser } from "@models/User";
 import passport from "passport";
 import passportLocal from "passport-local";
-import jwt from "jsonwebtoken";
-import passportJWT, { ExtractJwt } from "passport-jwt";
+import passportJWT from "passport-jwt";
 import { isTokenBlocked } from "@controller/expired-tokens";
 
 const LocalStrategy = passportLocal.Strategy;

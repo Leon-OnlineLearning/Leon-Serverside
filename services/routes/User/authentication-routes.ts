@@ -18,7 +18,7 @@ router.post('/signup', (req, res) => {
 
 router.post('/login', passport.authenticate('login', { session: false }), (req, res) => {
     const user: any = req.user;
-    const payload = { email: user["email"], id: user["id"], firstName: user["firstName"], lastName: user["lastName"] }
+    const payload = { id: user["id"], firstName: user["firstName"], lastName: user["lastName"] }
     const token = jwt.sign(payload, process.env.JWT_SECRET || 'leon', { expiresIn: "15m" })
     res.cookie('jwt', token, { httpOnly: true })
     res.json({ success: true, token })
