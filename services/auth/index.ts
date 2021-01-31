@@ -54,7 +54,6 @@ passport.use(
         },
         secretOrKey: process.env.JWT_SECRET || 'leon',
     }, (payload, done) => {
-        console.log("hi?");
         try {
             return done(null, payload)
         } catch (e) {
@@ -64,13 +63,13 @@ passport.use(
     )
 )
 
-export const JWTMiddleware = (req: any, res: any, next: any) => {
+export const JWTMiddleware = async (req: any, res: any, next: any) => {
     // get the token from request cookies
     let token; 
     if (req && req.cookies) token = req.cookies['jwt'];
     if (!token) res.status(401).send("Token not found")
     // if blocked:token exist in cache 
-    if (isTokenBlocked(token)) 
+    if (await isTokenBlocked(token)) 
         res.status(401).send("Token expired")
     // return 401 unauthorized
     next()
