@@ -3,6 +3,7 @@ import passport from "passport";
 import passportLocal from "passport-local";
 import jwt from "jsonwebtoken";
 import passportJWT, { ExtractJwt } from "passport-jwt";
+import { isTokenBlocked } from "@controller/expired-tokens";
 
 const LocalStrategy = passportLocal.Strategy;
 const JWTStrategy = passportJWT.Strategy;
@@ -65,7 +66,12 @@ passport.use(
 
 export const JWTMiddleware = (req: any, res: any, next: any) => {
     // get the token from request cookies
+    let token; 
+    if (req && req.cookies) token = req.cookies['jwt'];
+    if (!token) res.status(401).send("Token not found")
     // if blocked:token exist in cache 
+    if (isTokenBlocked(token)) 
+        res.status(401).send("Token expired")
     // return 401 unauthorized
     next()
 }

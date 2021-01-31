@@ -11,7 +11,7 @@ client.on("error", (error) => {
 
 export async function blockToken(token: string, expiresIn: number) {
     return await new Promise ((resolve,reject)=> {
-        client.setex(`blocked:${token}`, (new Date().getTime() - expiresIn)/1000, "1", (err, res) => {
+        client.setex(`blocked:${token}`, (-new Date().getTime() + expiresIn)/1000, "1", (err, res) => {
             if (err) reject(err)
             else resolve(res)
         })
