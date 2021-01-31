@@ -51,40 +51,5 @@ User.init({
     }
 })
 
-// const User = sequelize.define('User', {
-//     id: {
-//         type: DataTypes.UUID,
-//         defaultValue: DataTypes.UUIDV4,
-//         primaryKey: true
-//     },
-//     email: {
-//         type: DataTypes.STRING,
-//         allowNull: false,
-//         unique: true
-//     },
-//     firstName: {
-//         type: DataTypes.STRING,
-//         allowNull: false
-//     },
-//     lastName: {
-//         type: DataTypes.STRING,
-//         allowNull: false
-//     },
-//     password: {
-//         type: DataTypes.STRING,
-//         allowNull: false,
-//         // this method fails because the password value won't be ready before validation
-//         // solution: use beforeCreate hook instead
-//         // async set(value) {
-//         //     this.setDataValue('password',await hashPassword(value))
-//         // }
-//     }
-// }, {
-//     hooks: {
-//         beforeCreate: async (user: any, _) => {
-//             user.password = await hashPassword(user.password)
-//         }
-//     }
-// })
 
 export default User;
