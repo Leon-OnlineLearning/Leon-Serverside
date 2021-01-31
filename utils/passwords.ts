@@ -7,3 +7,12 @@ export async function hashPassword(password: unknown, saltRounds: number = 10) {
         })
     })
 }
+
+export async function comparePasswords(input: string, hashedPassword: string) {
+    return await new Promise((resolve, reject) => {
+        bcrypt.compare(input, hashedPassword, (err, result) => {
+            if (err) reject(err)
+            else resolve(result)
+        })
+    })
+}
