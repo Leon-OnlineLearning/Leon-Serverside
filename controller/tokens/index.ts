@@ -1,5 +1,6 @@
 import redis from "redis"
 import jwt from "jsonwebtoken"
+import User from "@models/User";
 
 const client = redis.createClient({
     host: process.env.INVALID_TOKEN_SERVER || '127.0.0.1',
@@ -49,7 +50,7 @@ export async function isTokenBlocked(token: string) {
 }
 
 export async function generateAccessToken(user: any) {
-    
+
     const payload = { id: user["id"], firstName: user["firstName"], lastName: user["lastName"] }
     return new Promise((resolve, reject) => {
         jwt.sign(payload, process.env.JWT_SECRET || 'leon',
@@ -74,10 +75,10 @@ export async function generateRefreshToken(user: any) {
 }
 
 export async function isTokenValidAndExpired(token: string): Promise<boolean> {
-    
+
     try {
         // check if token is valid without checking expiration 
-        let decoded: any = await getUserFromJWT(token)
+        let decoded: any = await getPayloadFromJWT(token)
         // check if token is blocked => invalid
         const blockedToken = await isTokenBlocked(token)
         if (blockedToken) {
@@ -90,15 +91,21 @@ export async function isTokenValidAndExpired(token: string): Promise<boolean> {
     } catch (e) {
         return false
     }
-    
+
     return true
 }
 
-export async function getUserFromJWT(token: string) {
-        return await new Promise((resolve, reject) => {
-            jwt.verify(token, process.env.JWT_SECRET || 'leon', { ignoreExpiration: true }, (err, decoded) => {
-                if (err) reject(err)
-                else resolve(decoded)
-            })
+export async function getPayloadFromJWT(token:string) {
+   return  await new Promise((resolve, reject) => {
+        jwt.verify(token, process.env.JWT_SECRET || 'leon', { ignoreExpiration: true }, (err, decoded) => {
+            if (err) reject(err)
+            else resolve(decoded)
         })
+    })
+}
+
+export async function getUserFromJWT(token: string) {
+    const payload : any = await getPayloadFromJWT(token)
+    const user = await User.findByPk(payload["id"])
+    return user
 }

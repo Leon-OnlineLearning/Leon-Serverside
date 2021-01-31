@@ -1,6 +1,7 @@
 import express from "express"
 import passport from "@services/auth"
-import { blockToken, generateAccessToken, generateRefreshToken, isTokenValidAndExpired, getUserFromJWT } from "@controller/tokens";
+import { blockToken, generateAccessToken, generateRefreshToken, isTokenValidAndExpired, getPayloadFromJWT, getUserFromJWT } from "@controller/tokens";
+import User from "@models/User";
 
 const router = express.Router();
 
@@ -34,7 +35,8 @@ router.post('/refreshToken', passport.authenticate('refresh-token', { session: f
     // if so send new token with payload generated from user call from the id
     // otherwise send 400 bad request
     if (validAndExpired) {
-        const token = await generateAccessToken(req.user)
+        const user = await getUserFromJWT(req.body.oldToken)
+        const token = await generateAccessToken(user)
         res.cookie('jwt', token, { httpOnly: true })
         res.send({success: true, token, message: "new token generated"})
     } else {
@@ -44,7 +46,7 @@ router.post('/refreshToken', passport.authenticate('refresh-token', { session: f
 
 router.post('/logout', async (req,res)=>{
     const token = req.cookies['jwt']
-    const user:any = await getUserFromJWT(token)
+    const user:any = await getPayloadFromJWT(token)
     await blockToken(token, user['exp'])
     res.clearCookie('jwt')
     res.status(205).send('logged out!')
