@@ -1,11 +1,12 @@
-import {DataTypes} from "sequelize"
+import { DataTypes } from "sequelize"
 import sequelize from "@utils/database-connection"
+import { hashPassword } from "@utils/passwords"
 
-const User = sequelize.define('User', {
-    email : {
+export const User = sequelize.define('User', {
+    email: {
         type: DataTypes.STRING,
         allowNull: false
-    }, 
+    },
     firstName: {
         type: DataTypes.STRING,
         allowNull: false
@@ -16,7 +17,9 @@ const User = sequelize.define('User', {
     },
     password: {
         type: DataTypes.STRING,
-        allowNull: false
+        allowNull: false,
+        async set(value) {
+            this.setDataValue('password',await hashPassword(value))
+        }
     }
-
 })
