@@ -1,8 +1,8 @@
 import User, { NonExistingUser } from "@models/User";
 import passport from "passport";
 import passportLocal from "passport-local";
-import passportJWT from "passport-jwt";
-import { isTokenBlocked } from "@controller/expired-tokens";
+import passportJWT, {ExtractJwt}  from "passport-jwt";
+import { isTokenBlocked } from "@controller/tokens";
 
 const LocalStrategy = passportLocal.Strategy;
 const JWTStrategy = passportJWT.Strategy;
@@ -45,6 +45,7 @@ passport.use(
 )
 
 passport.use(
+    'access-token',
     new JWTStrategy({
         jwtFromRequest: (req) => {
             let token = null;
@@ -52,6 +53,23 @@ passport.use(
             return token
         },
         secretOrKey: process.env.JWT_SECRET || 'leon',
+    }, (payload, done) => {
+        try {
+            return done(null, payload)
+        } catch (e) {
+            return done(e)
+        }
+    }
+    )
+)
+
+passport.use(
+    'refresh-token',
+    new JWTStrategy({
+        jwtFromRequest: (req) => {
+            return req.body["refreshToken"] 
+        },
+        secretOrKey: process.env.JWT_REFRESH_SECRET || 'leon_refresh',
     }, (payload, done) => {
         try {
             return done(null, payload)
