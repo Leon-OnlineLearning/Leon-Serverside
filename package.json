@@ -25,7 +25,9 @@
   "homepage": "https://github.com/Leon-OnlineLearning/Leon-Serverside#readme",
   "dependencies": {
     "@ef-carbon/tspm": "^2.2.5",
+    "@types/bcrypt": "^3.0.0",
     "@types/express": "^4.17.11",
+    "@types/passport": "^1.0.5",
     "bcrypt": "^5.0.0",
     "dotenv": "^8.2.0",
     "express": "^4.17.1",
