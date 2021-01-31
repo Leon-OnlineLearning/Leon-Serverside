@@ -2,8 +2,10 @@ import User, { NonExistingUser } from "@models/User";
 import passport from "passport";
 import passportLocal from "passport-local";
 import jwt from "jsonwebtoken";
+import passportJWT, { ExtractJwt } from "passport-jwt";
 
 const LocalStrategy = passportLocal.Strategy;
+const JWTStrategy = passportJWT.Strategy;
 
 passport.use('login',
     new LocalStrategy({
@@ -42,15 +44,24 @@ passport.use(
     )
 )
 
-passport.serializeUser((user: any, done) => {
-    const token = jwt.sign({ email: user["email"], id: user["id"], firstName: user["firstName"], lastName: user["lastName"] }, process.env.JWT_SECRET || 'leon')
-
-    done(null, { token })
-})
-
-passport.deserializeUser((user, done) => {
-    console.log(user);
-    done(null)
-})
+passport.use(
+    new JWTStrategy({
+        jwtFromRequest: (req) => {
+            let token = null;
+            if (req && req.cookies) token = req.cookies['jwt'];
+            return token
+        },
+        secretOrKey: process.env.JWT_SECRET || 'leon',
+    }, (payload, done) => {
+        console.log("hi?");
+        try {
+            return done(null, payload)
+        } catch (e) {
+            
+            return done(e)
+        }
+    }
+    )
+)
 
 export default passport;

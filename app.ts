@@ -1,14 +1,16 @@
 import express from "express"
 import databaseStartup from "@utils/database-startup"
-import User from "@models/User"
-import usersRouter from "@services/routes/User"
+import authRouter from "@services/routes/User/authentication-routes"
+import userRouter from "@services/routes/User/secure-routes"
 import passport from "@services/auth"
+import cookieParser from "cookie-parser"
 
 const app = express()
 app.use(express.json())
+app.use(cookieParser())
 app.use(passport.initialize())
-app.use(passport.session())
-app.use('/users', usersRouter)
+app.use('/auth', authRouter)
+app.use('/user', userRouter)
 
 const PORT = process.env.SERVER_PORT || 3333
 // start listening on $PORT

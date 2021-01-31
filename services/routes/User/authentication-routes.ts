@@ -16,9 +16,12 @@ router.post('/signup', (req, res) => {
     })(req, res)
 })
 
-router.post('/login', passport.authenticate('login'), (req, res) => {
+router.post('/login', passport.authenticate('login', { session: false }), (req, res) => {
     const user: any = req.user;
-    const token = jwt.sign({ email: user["email"], id: user["id"], firstName: user["firstName"], lastName: user["lastName"] }, process.env.JWT_SECRET || 'leon')
-    return (res.json({ token }))
+    const payload = { email: user["email"], id: user["id"], firstName: user["firstName"], lastName: user["lastName"] }
+    const token = jwt.sign(payload, process.env.JWT_SECRET || 'leon', { expiresIn: "15m" })
+    res.cookie('jwt', token, { httpOnly: true })
+    res.json({ success: true, token })
 })
+
 export default router;
