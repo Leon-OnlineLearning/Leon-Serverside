@@ -57,11 +57,17 @@ passport.use(
         try {
             return done(null, payload)
         } catch (e) {
-            
             return done(e)
         }
     }
     )
 )
+
+export const JWTMiddleware = (req: any, res: any, next: any) => {
+    // get the token from request cookies
+    // if blocked:token exist in cache 
+    // return 401 unauthorized
+    next()
+}
 
 export default passport;
