@@ -6,6 +6,9 @@ import User from "@models/User";
 const router = express.Router();
 
 router.post('/signup', async (req, res) => {
+    if (!req.body["email"] || !req.body["password"]) {
+        res.send('Bad request').status(400)
+    }
     passport.authenticate('signup', async (error, user) => {
         if (error) {
             res.status(422)
@@ -22,6 +25,7 @@ router.post('/signup', async (req, res) => {
 
 router.post('/login', passport.authenticate('login', { session: false }), async (req, res) => {
     const user: any = req.user;
+    // unblock the id if exist
     const token = await generateAccessToken(user)
     const refreshToken = await generateRefreshToken(user)
     res.cookie('jwt', token, { httpOnly: true })

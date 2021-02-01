@@ -32,11 +32,13 @@ passport.use('login',
 passport.use(
     'signup',
     new LocalStrategy(
-        { usernameField: 'email', passwordField: 'password', passReqToCallback: true },
+        { usernameField: 'email', passwordField: 'password',
+         passReqToCallback: true },
         async (req, email, password, done) => {
             try {
                 const user = await User.create({ firstName: req.body.firstName, lastName: req.body.lastName, email: email, password: password })
                 return done(null, user)
+                return done(null, {})
             } catch (e) {
                 return done(e)
             }
