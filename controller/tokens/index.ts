@@ -52,11 +52,16 @@ export async function blockId(id: string) {
  * 
  * @param token 
  */
-export async function registerPayload(payload: any, ttl: number) {
+export async function registerPayload(payload: any) {
     // use cases
     // 1- new login
+    console.log('payload registering');
+    const currentTime = (Math.floor(Date.now() / 1000)).toString()
+    console.log('current time', currentTime)
     return await new Promise((resolve, reject) => {
-        client.set(`online:${payload.id}`, (Math.floor(Date.now() / 1000)).toString(), (err, res) => {
+        client.set(`online:${payload.id}`, currentTime, (err, res) => {
+            console.log('result is', res);
+
             if (err) reject(err)
             else resolve(res)
         })
@@ -102,7 +107,7 @@ export async function isTokenBlocked(token: string) {
 export async function generateAccessToken(user: any, refresh: boolean = false) {
 
     const payload = { id: user["id"], firstName: user["firstName"], lastName: user["lastName"] }
-    if (!refresh) await registerPayload(payload, 1 * 60)
+    if (!refresh) await registerPayload(payload)
     return new Promise((resolve, reject) => {
         jwt.sign(payload, process.env.JWT_SECRET || 'leon',
             { expiresIn: "1m" },
@@ -136,7 +141,7 @@ export async function isTokenValidAndExpired(token: string): Promise<boolean> {
 
         // check if token is blocked => invalid
         const blockedToken = await isTokenBlocked(token)
-        console.log(blockedToken)
+        console.log('is token blocked', blockedToken)
 
         if (blockedToken) {
             return false
