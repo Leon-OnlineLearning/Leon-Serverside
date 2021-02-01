@@ -36,13 +36,12 @@ client.on("error", (error) => {
 
 /**
  *
- * @param token 
- * @param expiresIn 
+ * @param id 
  */
-export async function blockToken(token: string) {
-    const payload: any = await getPayloadFromJWT(token)
+export async function blockId(id: string) {
+    // const payload: any = await getPayloadFromJWT(token)
     await new Promise((resolve, reject) => {
-        client.del(`online:${payload["id"]}`, (err, res) => {
+        client.del(`online:${id}`, (err, res) => {
             if (err) reject(err)
             else resolve(res)
         })
@@ -53,36 +52,33 @@ export async function blockToken(token: string) {
  * 
  * @param token 
  */
-export async function issueToken(token: string, expiresIn: number) {
+export async function registerPayload(payload: any, ttl: number) {
     // use cases
     // 1- new login
     // 2- refresh token
-    const payload: any = await getPayloadFromJWT(token)
-    const timeNow = Math.floor(new Date().getTime() / 1000)
-    const expirationTime = Math.floor(expiresIn - timeNow);
     return await new Promise((resolve, reject) => {
-        client.setex(`online:${payload.id}`, expirationTime, payload.iat.toString(), (err, res) => {
+        client.set(`online:${payload.id}`, (Math.floor(Date.now()/1000)).toString(), (err, res) => {
             if (err) reject(err)
             else resolve(res)
         })
     })
 }
 
-export async function updateLastActiveTime(id:string, iat: number, expiresIn: number) {
-    const expTime : number = await new Promise((resolve,reject)=> {
-        client.ttl(`online:${id}`, (err,res)=>{
-            if (err) reject(err)
-            else resolve(res)
-        })
-    })
+// export async function updateLastActiveTime(id: string, iat: number, expiresIn: number) {
+//     const expTime: number = await new Promise((resolve, reject) => {
+//         client.ttl(`online:${id}`, (err, res) => {
+//             if (err) reject(err)
+//             else resolve(res)
+//         })
+//     })
 
-    return await new Promise((resolve, reject) => {
-        client.setex(`online:${id}`, expTime, iat.toString(), (err, res) => {
-            if (err) reject(err)
-            else resolve(res)
-        })
-    })
-}
+//     return await new Promise((resolve, reject) => {
+//         client.setex(`online:${id}`, expTime, iat.toString(), (err, res) => {
+//             if (err) reject(err)
+//             else resolve(res)
+//         })
+//     })
+// }
 
 /**
  * Checks weather or not the token is blocked namespace in cache. 
@@ -94,7 +90,7 @@ export async function isTokenBlocked(token: string) {
         client.get(`online:${payload["id"]}`, (err, reply) => {
             if (err) reject(err)
             else {
-                if (reply) resolve(parseInt(payload["iat"]) < parseInt(reply)) 
+                if (reply) resolve(parseInt(payload["iat"]) < parseInt(reply))
                 else resolve(true)
             }
         })
@@ -104,9 +100,10 @@ export async function isTokenBlocked(token: string) {
 export async function generateAccessToken(user: any) {
 
     const payload = { id: user["id"], firstName: user["firstName"], lastName: user["lastName"] }
+    await registerPayload(payload, 1*60)
     return new Promise((resolve, reject) => {
         jwt.sign(payload, process.env.JWT_SECRET || 'leon',
-            { expiresIn: "15m" },
+            { expiresIn: "1m" },
             (err, token) => {
                 if (err) reject(err)
                 else resolve(token)
@@ -127,16 +124,23 @@ export async function generateRefreshToken(user: any) {
 }
 
 export async function isTokenValidAndExpired(token: string): Promise<boolean> {
+    console.log(token);
+    
 
     try {
         // check if token is valid without checking expiration 
         let decoded: any = await getPayloadFromJWT(token)
+        console.log(decoded);
+        
         // check if token is blocked => invalid
         const blockedToken = await isTokenBlocked(token)
+
         if (blockedToken) {
             return false
         }
         // check if token is expired
+        console.log(decoded);
+        
         if (decoded['exp'] && Date.now() < decoded['exp']) {
             return false
         }

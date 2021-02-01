@@ -1,6 +1,6 @@
 import express from "express"
 import passport from "@services/auth"
-import { blockToken, generateAccessToken, generateRefreshToken, isTokenValidAndExpired, getPayloadFromJWT, getUserFromJWT } from "@controller/tokens";
+import { blockId, generateAccessToken, generateRefreshToken, isTokenValidAndExpired, getPayloadFromJWT, getUserFromJWT } from "@controller/tokens";
 import User from "@models/User";
 
 const router = express.Router();
@@ -50,8 +50,8 @@ router.post('/refreshToken', passport.authenticate('refresh-token', { session: f
 
 router.post('/logout', async (req,res)=>{
     const token = req.cookies['jwt']
-    const user:any = await getPayloadFromJWT(token)
-    await blockToken(token, user['exp'])
+    const user : any= await getPayloadFromJWT(token)
+    await blockId(user["id"])
     res.clearCookie('jwt')
     res.status(205).send('logged out!')
 })
