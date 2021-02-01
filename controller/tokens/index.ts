@@ -55,9 +55,8 @@ export async function blockId(id: string) {
 export async function registerPayload(payload: any, ttl: number) {
     // use cases
     // 1- new login
-    // 2- refresh token
     return await new Promise((resolve, reject) => {
-        client.set(`online:${payload.id}`, (Math.floor(Date.now()/1000)).toString(), (err, res) => {
+        client.set(`online:${payload.id}`, (Math.floor(Date.now() / 1000)).toString(), (err, res) => {
             if (err) reject(err)
             else resolve(res)
         })
@@ -86,6 +85,8 @@ export async function registerPayload(payload: any, ttl: number) {
  */
 export async function isTokenBlocked(token: string) {
     const payload: any = await getPayloadFromJWT(token)
+    console.log("payload", payload);
+
     return await new Promise((resolve, reject) => {
         client.get(`online:${payload["id"]}`, (err, reply) => {
             if (err) reject(err)
@@ -97,10 +98,11 @@ export async function isTokenBlocked(token: string) {
     })
 }
 
-export async function generateAccessToken(user: any) {
+
+export async function generateAccessToken(user: any, refresh: boolean = false) {
 
     const payload = { id: user["id"], firstName: user["firstName"], lastName: user["lastName"] }
-    await registerPayload(payload, 1*60)
+    if (!refresh) await registerPayload(payload, 1 * 60)
     return new Promise((resolve, reject) => {
         jwt.sign(payload, process.env.JWT_SECRET || 'leon',
             { expiresIn: "1m" },
@@ -125,22 +127,23 @@ export async function generateRefreshToken(user: any) {
 
 export async function isTokenValidAndExpired(token: string): Promise<boolean> {
     console.log(token);
-    
+
 
     try {
         // check if token is valid without checking expiration 
         let decoded: any = await getPayloadFromJWT(token)
         console.log(decoded);
-        
+
         // check if token is blocked => invalid
         const blockedToken = await isTokenBlocked(token)
+        console.log(blockedToken)
 
         if (blockedToken) {
             return false
         }
         // check if token is expired
         console.log(decoded);
-        
+
         if (decoded['exp'] && Date.now() < decoded['exp']) {
             return false
         }

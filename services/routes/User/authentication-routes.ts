@@ -38,9 +38,11 @@ router.post('/refreshToken', passport.authenticate('refresh-token', { session: f
     let validAndExpired = await isTokenValidAndExpired(req.body.oldToken)
     // if so send new token with payload generated from user call from the id
     // otherwise send 400 bad request
+    console.log(validAndExpired);
+    
     if (validAndExpired) {
         const user = await getUserFromJWT(req.body.oldToken)
-        const token = await generateAccessToken(user)
+        const token = await generateAccessToken(user, true)
         res.cookie('jwt', token, { httpOnly: true })
         res.send({success: true, token, message: "new token generated"})
     } else {

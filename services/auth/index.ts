@@ -56,6 +56,8 @@ passport.use(
         },
         secretOrKey: process.env.JWT_SECRET || 'leon',
     }, (payload, done) => {
+        console.log(payload);
+        
         try {
             return done(null, payload)
         } catch (e) {
