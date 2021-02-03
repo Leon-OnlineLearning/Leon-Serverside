@@ -1,4 +1,4 @@
-import User, { UserWithGoogle, NonExistingUser } from "@models/User";
+import User, { NonExistingUser } from "@models/User";
 import passport from "passport";
 import { Strategy as LocalStrategy } from "passport-local";
 import { Strategy as JWTStrategy, ExtractJwt } from "passport-jwt";
@@ -94,13 +94,14 @@ passport.use(new GoogleStrategy({
         console.log(profile);
         
         try {
-            const user = await UserWithGoogle.findCreateFind({ 
+            const user = await User.findCreateFind({ 
                 where: { id: profile.id },
                 defaults: {
                     id: profile.id,
                     firstName: profile.name?.givenName,
                     lastName: profile.name?.familyName,
-                    email: profile.emails ? profile.emails[0].value : ""
+                    email: profile.emails ? profile.emails[0].value : undefined,
+                    thirdPartyCredentials: true
                 }
             });
             return done(null, user);

@@ -1,6 +1,7 @@
 import { DataTypes, Model } from "sequelize"
 import sequelize from "@utils/database-connection"
 import { hashPassword, comparePasswords } from "@utils/passwords"
+import { use } from "passport"
 
 export class NonExistingUser extends Error {
     constructor(message: string) {
@@ -10,35 +11,35 @@ export class NonExistingUser extends Error {
     }
 }
 
-export class UserWithGoogle extends Model {}
+// export class UserWithGoogle extends Model {}
 
-UserWithGoogle.init(
-    {
-        id: {
-            type: DataTypes.STRING,
-            allowNull: false,
-            primaryKey: true
-        },
-        lastName :{ 
-            type: DataTypes.STRING,
-            allowNull: false
-        },
-        firstName :{ 
-            type: DataTypes.STRING,
-            allowNull: false
-        },
-        email : {
-            type: DataTypes.STRING,
-            allowNull: false,
-            validate: {
-                isEmail: true
-            }
-        }
-    }, {
-        sequelize,
-        modelName: 'google_user'
-    }
-)
+// UserWithGoogle.init(
+//     {
+//         id: {
+//             type: DataTypes.STRING,
+//             allowNull: false,
+//             primaryKey: true
+//         },
+//         lastName :{ 
+//             type: DataTypes.STRING,
+//             allowNull: false
+//         },
+//         firstName :{ 
+//             type: DataTypes.STRING,
+//             allowNull: false
+//         },
+//         email : {
+//             type: DataTypes.STRING,
+//             allowNull: false,
+//             validate: {
+//                 isEmail: true
+//             }
+//         }
+//     }, {
+//         sequelize,
+//         modelName: 'google_user'
+//     }
+// )
 
 class User extends Model {
     /**
@@ -93,9 +94,11 @@ User.init({
         type: DataTypes.STRING,
         allowNull: false
     },
+    thirdPartyCredentials: {
+        type: DataTypes.BOOLEAN,
+    },
     password: {
         type: DataTypes.STRING,
-        allowNull: false,
         validate: {
             isStrongPassword(password: string) {
                 return (
@@ -118,7 +121,13 @@ User.init({
     modelName: 'User',
     hooks: {
         beforeCreate: async (user: any, _) => {
-            user.password = await hashPassword(user.password)
+            if (user.password)
+                user.password = await hashPassword(user.password)
+        }
+    },
+    validate: {
+        passwordOrThirdParty() {
+            return (this.password || this.thirdPartyCredentials) 
         }
     }
 })
