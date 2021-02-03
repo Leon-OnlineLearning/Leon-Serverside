@@ -10,6 +10,36 @@ export class NonExistingUser extends Error {
     }
 }
 
+export class UserWithGoogle extends Model {}
+
+UserWithGoogle.init(
+    {
+        id: {
+            type: DataTypes.STRING,
+            allowNull: false,
+            primaryKey: true
+        },
+        lastName :{ 
+            type: DataTypes.STRING,
+            allowNull: false
+        },
+        firstName :{ 
+            type: DataTypes.STRING,
+            allowNull: false
+        },
+        email : {
+            type: DataTypes.STRING,
+            allowNull: false,
+            validate: {
+                isEmail: true
+            }
+        }
+    }, {
+        sequelize,
+        modelName: 'google_user'
+    }
+)
+
 class User extends Model {
     /**
      * return user if credentials were correct, return false in case of incorrect password 
@@ -34,7 +64,7 @@ class User extends Model {
         }
         let correctPassword = await comparePasswords(password, user["password"])
         if (!correctPassword) {
-           return false 
+            return false
         } else {
             return user
         }
@@ -51,7 +81,7 @@ User.init({
         type: DataTypes.STRING,
         allowNull: false,
         unique: true,
-        validate : {
+        validate: {
             isEmail: true
         }
     },
@@ -66,6 +96,17 @@ User.init({
     password: {
         type: DataTypes.STRING,
         allowNull: false,
+        validate: {
+            isStrongPassword(password: string) {
+                return (
+                    /[A-Z]/g.test(password) &&
+                    /[a-z]/g.test(password) &&
+                    /[^a-zA-Z0-9]/g.test(password) &&
+                    /[0-9]/g.test(password) &&
+                    password.length > 8
+                )
+            }
+        }
         // this method fails because the password value won't be ready before validation
         // solution: use beforeCreate hook instead
         // async set(value) {

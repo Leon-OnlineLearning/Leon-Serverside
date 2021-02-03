@@ -1,12 +1,10 @@
-import User, { NonExistingUser } from "@models/User";
+import User, { UserWithGoogle, NonExistingUser } from "@models/User";
 import passport from "passport";
-import passportLocal from "passport-local";
-import passportJWT, {ExtractJwt}  from "passport-jwt";
+import { Strategy as LocalStrategy } from "passport-local";
+import { Strategy as JWTStrategy, ExtractJwt } from "passport-jwt";
 import { isTokenBlocked } from "@controller/tokens";
-import {Strategy as GoogleStrategy} from "passport-google-oauth"
+import { OAuth2Strategy as GoogleStrategy } from "passport-google-oauth"
 
-const LocalStrategy = passportLocal.Strategy;
-const JWTStrategy = passportJWT.Strategy;
 
 passport.use('login',
     new LocalStrategy({
@@ -33,8 +31,10 @@ passport.use('login',
 passport.use(
     'signup',
     new LocalStrategy(
-        { usernameField: 'email', passwordField: 'password',
-         passReqToCallback: true },
+        {
+            usernameField: 'email', passwordField: 'password',
+            passReqToCallback: true
+        },
         async (req, email, password, done) => {
             try {
                 const user = await User.create({ firstName: req.body.firstName, lastName: req.body.lastName, email: email, password: password })
@@ -58,7 +58,7 @@ passport.use(
         secretOrKey: process.env.JWT_SECRET || 'leon',
     }, (payload, done) => {
         console.log(payload);
-        
+
         try {
             return done(null, payload)
         } catch (e) {
@@ -72,7 +72,7 @@ passport.use(
     'refresh-token',
     new JWTStrategy({
         jwtFromRequest: (req) => {
-            return req.body["refreshToken"] 
+            return req.body["refreshToken"]
         },
         secretOrKey: process.env.JWT_REFRESH_SECRET || 'leon_refresh',
     }, (payload, done) => {
@@ -85,13 +85,38 @@ passport.use(
     )
 )
 
+passport.use(new GoogleStrategy({
+    clientID: process.env.GOOGLE_OAUTH2_CLIENT_ID || "google_client_id",
+    clientSecret: process.env.GOOGLE_OAUTH2_CLIENT_SECRET || "TOP_SECRET",
+    callbackURL: "/auth/google/redirect"
+},
+    async function (accessToken, refreshToken, profile, done) {
+        console.log(profile);
+        
+        try {
+            const user = await UserWithGoogle.findCreateFind({ 
+                where: { id: profile.id },
+                defaults: {
+                    id: profile.id,
+                    firstName: profile.name?.givenName,
+                    lastName: profile.name?.familyName,
+                    email: profile.emails ? profile.emails[0].value : ""
+                }
+            });
+            return done(null, user);
+        } catch (e) {
+            return done(e);
+        }
+    }
+));
+
 export const BlockedJWTMiddleware = async (req: any, res: any, next: any) => {
     // get the token from request cookies
-    let token; 
+    let token;
     if (req && req.cookies) token = req.cookies['jwt'];
     if (!token) res.status(401).send("Token not found")
     // if blocked:token exist in cache 
-    if (await isTokenBlocked(token)) 
+    if (await isTokenBlocked(token))
         res.status(401).send("Token Blocked!")
     // return 401 unauthorized
     next()
