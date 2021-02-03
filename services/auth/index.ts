@@ -57,7 +57,6 @@ passport.use(
         },
         secretOrKey: process.env.JWT_SECRET || 'leon',
     }, (payload, done) => {
-        console.log(payload);
 
         try {
             return done(null, payload)
@@ -91,7 +90,6 @@ passport.use(new GoogleStrategy({
     callbackURL: "/auth/google/redirect"
 },
     async function (accessToken, refreshToken, profile, done) {
-        console.log(profile);
         
         try {
             const user = await User.findCreateFind({ 

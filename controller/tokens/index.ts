@@ -55,12 +55,9 @@ export async function blockId(id: string) {
 export async function registerPayload(payload: any) {
     // use cases
     // 1- new login
-    console.log('payload registering');
     const currentTime = (Math.floor(Date.now() / 1000)).toString()
-    console.log('current time', currentTime)
     return await new Promise((resolve, reject) => {
         client.set(`online:${payload.id}`, currentTime, (err, res) => {
-            console.log('result is', res);
 
             if (err) reject(err)
             else resolve(res)
@@ -90,7 +87,6 @@ export async function registerPayload(payload: any) {
  */
 export async function isTokenBlocked(token: string) {
     const payload: any = await getPayloadFromJWT(token)
-    console.log("payload", payload);
 
     return await new Promise((resolve, reject) => {
         client.get(`online:${payload["id"]}`, (err, reply) => {
@@ -131,23 +127,19 @@ export async function generateRefreshToken(user: any) {
 }
 
 export async function isTokenValidAndExpired(token: string): Promise<boolean> {
-    console.log(token);
 
 
     try {
         // check if token is valid without checking expiration 
         let decoded: any = await getPayloadFromJWT(token)
-        console.log(decoded);
 
         // check if token is blocked => invalid
         const blockedToken = await isTokenBlocked(token)
-        console.log('is token blocked', blockedToken)
 
         if (blockedToken) {
             return false
         }
         // check if token is expired
-        console.log(decoded);
 
         if (decoded['exp'] && Date.now() < decoded['exp']) {
             return false
