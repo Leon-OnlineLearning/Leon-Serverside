@@ -3,6 +3,7 @@ import passport from "passport";
 import passportLocal from "passport-local";
 import passportJWT, {ExtractJwt}  from "passport-jwt";
 import { isTokenBlocked } from "@controller/tokens";
+import {Strategy as GoogleStrategy} from "passport-google-oauth"
 
 const LocalStrategy = passportLocal.Strategy;
 const JWTStrategy = passportJWT.Strategy;
