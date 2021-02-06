@@ -25,10 +25,6 @@ router.post('/signup', async (req, res) => {
 router.post('/login', passport.authenticate('login', { session: false }), async (req, res) => {
     const user: any = req.user;
     await login(user, res)
-    // const token = await generateAccessToken(user)
-    // const refreshToken = await generateRefreshToken(user)
-    // res.cookie('jwt', token, { httpOnly: true })
-    // res.json({ success: true, token, refreshToken })
 })
 
 async function login(user: any, res: any) {
