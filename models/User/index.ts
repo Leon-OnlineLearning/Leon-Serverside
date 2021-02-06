@@ -11,36 +11,6 @@ export class NonExistingUser extends Error {
     }
 }
 
-// export class UserWithGoogle extends Model {}
-
-// UserWithGoogle.init(
-//     {
-//         id: {
-//             type: DataTypes.STRING,
-//             allowNull: false,
-//             primaryKey: true
-//         },
-//         lastName :{ 
-//             type: DataTypes.STRING,
-//             allowNull: false
-//         },
-//         firstName :{ 
-//             type: DataTypes.STRING,
-//             allowNull: false
-//         },
-//         email : {
-//             type: DataTypes.STRING,
-//             allowNull: false,
-//             validate: {
-//                 isEmail: true
-//             }
-//         }
-//     }, {
-//         sequelize,
-//         modelName: 'google_user'
-//     }
-// )
-
 class User extends Model {
     /**
      * return user if credentials were correct, return false in case of incorrect password 
