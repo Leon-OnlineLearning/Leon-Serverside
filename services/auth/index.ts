@@ -1,7 +1,7 @@
 import User, { NonExistingUser } from "@models/User";
 import passport from "passport";
 import { Strategy as LocalStrategy } from "passport-local";
-import { Strategy as JWTStrategy, ExtractJwt } from "passport-jwt";
+import { Strategy as JWTStrategy } from "passport-jwt";
 import { isTokenBlocked } from "@controller/tokens";
 import { OAuth2Strategy as GoogleStrategy } from "passport-google-oauth"
 
@@ -39,7 +39,6 @@ passport.use(
             try {
                 const user = await User.create({ firstName: req.body.firstName, lastName: req.body.lastName, email: email, password: password })
                 return done(null, user)
-                return done(null, {})
             } catch (e) {
                 return done(e)
             }
@@ -89,7 +88,7 @@ passport.use(new GoogleStrategy({
     clientSecret: process.env.GOOGLE_OAUTH2_CLIENT_SECRET || "TOP_SECRET",
     callbackURL: "/auth/google/redirect"
 },
-    async function (accessToken, refreshToken, profile, done) {
+    async function (_accessToken, _refreshToken, profile, done) {
         
         try {
             const user = await User.findCreateFind({ 

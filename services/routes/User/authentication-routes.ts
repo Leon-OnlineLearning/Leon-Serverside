@@ -1,7 +1,6 @@
 import express from "express"
 import passport from "@services/auth"
 import { blockId, generateAccessToken, generateRefreshToken, isTokenValidAndExpired, getPayloadFromJWT, getUserFromJWT } from "@controller/tokens";
-import User from "@models/User";
 
 const router = express.Router();
 
