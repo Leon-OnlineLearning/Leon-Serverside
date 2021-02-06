@@ -1,7 +1,6 @@
 import { DataTypes, Model } from "sequelize"
 import sequelize from "@utils/database-connection"
 import { hashPassword, comparePasswords } from "@utils/passwords"
-import { use } from "passport"
 
 export class NonExistingUser extends Error {
     constructor(message: string) {
@@ -56,6 +55,14 @@ User.init({
             isEmail: true
         }
     },
+		role: {
+			type: DataTypes.STRING,
+			allowNull: false,
+			defaultValue: "STUDENT",
+			validate: {
+				isIn: [["STUDENT", "PROFESSOR", "ADMIN"]]
+			}
+		},
     firstName: {
         type: DataTypes.STRING,
         allowNull: false

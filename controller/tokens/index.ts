@@ -102,7 +102,7 @@ export async function isTokenBlocked(token: string) {
 
 export async function generateAccessToken(user: any, refresh: boolean = false) {
 
-    const payload = { id: user["id"], firstName: user["firstName"], lastName: user["lastName"] }
+    const payload = { id: user["id"], firstName: user["firstName"], lastName: user["lastName"], role: user["role"]}
     if (!refresh) await registerPayload(payload)
     return new Promise((resolve, reject) => {
         jwt.sign(payload, process.env.JWT_SECRET || 'leon',
@@ -115,7 +115,7 @@ export async function generateAccessToken(user: any, refresh: boolean = false) {
 }
 
 export async function generateRefreshToken(user: any) {
-    const payload = { id: user["id"], firstName: user["firstName"], lastName: user["lastName"] }
+    const payload = { id: user["id"], firstName: user["firstName"], lastName: user["lastName"], role: user["role"] }
     return new Promise((resolve, reject) => {
         jwt.sign(payload, process.env.JWT_REFRESH_SECRET || 'leon_refresh',
             { expiresIn: "1y" },
