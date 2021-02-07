@@ -37,11 +37,12 @@ async function login(user: any, res: any) {
 router.post('/refreshToken', passport.authenticate('refresh-token', { session: false }), async (req, res) => {
 
     // check if the old token is valid and expired
-    let validAndExpired = await isTokenValidAndExpired(req.cookies['jwt'])
+    let validAndExpired = await isTokenValidAndExpired(req.cookies['jwt'] || req.body["oldToken"])
     // if so send new token with payload generated from user call from the id
     // otherwise send 400 bad request
 
     if (validAndExpired) {
+			console.log("here....")
         const user = await getUserFromJWT(req.cookies['jwt'])
         const token = await generateAccessToken(user, true)
         res.cookie('jwt', token, { httpOnly: true })
