@@ -1,16 +1,18 @@
 # Leon-Serverside
 
-## .env example 
-root/.env
+## `.env` Fields
 ```
-DATABASE_NAME=leon
-USERNAME=leon
-PASSWORD=a
-HOST=localhost
-DATABASE_PORT=3306
-SERVER_PORT=3333
-CONNECTION_POOLS=4
+DATABASE_NAME
+USERNAME
+PASSWORD
+HOST
+DATABASE_PORT
+SERVER_PORT
+CONNECTION_POOLS
+JWT_SECRET
+JWT_REFRESH_SECRET
+INVALID_TOKEN_SERVER
+INVALID_TOKEN_PORT
+GOOGLE_OAUTH2_CLIENT_ID
+GOOGLE_OAUTH2_CLIENT_SECRET
 ```
-
-## Notes
-database sync should be done only in [dev environment] (https://sequelize.org/master/manual/model-basics.html#synchronization-in-production)
