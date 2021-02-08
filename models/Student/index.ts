@@ -2,6 +2,7 @@ import { Model, DataTypes } from "sequelize";
 import User from "../User";
 import sequelize from "@utils/database-connection"
 import Department from "@models/Department";
+import Course from "@models/Course";
 
 
 class Student extends Model {}
@@ -29,6 +30,7 @@ Student.belongsTo(User, {
 })
 
 Student.belongsTo(Department)
+Student.hasMany(Course)
 
 console.log(Student === sequelize.models.Student);
 

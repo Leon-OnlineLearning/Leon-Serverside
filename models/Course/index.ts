@@ -1,4 +1,5 @@
 import Department from "@models/Department";
+import Professor from "@models/Professor";
 import sequelize from "@utils/database-connection";
 import { DataTypes, Model } from "sequelize";
 
@@ -16,7 +17,9 @@ Course.init(
 }
 )
 
-Course.belongsToMany(Department, {through: 'DEPARTMENTS_COURSES'})
-Department.belongsToMany(Course, {through: 'DEPARTMENTS_COURSES'})
+Course.belongsToMany(Department, {through: 'DepartmentsCourses'})
+Department.belongsToMany(Course, {through: 'DepartmentsCourses'})
+
+Course.belongsTo(Professor)
 
 export default Course;

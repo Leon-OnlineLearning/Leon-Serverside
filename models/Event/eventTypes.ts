@@ -1,3 +1,3 @@
-function getEventTypes() {
-    return ["Lecture", "Exam"]
+export function getEventTypes() {
+    return ["LECTURE", "EXAM", "ASSIGNMENT", "QUIZ"]
 }
