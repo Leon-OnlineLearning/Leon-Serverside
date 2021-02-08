@@ -16,7 +16,7 @@ export default async function databaseStartup(redefineSchema: boolean = true) {
     }
     try {
         if (redefineSchema) {
-            await sequelize.sync({ alter: true })
+            await sequelize.sync()
             console.log('sync to database: DONE');
         }
 

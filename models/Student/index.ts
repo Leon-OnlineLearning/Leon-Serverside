@@ -10,7 +10,8 @@ class Student extends Model {}
 Student.init({
     UserId: {
         type: DataTypes.UUID,
-        unique: true
+        unique: true,
+        allowNull: false
     }, 
     year: {
         type: DataTypes.INTEGER,
