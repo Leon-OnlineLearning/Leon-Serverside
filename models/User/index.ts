@@ -1,6 +1,7 @@
 import { DataTypes, Model } from "sequelize"
 import sequelize from "@utils/database-connection"
 import { hashPassword, comparePasswords } from "@utils/passwords"
+import Student from "../Student"
 
 export class NonExistingUser extends Error {
     constructor(message: string) {
@@ -108,6 +109,8 @@ User.init({
         }
     }
 })
+
+/* Associations */ 
 
 
 export default User;
