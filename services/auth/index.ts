@@ -101,10 +101,7 @@ passport.use(new GoogleStrategy({
     callbackURL: "/auth/google/redirect"
 },
     async function (_accessToken, _refreshToken, profile, done) {
-
         try {
-            // throw new Error("To be implemented");
-
             const repo = getCustomRepository(UserRepo)
             const user = new User();
             user.firstName = profile.name?.givenName || "No firstName";
@@ -115,7 +112,7 @@ passport.use(new GoogleStrategy({
             } else {
                 throw new Error("Email is not provided");
             }
-            await repo.save(user);
+            await repo.upsert(user);
             return done(null, user);
         } catch (e) {
             return done(e);

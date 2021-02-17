@@ -65,8 +65,10 @@ router.get('/google', passport.authenticate('google', {
 }));
 
 router.get('/google/redirect', passport.authenticate('google', { session: false }), async (req: any, res) => {
-    const user = req.user[0]['dataValues']
-    await login(user, res)
+    // console.log("user: ",req.user);
+    
+    // const user = req.user[0]['dataValues']
+    await login(req.user, res)
 })
 
 export default router;

@@ -16,7 +16,7 @@ const initializeConnection = async () => {
             type: "mysql",
             ...connectionInfo,
             entities: [
-                __dirname + "/../models/**/index.js"
+                __dirname + "/../models/**/*.js"
             ]
         }
     )
