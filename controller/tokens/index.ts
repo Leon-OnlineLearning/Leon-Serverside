@@ -24,6 +24,8 @@
 import redis from "redis"
 import jwt from "jsonwebtoken"
 import User from "@models/User";
+import { getRepository } from "typeorm";
+import UserRepo from "@controller/DataAccess/user-repo";
 
 const client = redis.createClient({
     host: process.env.INVALID_TOKEN_SERVER || '127.0.0.1',
@@ -162,6 +164,7 @@ export async function getPayloadFromJWT(token: string) {
 
 export async function getUserFromJWT(token: string) {
     const payload: any = await getPayloadFromJWT(token)
-    const user = await User.findByPk(payload["id"])
+    const repo = getRepository(UserRepo);
+    const user = await repo.findOne(payload["id"])
     return user
 }

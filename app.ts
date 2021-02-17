@@ -1,3 +1,4 @@
+import "reflect-metadata";
 import express from "express"
 import databaseStartup from "@utils/database-startup"
 import authRouter from "@services/routes/User/authentication-routes"

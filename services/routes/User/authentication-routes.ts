@@ -6,12 +6,12 @@ const router = express.Router();
 
 router.post('/signup', async (req, res) => {
     if (!req.body["email"] || !req.body["password"]) {
-        res.send('Bad request').status(400)
+        res.status(400).send("email and/or password wasn't provided")
     }
     passport.authenticate('signup', async (error, user) => {
         if (error) {
             res.status(422)
-            res.send(error.errors[0].message)
+            res.send(error)
         }
         if (user) {
             const token = await generateAccessToken(user)
@@ -68,7 +68,6 @@ router.get('/google', passport.authenticate('google', {
 router.get('/google/redirect', passport.authenticate('google', { session: false }), async (req: any, res) => {
     const user = req.user[0]['dataValues']
     await login(user, res)
-    // res.send('TODO: send jwt info here')
 })
 
 export default router;

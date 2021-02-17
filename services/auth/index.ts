@@ -1,9 +1,12 @@
-import User, { NonExistingUser } from "@models/User";
+import User, { NonExistingUser, UserRole } from "@models/User";
 import passport from "passport";
 import { Strategy as LocalStrategy } from "passport-local";
 import { Strategy as JWTStrategy } from "passport-jwt";
 import { isTokenBlocked } from "@controller/tokens";
 import { OAuth2Strategy as GoogleStrategy } from "passport-google-oauth"
+import verifyPassword from "@controller/BusinessLogic/User/validate-user";
+import { getConnection, getCustomRepository, getRepository } from "typeorm";
+import UserRepo from "@controller/DataAccess/user-repo";
 
 
 passport.use('login',
@@ -12,7 +15,7 @@ passport.use('login',
         passwordField: 'password'
     }, async (email, password, done) => {
         try {
-            const correctUser = await User.verifyPassword(email, password)
+            const correctUser = await verifyPassword(email, password)
             if (!correctUser) {
                 return done(null, false, { message: 'Incorrect password!' })
             }
@@ -37,7 +40,14 @@ passport.use(
         },
         async (req, email, password, done) => {
             try {
-                const user = await User.create({ firstName: req.body.firstName, lastName: req.body.lastName, email: email, password: password })
+                const repo = getCustomRepository(UserRepo)
+                const user = new User();
+                user.firstName = req.body.firstName;
+                user.lastName = req.body.lastName;
+                user.password = password;
+                user.email = email;
+                user.role = req.body.role;
+                await repo.save(user)
                 return done(null, user)
             } catch (e) {
                 return done(e)
@@ -45,6 +55,7 @@ passport.use(
         }
     )
 )
+
 
 passport.use(
     'access-token',
@@ -91,16 +102,19 @@ passport.use(new GoogleStrategy({
     async function (_accessToken, _refreshToken, profile, done) {
         
         try {
-            const user = await User.findCreateFind({ 
-                where: { id: profile.id },
-                defaults: {
-                    id: profile.id,
-                    firstName: profile.name?.givenName,
-                    lastName: profile.name?.familyName,
-                    email: profile.emails ? profile.emails[0].value : undefined,
-                    thirdPartyCredentials: true
-                }
-            });
+            // throw new Error("To be implemented");
+            
+            const repo = getCustomRepository(UserRepo)
+            const user = new User();
+            user.firstName = profile.name?.givenName || "No firstName";
+            user.lastName = profile.name?.familyName || "No lastName";
+            user.thirdPartyAccount = true;
+            if (profile.emails) {
+                user.email = profile.emails[0].value 
+            } else {
+                throw new Error("Email is not provided");
+            }
+            await repo.save(user);
             return done(null, user);
         } catch (e) {
             return done(e);

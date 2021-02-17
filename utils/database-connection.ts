@@ -1,22 +1,26 @@
-import { Sequelize } from "sequelize"
+import User from "@models/User"
+import { createConnection } from "typeorm"
 
-export const connectionInfo = {
-    database: process.env.DATABASE_NAME || 'leon',
+const connectionInfo = {
+    host: process.env.HOST || 'localhost',
+    port: parseInt(process.env.DATABASE_PORT || "") || 3306,
     username: process.env.USERNAME || 'leon',
     password: process.env.PASSWORD || 'leon',
-    host: process.env.HOST || 'localhost',
-    port: parseInt(process.env.DATABASE_PORT || "") || 3306
+    database: process.env.DATABASE_NAME || 'leon',
 }
 
-const sequelize = new Sequelize(
-    {
-        ...connectionInfo,
-        dialect: 'mysql',
-        pool: {
-            max: parseInt(process.env.CONNECTION_POOLS || "") || 4,
-            idle: 100000
-        }
-    }
-);
+const initializeConnection = async () => {
 
-export default sequelize;
+    const connection = await createConnection(
+        {
+            type: "mysql",
+            ...connectionInfo,
+            entities: [
+                __dirname + "/../models/**/index.js"
+            ]
+        }
+    )
+    await connection.synchronize();
+}
+
+export default initializeConnection;
