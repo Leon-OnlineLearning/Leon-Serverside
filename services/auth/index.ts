@@ -7,6 +7,7 @@ import { OAuth2Strategy as GoogleStrategy } from "passport-google-oauth"
 import verifyPassword from "@controller/BusinessLogic/User/validate-user";
 import { getConnection, getCustomRepository, getRepository } from "typeorm";
 import UserRepo from "@controller/DataAccess/user-repo";
+import { hashPassword } from "@utils/passwords";
 
 
 passport.use('login',
@@ -16,6 +17,7 @@ passport.use('login',
     }, async (email, password, done) => {
         try {
             const correctUser = await verifyPassword(email, password)
+
             if (!correctUser) {
                 return done(null, false, { message: 'Incorrect password!' })
             }
@@ -44,7 +46,7 @@ passport.use(
                 const user = new User();
                 user.firstName = req.body.firstName;
                 user.lastName = req.body.lastName;
-                user.password = password;
+                user.password = await hashPassword(password);
                 user.email = email;
                 user.role = req.body.role;
                 await repo.save(user)
@@ -100,17 +102,17 @@ passport.use(new GoogleStrategy({
     callbackURL: "/auth/google/redirect"
 },
     async function (_accessToken, _refreshToken, profile, done) {
-        
+
         try {
             // throw new Error("To be implemented");
-            
+
             const repo = getCustomRepository(UserRepo)
             const user = new User();
             user.firstName = profile.name?.givenName || "No firstName";
             user.lastName = profile.name?.familyName || "No lastName";
             user.thirdPartyAccount = true;
             if (profile.emails) {
-                user.email = profile.emails[0].value 
+                user.email = profile.emails[0].value
             } else {
                 throw new Error("Email is not provided");
             }

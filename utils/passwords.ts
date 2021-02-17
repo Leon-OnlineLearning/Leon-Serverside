@@ -1,5 +1,5 @@
 import bcrypt from "bcrypt"
-export async function hashPassword(password: unknown, saltRounds: number = 10) {
+export async function hashPassword(password: unknown, saltRounds: number = 10) : Promise<string> {
     return await new Promise((resolve, reject) => {
         bcrypt.hash(password, saltRounds, (err, hash) => {
             if (err) reject(err)

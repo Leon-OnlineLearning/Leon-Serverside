@@ -1,4 +1,4 @@
-import { IsEmail, validateOrReject } from "class-validator"
+import { IsEmail } from "class-validator"
 import { BeforeInsert, Column, Entity, PrimaryGeneratedColumn } from "typeorm"
 
 export class NonExistingUser extends Error {
@@ -20,15 +20,15 @@ class User {
     @PrimaryGeneratedColumn("uuid")
     id: string;
 
-    @Column({ nullable: false })
+    @Column({ nullable: false, unique: true })
     @IsEmail()
     email: string;
 
-    @Column({ 
+    @Column({
         nullable: false,
         type: "enum",
         enum: UserRole,
-        default: UserRole.STUDENT 
+        default: UserRole.STUDENT
     })
     role: UserRole;
 
