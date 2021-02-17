@@ -9,11 +9,11 @@ export class NonExistingUser extends Error {
     }
 }
 
-export enum UserRole {
-    STUDENT = "student",
-    PROFESSOR = "professor",
-    ADMIN = "admin"
-}
+// export enum UserRole {
+//     STUDENT = "student",
+//     PROFESSOR = "professor",
+//     ADMIN = "admin"
+// }
 
 @Entity({ name: "USERS" })
 class User {
@@ -24,13 +24,13 @@ class User {
     @IsEmail()
     email: string;
 
-    @Column({
-        nullable: false,
-        type: "enum",
-        enum: UserRole,
-        default: UserRole.STUDENT
-    })
-    role: UserRole;
+    // @Column({
+    //     nullable: false,
+    //     type: "enum",
+    //     enum: UserRole,
+    //     default: UserRole.STUDENT
+    // })
+    // role: UserRole;
 
     @Column({ nullable: true })
     password: string;

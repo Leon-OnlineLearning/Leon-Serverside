@@ -1,4 +1,4 @@
-import User, { NonExistingUser, UserRole } from "@models/User";
+import User, { NonExistingUser } from "@models/Users/User";
 import passport from "passport";
 import { Strategy as LocalStrategy } from "passport-local";
 import { Strategy as JWTStrategy } from "passport-jwt";
@@ -48,7 +48,6 @@ passport.use(
                 user.lastName = req.body.lastName;
                 user.password = await hashPassword(password);
                 user.email = email;
-                user.role = req.body.role;
                 await repo.save(user)
                 return done(null, user)
             } catch (e) {

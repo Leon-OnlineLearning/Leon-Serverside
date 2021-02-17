@@ -1,5 +1,5 @@
 import UserRepo from "@controller/DataAccess/user-repo";
-import { NonExistingUser } from "@models/User";
+import { NonExistingUser } from "@models/Users/User";
 import { comparePasswords } from "@utils/passwords";
 import { getCustomRepository } from "typeorm";
 

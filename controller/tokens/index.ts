@@ -23,7 +23,7 @@
 
 import redis from "redis"
 import jwt from "jsonwebtoken"
-import User from "@models/User";
+import User from "@models/Users/User";
 import { getCustomRepository, getRepository } from "typeorm";
 import UserRepo from "@controller/DataAccess/user-repo";
 

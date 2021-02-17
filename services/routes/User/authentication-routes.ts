@@ -42,7 +42,6 @@ router.post('/refreshToken', passport.authenticate('refresh-token', { session: f
     // otherwise send 400 bad request
 
     if (validAndExpired) {
-			console.log("here....")
         const user = await getUserFromJWT(req.cookies['jwt'])
         const token = await generateAccessToken(user, true)
         res.cookie('jwt', token, { httpOnly: true })
