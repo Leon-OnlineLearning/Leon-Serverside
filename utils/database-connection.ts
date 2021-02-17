@@ -20,7 +20,7 @@ const initializeConnection = async () => {
             ]
         }
     )
-    await connection.synchronize();
+    await connection.synchronize(true);
 }
 
 export default initializeConnection;

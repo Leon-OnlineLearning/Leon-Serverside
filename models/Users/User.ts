@@ -1,5 +1,5 @@
 import { IsEmail } from "class-validator"
-import { BeforeInsert, Column, Entity, PrimaryGeneratedColumn } from "typeorm"
+import { BeforeInsert, Column, Entity, PrimaryGeneratedColumn, TableInheritance } from "typeorm"
 
 export class NonExistingUser extends Error {
     constructor(message: string) {
@@ -9,13 +9,8 @@ export class NonExistingUser extends Error {
     }
 }
 
-// export enum UserRole {
-//     STUDENT = "student",
-//     PROFESSOR = "professor",
-//     ADMIN = "admin"
-// }
-
 @Entity({ name: "USERS" })
+@TableInheritance({column:{type: "varchar", name: "role" }})
 class User {
     @PrimaryGeneratedColumn("uuid")
     id: string;
@@ -23,14 +18,6 @@ class User {
     @Column({ nullable: false, unique: true })
     @IsEmail()
     email: string;
-
-    // @Column({
-    //     nullable: false,
-    //     type: "enum",
-    //     enum: UserRole,
-    //     default: UserRole.STUDENT
-    // })
-    // role: UserRole;
 
     @Column({ nullable: true })
     password: string;

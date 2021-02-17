@@ -11,4 +11,22 @@ export default class UserRepo extends Repository<User>{
         .orIgnore()
         .execute();
     }
+
+    async getRoleById(id: string) {
+        const res = await getConnection().createQueryBuilder()
+        .select("USERS.role")
+        .from(User, "USERS")
+        .where("USERS.id = :id", {id: id})
+        .execute();
+        return res[0]["USERS_role"]
+    }
+
+    async findUserAndRoleById(id: string) {
+        const res = await getConnection().createQueryBuilder()
+        .select("USERS")
+        .from(User, "USERS")
+        .where("USERS.id = :id", {id: id})
+        .execute();
+        return res;
+    }
 }

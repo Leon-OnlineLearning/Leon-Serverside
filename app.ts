@@ -5,6 +5,12 @@ import authRouter from "@services/routes/User/authentication-routes"
 import userRouter from "@services/routes/User/secure-routes"
 import passport from "@services/auth"
 import cookieParser from "cookie-parser"
+import Student from "@models/Users/Student";
+import { hashPassword } from "@utils/passwords";
+import { getCustomRepository, getRepository } from "typeorm";
+import UserRepo from "@controller/DataAccess/user-repo";
+import User from "@models/Users/User";
+import Professor from "@models/Users/Admin";
 
 const app = express()
 app.use(express.json())
@@ -18,5 +24,4 @@ const PORT = process.env.SERVER_PORT || 3333
 app.listen(PORT, async () => {
     console.log(`listening on port ${PORT}`);
     await databaseStartup()
-    console.log('connected to database')
 })

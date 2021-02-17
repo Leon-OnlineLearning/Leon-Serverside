@@ -12,6 +12,7 @@ const verifyPassword = async (email: string, password: string) => {
                 email: email
             }
         })
+        
         if (!user) {
             throw new NonExistingUser("Invalid Email!")
         }
