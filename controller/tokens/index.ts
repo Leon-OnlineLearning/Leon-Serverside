@@ -24,7 +24,7 @@
 import redis from "redis"
 import jwt from "jsonwebtoken"
 import User from "@models/User";
-import { getRepository } from "typeorm";
+import { getCustomRepository, getRepository } from "typeorm";
 import UserRepo from "@controller/DataAccess/user-repo";
 
 const client = redis.createClient({
@@ -164,7 +164,7 @@ export async function getPayloadFromJWT(token: string) {
 
 export async function getUserFromJWT(token: string) {
     const payload: any = await getPayloadFromJWT(token)
-    const repo = getRepository(UserRepo);
+    const repo = getCustomRepository(UserRepo);
     const user = await repo.findOne(payload["id"])
     return user
 }
