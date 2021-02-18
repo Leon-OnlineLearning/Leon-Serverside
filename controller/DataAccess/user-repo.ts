@@ -3,7 +3,7 @@ import { EntityRepository, getConnection, Repository } from "typeorm";
 
 @EntityRepository(User)
 export default class UserRepo extends Repository<User>{
-    async upsert(user: User){
+    async insertOrIgnore(user: User){
         await getConnection().createQueryBuilder()
         .insert()
         .into(User)

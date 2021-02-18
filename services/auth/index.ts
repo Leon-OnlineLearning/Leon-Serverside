@@ -8,6 +8,10 @@ import verifyPassword from "@controller/BusinessLogic/User/validate-user";
 import { getConnection, getCustomRepository, getRepository } from "typeorm";
 import UserRepo from "@controller/DataAccess/user-repo";
 import { hashPassword } from "@utils/passwords";
+import Student from "@models/Users/Student";
+import Professor from "@models/Users/Professor";
+import Admin from "@models/Users/Admin";
+import UserFactory from "@models/Users/UserFactory";
 
 
 passport.use('login',
@@ -42,8 +46,13 @@ passport.use(
         },
         async (req, email, password, done) => {
             try {
+                if (!req.body.role || !(req.body.role instanceof String)) {
+                    throw new Error("role wasn't provided properly");
+                }
+
                 const repo = getCustomRepository(UserRepo)
-                const user = new User();
+
+                let user = UserFactory(req.body.role)
                 user.firstName = req.body.firstName;
                 user.lastName = req.body.lastName;
                 user.password = await hashPassword(password);
@@ -103,7 +112,7 @@ passport.use(new GoogleStrategy({
     async function (_accessToken, _refreshToken, profile, done) {
         try {
             const repo = getCustomRepository(UserRepo)
-            const user = new User();
+            const user = UserFactory();
             user.firstName = profile.name?.givenName || "No firstName";
             user.lastName = profile.name?.familyName || "No lastName";
             user.thirdPartyAccount = true;
@@ -112,7 +121,7 @@ passport.use(new GoogleStrategy({
             } else {
                 throw new Error("Email is not provided");
             }
-            await repo.upsert(user);
+            await repo.insertOrIgnore(user);
             return done(null, user);
         } catch (e) {
             return done(e);

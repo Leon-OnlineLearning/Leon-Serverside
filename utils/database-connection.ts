@@ -1,4 +1,3 @@
-import User from "@models/Users/User"
 import { createConnection } from "typeorm"
 
 const connectionInfo = {
@@ -14,6 +13,8 @@ const initializeConnection = async () => {
     const connection = await createConnection(
         {
             type: "mysql",
+            logging: true,
+            logger: "simple-console",
             ...connectionInfo,
             entities: [
                 __dirname + "/../models/**/*.js"

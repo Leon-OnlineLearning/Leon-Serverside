@@ -5,7 +5,8 @@
   "main": "app.js",
   "scripts": {
     "dev": "tsc && ef-tspm && nodemon -r dotenv/config build/app.js",
-    "tsc": "tsc && ef-tspm"
+    "tsc": "tsc && ef-tspm",
+    "clean": "rm -rf ./build"
   },
   "repository": {
     "type": "git",
