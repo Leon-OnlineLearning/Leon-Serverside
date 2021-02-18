@@ -11,7 +11,7 @@ import { hashPassword } from "@utils/passwords";
 import Student from "@models/Users/Student";
 import Professor from "@models/Users/Professor";
 import Admin from "@models/Users/Admin";
-import UserFactory from "@models/Users/UserFactory";
+import UserPersistanceFactory from "@models/Users/UserFactory";
 
 
 passport.use('login',
@@ -46,17 +46,21 @@ passport.use(
         },
         async (req, email, password, done) => {
             try {
-                if (!req.body.role || !(req.body.role instanceof String)) {
+                
+                if (!req.body.role || typeof req.body.role !== "string") {
                     throw new Error("role wasn't provided properly");
                 }
 
-                const repo = getCustomRepository(UserRepo)
 
-                let user = UserFactory(req.body.role)
+                const [repo, user] = UserPersistanceFactory(req.body.role)
+                console.log(user);
+                
                 user.firstName = req.body.firstName;
                 user.lastName = req.body.lastName;
                 user.password = await hashPassword(password);
                 user.email = email;
+                console.log('result user',user);
+                
                 await repo.save(user)
                 return done(null, user)
             } catch (e) {
@@ -112,7 +116,7 @@ passport.use(new GoogleStrategy({
     async function (_accessToken, _refreshToken, profile, done) {
         try {
             const repo = getCustomRepository(UserRepo)
-            const user = UserFactory();
+            const [_, user] = UserPersistanceFactory();
             user.firstName = profile.name?.givenName || "No firstName";
             user.lastName = profile.name?.familyName || "No lastName";
             user.thirdPartyAccount = true;

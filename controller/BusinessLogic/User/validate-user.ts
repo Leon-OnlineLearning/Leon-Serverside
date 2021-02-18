@@ -7,12 +7,7 @@ const verifyPassword = async (email: string, password: string) => {
     const repo = getCustomRepository(UserRepo)
     let user: any;
     try {
-        user = await repo.findOne({
-            where: {
-                email: email
-            }
-        })
-        
+        user = await repo.findUserAndRoleByEmail(email)
         if (!user) {
             throw new NonExistingUser("Invalid Email!")
         }
