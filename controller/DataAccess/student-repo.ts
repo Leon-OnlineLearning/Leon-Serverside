@@ -5,12 +5,22 @@ import { EntityRepository, getConnection, Repository } from "typeorm";
 
 @EntityRepository(Student)
 export default class StudentRepo extends Repository<Student>{
-    async insertOrIgnore(user: User){
-        await getConnection().createQueryBuilder()
-        .insert()
-        .into(Student)
-        .values(user)
-        .orIgnore()
-        .execute();
+    async findOrCreate(user: User) {
+        const res = await getConnection()
+            .createQueryBuilder()
+            .select()
+            .from(User, "USERS")
+            .where("USERS.email = :email", { email: user.email })
+            .execute();
+        if (res.length !== 0) {
+            return res[0];
+        } else {
+            await getConnection().createQueryBuilder()
+                .insert()
+                .into(Student)
+                .values(user)
+                .execute();
+            return user;
+        }
     }
 }

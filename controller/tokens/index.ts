@@ -42,8 +42,9 @@ client.on("error", (error) => {
  */
 export async function blockId(id: string) {
     // const payload: any = await getPayloadFromJWT(token)
+    const blockedKey = `online:${id}`
     await new Promise((resolve, reject) => {
-        client.del(`online:${id}`, (err, res) => {
+        client.del(blockedKey, (err, res) => {
             if (err) reject(err)
             else resolve(res)
         })
@@ -90,7 +91,6 @@ export async function registerPayload(payload: any) {
 export async function isTokenBlocked(token: string) {
     try {
         const payload: any = await getPayloadFromJWT(token)
-        console.log("inside is token blocked");
 
         return await new Promise((resolve, reject) => {
             client.get(`online:${payload["id"]}`, (err, reply) => {

@@ -26,9 +26,8 @@ export default class UserRepo extends Repository<User>{
         const res = await getConnection().createQueryBuilder()
         .select("USERS")
         .from(User, "USERS")
-        .where("USERS.id = :email", {email: email})
+        .where("USERS.email = :email", {email: email})
         .execute();
-        console.log("find user and role result",res);
         return res;
     }
 

@@ -54,13 +54,11 @@ passport.use(
 
 
                 const [repo, user] = UserPersistanceFactory(req.body.role)
-                console.log(user);
 
                 user.firstName = req.body.firstName;
                 user.lastName = req.body.lastName;
                 user.password = await hashPassword(password);
                 user.email = email;
-                console.log('result user', user);
 
                 await repo.save(user)
                 return done(null, user)
@@ -120,17 +118,17 @@ passport.use(new GoogleStrategy({
             // NOTE: all accounts signing up with google are going to be users 
             // and other types would be ignored anyway 
             // so i will use students repo here no need to do factory
-            const [_, user] = UserPersistanceFactory();
-            user.firstName = profile.name?.givenName || "No firstName";
-            user.lastName = profile.name?.familyName || "No lastName";
-            user.thirdPartyAccount = true;
+            const [_, userObj] = UserPersistanceFactory();
+            userObj.firstName = profile.name?.givenName || "No firstName";
+            userObj.lastName = profile.name?.familyName || "No lastName";
+            userObj.thirdPartyAccount = true;
             if (profile.emails) {
-                user.email = profile.emails[0].value
+                userObj.email = profile.emails[0].value
             } else {
                 throw new Error("Email is not provided");
             }
-            await repo.insertOrIgnore(user);
-            return done(null, user);
+            const persistedUser = await repo.findOrCreate(userObj);
+            return done(null, persistedUser);
         } catch (e) {
             return done(e);
         }
@@ -141,7 +139,6 @@ export const BlockedJWTMiddleware = async (req: any, res: any, next: any) => {
     // get the token from request cookies
     let token;
     if (req && req.cookies) token = req.cookies['jwt'];
-    console.log("token is", token);
 
     // if blocked:token exist in cache 
     try {

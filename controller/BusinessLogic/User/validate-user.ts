@@ -8,13 +8,14 @@ const verifyPassword = async (email: string, password: string) => {
     let user: any;
     try {
         user = await repo.findUserAndRoleByEmail(email)
-        if (!user) {
+        if (user.length == 0) {
             throw new NonExistingUser("Invalid Email!")
         }
     } catch (error) {
         throw error
     }
-    let correctPassword = await comparePasswords(password, user["password"])
+    
+    let correctPassword = await comparePasswords(password, user[0]["password"])
     if (!correctPassword) {
         return false
     } else {
