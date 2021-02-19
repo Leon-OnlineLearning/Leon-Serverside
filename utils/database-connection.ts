@@ -18,7 +18,10 @@ const initializeConnection = async () => {
             ...connectionInfo,
             entities: [
                 __dirname + "/../models/**/*.js"
-            ]
+            ],
+            extra: { // config dependant on the database 
+                connectionLimit: process.env["CONNECTION_POOL_SIZE"] 
+            }
         }
     )
     await connection.synchronize(true);
