@@ -1,4 +1,5 @@
 import User from "@models/Users/User";
+import UserPersistanceFactory from "@models/Users/UserFactory";
 import { EntityRepository, getConnection, Repository } from "typeorm";
 
 @EntityRepository(User)

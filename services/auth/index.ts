@@ -12,6 +12,7 @@ import Student from "@models/Users/Student";
 import Professor from "@models/Users/Professor";
 import Admin from "@models/Users/Admin";
 import UserPersistanceFactory from "@models/Users/UserFactory";
+import StudentRepo from "@controller/DataAccess/student-repo";
 
 
 passport.use('login',
@@ -115,7 +116,10 @@ passport.use(new GoogleStrategy({
 },
     async function (_accessToken, _refreshToken, profile, done) {
         try {
-            const repo = getCustomRepository(UserRepo)
+            const repo = getCustomRepository(StudentRepo)
+            // NOTE: all accounts signing up with google are going to be users 
+            // and other types would be ignored anyway 
+            // so i will use students repo here no need to do factory
             const [_, user] = UserPersistanceFactory();
             user.firstName = profile.name?.givenName || "No firstName";
             user.lastName = profile.name?.familyName || "No lastName";
