@@ -47,7 +47,7 @@ passport.use(
         },
         async (req, email, password, done) => {
             try {
-                
+
                 if (!req.body.role || typeof req.body.role !== "string") {
                     throw new Error("role wasn't provided properly");
                 }
@@ -55,13 +55,13 @@ passport.use(
 
                 const [repo, user] = UserPersistanceFactory(req.body.role)
                 console.log(user);
-                
+
                 user.firstName = req.body.firstName;
                 user.lastName = req.body.lastName;
                 user.password = await hashPassword(password);
                 user.email = email;
-                console.log('result user',user);
-                
+                console.log('result user', user);
+
                 await repo.save(user)
                 return done(null, user)
             } catch (e) {
@@ -141,12 +141,18 @@ export const BlockedJWTMiddleware = async (req: any, res: any, next: any) => {
     // get the token from request cookies
     let token;
     if (req && req.cookies) token = req.cookies['jwt'];
-    if (!token) res.status(401).send("Token not found")
+    console.log("token is", token);
+
     // if blocked:token exist in cache 
-    if (await isTokenBlocked(token))
-        res.status(401).send("Token Blocked!")
+    try {
+        if (await isTokenBlocked(token))
+            res.status(401).send("Token Blocked!")
+        else 
+            next()
+    } catch (e) {
+        res.status(401).send(e.message)
+    }
     // return 401 unauthorized
-    next()
 }
 
 export default passport;

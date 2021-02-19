@@ -22,7 +22,7 @@
 
 
 import redis from "redis"
-import jwt from "jsonwebtoken"
+import jwt, { JsonWebTokenError } from "jsonwebtoken"
 import User from "@models/Users/User";
 import { getCustomRepository, getRepository } from "typeorm";
 import UserRepo from "@controller/DataAccess/user-repo";
@@ -51,7 +51,7 @@ export async function blockId(id: string) {
 }
 
 /**
- * 
+ * create new entry in the online cached users
  * @param token 
  */
 export async function registerPayload(payload: any) {
@@ -59,8 +59,8 @@ export async function registerPayload(payload: any) {
     // 1- new login
     const currentTime = (Math.floor(Date.now() / 1000)).toString()
     return await new Promise((resolve, reject) => {
-        client.set(`online:${payload.id}`, currentTime, (err, res) => {
-
+        // expires after 15 mins
+        client.setex(`online:${payload.id}`, 15 * 60, currentTime, (err, res) => {
             if (err) reject(err)
             else resolve(res)
         })
@@ -88,24 +88,32 @@ export async function registerPayload(payload: any) {
  * @param token 
  */
 export async function isTokenBlocked(token: string) {
-    const payload: any = await getPayloadFromJWT(token)
+    try {
+        const payload: any = await getPayloadFromJWT(token)
+        console.log("inside is token blocked");
 
-    return await new Promise((resolve, reject) => {
-        client.get(`online:${payload["id"]}`, (err, reply) => {
-            if (err) reject(err)
-            else {
-                if (reply) resolve(parseInt(payload["iat"]) < parseInt(reply))
-                else resolve(true)
-            }
+        return await new Promise((resolve, reject) => {
+            client.get(`online:${payload["id"]}`, (err, reply) => {
+                console.log(reply, err);
+
+                if (err) reject(err)
+                else {
+                    if (reply) resolve(parseInt(payload["iat"]) < parseInt(reply))
+                    else resolve(true)
+                }
+            })
         })
-    })
+    } catch (e) {
+        throw e;
+    }
 }
 
 
 export async function generateAccessToken(user: any, refresh: boolean = false) {
 
-    const payload = { id: user["id"], firstName: user["firstName"], lastName: user["lastName"], role: user["role"]}
-    if (!refresh) await registerPayload(payload)
+    const payload = { id: user["id"], firstName: user["firstName"], lastName: user["lastName"], role: user["role"] }
+    // if (!refresh) await registerPayload(payload)
+    await registerPayload(payload)
     return new Promise((resolve, reject) => {
         jwt.sign(payload, process.env.JWT_SECRET || 'leon',
             { expiresIn: "1m" },
@@ -129,6 +137,8 @@ export async function generateRefreshToken(user: any) {
 }
 
 export async function isTokenValidAndExpired(token: string): Promise<boolean> {
+
+    console.log("here....");
 
 
     try {
@@ -154,6 +164,7 @@ export async function isTokenValidAndExpired(token: string): Promise<boolean> {
 }
 
 export async function getPayloadFromJWT(token: string) {
+    if (!token) return Promise.reject(new Error("jwt is not provided"))
     return await new Promise((resolve, reject) => {
         jwt.verify(token, process.env.JWT_SECRET || 'leon', { ignoreExpiration: true }, (err, decoded) => {
             if (err) reject(err)
@@ -163,8 +174,12 @@ export async function getPayloadFromJWT(token: string) {
 }
 
 export async function getUserFromJWT(token: string) {
-    const payload: any = await getPayloadFromJWT(token)
-    const repo = getCustomRepository(UserRepo);
-    const user = await repo.findOne(payload["id"])
-    return user
+    try {
+        const payload: any = await getPayloadFromJWT(token)
+        const repo = getCustomRepository(UserRepo);
+        const user = await repo.findOne(payload["id"])
+        return user
+    } catch (e) {
+        throw new Error("token not found")
+    }
 }
