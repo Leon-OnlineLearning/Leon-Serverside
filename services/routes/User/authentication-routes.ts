@@ -27,9 +27,9 @@ router.post('/login', passport.authenticate('login', { session: false }), async 
     await login(user, res)
 })
 
-async function login(user: any, res: any) {
-    const token = await generateAccessToken(user)
-    const refreshToken = await generateRefreshToken(user)
+async function login(req: any, res: any) {
+    const token = await generateAccessToken(req.user)
+    const refreshToken = await generateRefreshToken(req.user)
     res.cookie('jwt', token, { httpOnly: true })
     res.json({ success: true, token, refreshToken })
 }
@@ -69,9 +69,7 @@ router.get('/google', passport.authenticate('google', {
 }));
 
 router.get('/google/redirect', passport.authenticate('google', { session: false }), async (req: any, res) => {
-    // console.log("user: ",req.user);
     
-    // const user = req.user[0]['dataValues']
     await login(req.user, res)
 })
 
