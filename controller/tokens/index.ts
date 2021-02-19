@@ -57,32 +57,16 @@ export async function blockId(id: string) {
  */
 export async function registerPayload(payload: any) {
     // use cases
-    // 1- new login
+    // 1- login
     const currentTime = (Math.floor(Date.now() / 1000)).toString()
     return await new Promise((resolve, reject) => {
-        // expires after 15 mins
-        client.setex(`online:${payload.id}`, 15 * 60, currentTime, (err, res) => {
+        // here set not "setex" because token only get registered on login to keep the time of the last login valid; to invalidate out of sync logins
+        client.set(`online:${payload.id}`, currentTime, (err, res) => {
             if (err) reject(err)
             else resolve(res)
         })
     })
 }
-
-// export async function updateLastActiveTime(id: string, iat: number, expiresIn: number) {
-//     const expTime: number = await new Promise((resolve, reject) => {
-//         client.ttl(`online:${id}`, (err, res) => {
-//             if (err) reject(err)
-//             else resolve(res)
-//         })
-//     })
-
-//     return await new Promise((resolve, reject) => {
-//         client.setex(`online:${id}`, expTime, iat.toString(), (err, res) => {
-//             if (err) reject(err)
-//             else resolve(res)
-//         })
-//     })
-// }
 
 /**
  * Checks weather or not the token is blocked namespace in cache. 
@@ -90,7 +74,7 @@ export async function registerPayload(payload: any) {
  */
 export async function isTokenBlocked(token: string) {
     try {
-        const payload: any = await getPayloadFromJWT(token)
+        const payload: any = await getPayloadFromJWTNoExpiration(token)
 
         return await new Promise((resolve, reject) => {
             client.get(`online:${payload["id"]}`, (err, reply) => {
@@ -112,8 +96,9 @@ export async function isTokenBlocked(token: string) {
 export async function generateAccessToken(user: any, refresh: boolean = false) {
 
     const payload = { id: user["id"], firstName: user["firstName"], lastName: user["lastName"], role: user["role"] }
-    // if (!refresh) await registerPayload(payload)
-    await registerPayload(payload)
+    // if your will refresh no need to create new entries in cache or to renew 
+    // the old ones because they hold the last login time
+    if (!refresh) await registerPayload(payload)
     return new Promise((resolve, reject) => {
         jwt.sign(payload, process.env.JWT_SECRET || 'leon',
             { expiresIn: "1m" },
@@ -143,7 +128,7 @@ export async function isTokenValidAndExpired(token: string): Promise<boolean> {
 
     try {
         // check if token is valid without checking expiration 
-        let decoded: any = await getPayloadFromJWT(token)
+        let decoded: any = await getPayloadFromJWTNoExpiration(token)
 
         // check if token is blocked => invalid
         const blockedToken = await isTokenBlocked(token)
@@ -163,7 +148,7 @@ export async function isTokenValidAndExpired(token: string): Promise<boolean> {
     return true
 }
 
-export async function getPayloadFromJWT(token: string) {
+export async function getPayloadFromJWTNoExpiration(token: string) {
     if (!token) return Promise.reject(new Error("jwt is not provided"))
     return await new Promise((resolve, reject) => {
         jwt.verify(token, process.env.JWT_SECRET || 'leon', { ignoreExpiration: true }, (err, decoded) => {
@@ -175,7 +160,7 @@ export async function getPayloadFromJWT(token: string) {
 
 export async function getUserFromJWT(token: string) {
     try {
-        const payload: any = await getPayloadFromJWT(token)
+        const payload: any = await getPayloadFromJWTNoExpiration(token)
         const repo = getCustomRepository(UserRepo);
         const user = await repo.findOne(payload["id"])
         return user

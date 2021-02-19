@@ -28,7 +28,7 @@ export default class UserRepo extends Repository<User>{
         .from(User, "USERS")
         .where("USERS.email = :email", {email: email})
         .execute();
-        return res;
+        return res[0];
     }
 
     async findUserAndRoleById(id: string) {

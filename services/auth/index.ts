@@ -4,7 +4,7 @@ import { Strategy as LocalStrategy } from "passport-local";
 import { Strategy as JWTStrategy } from "passport-jwt";
 import { isTokenBlocked } from "@controller/tokens";
 import { OAuth2Strategy as GoogleStrategy } from "passport-google-oauth"
-import verifyPassword from "@controller/BusinessLogic/User/validate-user";
+import getCorrectUser from "@controller/BusinessLogic/User/validate-user";
 import { getConnection, getCustomRepository, getRepository } from "typeorm";
 import UserRepo from "@controller/DataAccess/user-repo";
 import { hashPassword } from "@utils/passwords";
@@ -21,11 +21,12 @@ passport.use('login',
         passwordField: 'password'
     }, async (email, password, done) => {
         try {
-            const correctUser = await verifyPassword(email, password)
+            const correctUser = await getCorrectUser(email, password)
 
             if (!correctUser) {
                 return done(null, false, { message: 'Incorrect password!' })
             }
+            
             done(null, correctUser)
         } catch (e) {
             if (e instanceof NonExistingUser) {

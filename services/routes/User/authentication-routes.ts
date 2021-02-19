@@ -1,6 +1,7 @@
 import express from "express"
 import passport from "@services/auth"
-import { blockId, generateAccessToken, generateRefreshToken, isTokenValidAndExpired, getPayloadFromJWT, getUserFromJWT } from "@controller/tokens";
+import { blockId, generateAccessToken, generateRefreshToken, isTokenValidAndExpired, getPayloadFromJWTNoExpiration, getUserFromJWT } from "@controller/tokens";
+import User from "@models/Users/User";
 
 const router = express.Router();
 
@@ -24,12 +25,14 @@ router.post('/signup', async (req, res) => {
 
 router.post('/login', passport.authenticate('login', { session: false }), async (req, res) => {
     const user: any = req.user;
+    console.log("user is", user);
+    
     await login(user, res)
 })
 
-async function login(req: any, res: any) {
-    const token = await generateAccessToken(req.user)
-    const refreshToken = await generateRefreshToken(req.user)
+async function login(user: any, res: any) {
+    const token = await generateAccessToken(user)
+    const refreshToken = await generateRefreshToken(user)
     res.cookie('jwt', token, { httpOnly: true })
     res.json({ success: true, token, refreshToken })
 }
@@ -54,7 +57,7 @@ router.post('/refreshToken', passport.authenticate('refresh-token', { session: f
 router.post('/logout', async (req, res) => {
     const token = req.cookies['jwt']
     try {
-        const user: any = await getPayloadFromJWT(token)
+        const user: any = await getPayloadFromJWTNoExpiration(token)
         await blockId(user["id"])
         res.clearCookie('jwt')
         res.status(205).send('logged out!')
