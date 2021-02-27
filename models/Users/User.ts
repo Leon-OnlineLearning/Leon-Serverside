@@ -37,6 +37,15 @@ export default abstract class User {
             throw new NotPasswordOrThirdParty();
         }
     }
+
+    setValuesFromUser(user:User){
+        this.email = user.email || this.email;
+        this.firstName = user.firstName || this.email;
+        this.lastName = user.lastName || this.email;
+        this.password = user.password || this.password;
+        this.id = user.id || this.id;
+        this.thirdPartyAccount = user.thirdPartyAccount || this.thirdPartyAccount;
+    }
 }
 
 class NotPasswordOrThirdParty extends Error {
