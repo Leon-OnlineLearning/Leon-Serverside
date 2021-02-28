@@ -5,9 +5,9 @@ import User from "./User";
 
 @ChildEntity()
 export default class Student extends User {
-    @OneToMany(() => StudentsExams, se => se.student, { onDelete: "CASCADE" })
+    @OneToMany(() => StudentsExams, se => se.student, { cascade: true, onDelete: "CASCADE" })
     studentExam!: StudentsExams[]
 
-    @OneToMany(()=>Department, department=>department.students)
+    @OneToMany(() => Department, department => department.students)
     department!: Department
 }

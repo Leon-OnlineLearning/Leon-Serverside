@@ -5,6 +5,7 @@ import { EntityRepository, getConnection, Repository } from "typeorm";
 
 @EntityRepository(Student)
 export default class StudentRepo extends Repository<Student>{
+    // because the users with the lowers privilege (Students) will signup with third party methods
     async findOrCreate(user: User) {
         const res = await getConnection()
             .createQueryBuilder()
