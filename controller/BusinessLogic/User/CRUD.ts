@@ -1,8 +1,11 @@
 import UserRepo from "@controller/DataAccess/user-repo";
 import { blockId } from "@controller/tokens";
+import Admin from "@models/Users/Admin";
+import Professor from "@models/Users/Professor";
+import Student from "@models/Users/Student";
 import User from "@models/Users/User";
 import UserPersistanceFactory from "@models/Users/UserFactory";
-import { getConnection } from "typeorm";
+import { getConnection, Repository } from "typeorm";
 
 export async function createNewUser(user: User, role: string) {
     const [userRepo, newUserObj] = UserPersistanceFactory(role);
@@ -23,7 +26,7 @@ export async function createNewUser(user: User, role: string) {
  * @param newUser 
  */
 export async function updateUser(userId: string, newUser: User) {
-    
+
     const role = await _getUserRole(userId)
     const [userRepo, newUserObj] = UserPersistanceFactory(role);
     try {
@@ -61,4 +64,15 @@ export async function updateUserPrivileges(userId: string, newRole: string) {
 async function _getUserRole(id: string) {
     const _usrRepo = getConnection().getCustomRepository(UserRepo);
     return await _usrRepo.getRoleById(id)
+}
+
+/**
+ * a function to do custom interaction for users 
+ * @param role 
+ * @param interaction 
+ */
+function customInteraction(role: string,
+    interaction: (repo: Repository<Student | Admin | Professor>) => void) {
+    const [userRepo, _] = UserPersistanceFactory(role)
+    return interaction(userRepo)
 }
