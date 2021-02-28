@@ -3,8 +3,8 @@ import { createConnection } from "typeorm"
 const connectionInfo = {
     host: process.env.HOST || 'localhost',
     port: parseInt(process.env.DATABASE_PORT || "") || 3306,
-    username: process.env.USERNAME || 'leon',
-    password: process.env.PASSWORD || 'leon',
+    username: process.env.DB_USERNAME || 'leon',
+    password: process.env.DB_PASSWORD || 'leon',
     database: process.env.DATABASE_NAME || 'leon',
 }
 
