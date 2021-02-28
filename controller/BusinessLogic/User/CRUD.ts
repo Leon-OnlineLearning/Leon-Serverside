@@ -7,6 +7,9 @@ import User from "@models/Users/User";
 import UserPersistanceFactory from "@models/Users/UserFactory";
 import { getConnection, Repository } from "typeorm";
 
+// TODO: DISCUSS: you probably want to make a less flexible higher level function instead of these which call the 
+// database one more time, this performance overhead can be avoided
+
 export async function createNewUser(user: User, role: string) {
     const [userRepo, newUserObj] = UserPersistanceFactory(role);
     try {
