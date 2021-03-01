@@ -12,6 +12,18 @@ import { getConnection, Repository } from "typeorm";
 // example 
 // instead of `createNewUser` it will be `createNewProfessor` for example 
 
+export async function createNewStudent(student :Student) {
+    await createNewUser(student, "student")
+}
+
+export async function createNewProfessor(professor: Professor) {
+    await createNewUser(professor, "professor")
+}
+
+export async function createNewAdmin(admin: Admin) {
+    await createNewUser(admin, "admin")
+}
+
 export async function createNewUser(user: User, role: string) {
     const [userRepo, newUserObj] = UserPersistanceFactory(role);
     try {

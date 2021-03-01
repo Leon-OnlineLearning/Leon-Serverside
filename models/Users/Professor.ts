@@ -6,7 +6,6 @@ import User from "./User";
 /**
  * NOTE: professor supports cascading with courses
  */
-@ChildEntity()
 export default class Professor extends User {
     @ManyToMany(() => Course, { cascade: true })
     @JoinTable()

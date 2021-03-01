@@ -10,7 +10,6 @@ export class NonExistingUser extends Error {
 }
 
 @Entity({ name: "USERS" })
-@TableInheritance({ column: { type: "varchar", name: "role" } })
 export default abstract class User {
     @PrimaryGeneratedColumn("uuid")
     id: string;
