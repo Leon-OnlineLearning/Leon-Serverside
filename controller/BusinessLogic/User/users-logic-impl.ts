@@ -48,9 +48,4 @@ export class UsersLogicImpl implements UsersLogic {
         throw new Error("Method not implemented.");
     }
 
-    private async _getUserRole(id: string) {
-        const _usrRepo = getConnection().getCustomRepository(UserRepo);
-        return await _usrRepo.getRoleById(id)
-    }
-
 }
