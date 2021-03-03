@@ -1,4 +1,5 @@
 import Department from "@models/Department";
+import Exam from "@models/Events/Exam";
 import Lecture from "@models/Events/Lecture";
 import StudentsExams from "@models/JoinTables/StudentExam";
 import { ChildEntity, ManyToMany, OneToMany, OneToOne } from "typeorm";
@@ -12,6 +13,8 @@ export default class Student extends User {
     department!: Department
 
     // for attendance
-    @ManyToMany(()=> Lecture, lecture => lecture.students)
-    lectures! : Lecture[]
+    @ManyToMany(() => Lecture, lecture => lecture.students, {
+        cascade: true
+    })
+    lectures!: Lecture[]
 }
