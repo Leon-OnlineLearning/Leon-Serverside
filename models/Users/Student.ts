@@ -2,9 +2,10 @@ import Department from "@models/Department";
 import Exam from "@models/Events/Exam";
 import Lecture from "@models/Events/Lecture";
 import StudentsExams from "@models/JoinTables/StudentExam";
-import { ChildEntity, ManyToMany, OneToMany, OneToOne } from "typeorm";
+import { ChildEntity, Entity, ManyToMany, OneToMany, OneToOne } from "typeorm";
 import User from "./User";
 
+@Entity()
 export default class Student extends User {
     @OneToMany(() => StudentsExams, se => se.student, { cascade: true, onDelete: "CASCADE" })
     studentExam!: StudentsExams[]
