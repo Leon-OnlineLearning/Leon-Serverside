@@ -24,5 +24,5 @@ export default class Lecture extends Event{
     departments! : Department[]
 
     @ManyToMany(()=> Student, student => student.lectures)
-    students! : Student[]
+    students! : Promise<Student[]>
 }

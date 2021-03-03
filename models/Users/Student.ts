@@ -1,3 +1,4 @@
+import Course from "@models/Course";
 import Department from "@models/Department";
 import Exam from "@models/Events/Exam";
 import Lecture from "@models/Events/Lecture";
@@ -20,5 +21,9 @@ export default class Student extends User {
     @JoinTable(
         { name: "student_lecture_attendance" }
     )
-    lectures!: Lecture[]
+    lectures!: Promise<Lecture[]>;
+
+    @ManyToMany(()=> Course, c => c.students)
+    courses! : Promise<Course[]>
+
 }
