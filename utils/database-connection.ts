@@ -9,7 +9,7 @@ const connectionInfo = {
 }
 
 const initializeConnection = async () => {
-
+    
     const connection = await createConnection(
         {
             type: "mysql",
@@ -17,7 +17,7 @@ const initializeConnection = async () => {
             logger: "simple-console",
             ...connectionInfo,
             entities: [
-                __dirname + "/../models/**/*.js"
+                __dirname + "/../models/**/*.ts"
             ],
             extra: { // config dependant on the database 
                 connectionLimit: process.env["CONNECTION_POOL_SIZE"] 
