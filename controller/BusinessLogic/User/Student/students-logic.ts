@@ -8,4 +8,6 @@ export default interface StudentLogic {
     attendLecture(student: Student, lecture: Lecture) : Promise<void>;
     attendExam(student: Student, exam: Exam) : Promise<void>;
     getAllCourses(studentId: string) : Promise<Course[]>;
+    // DISCUSS: is this really needed while you got the courses which in turn has lectures in it
+    getAllLectures(studentId: string): Promise<Lecture[]>;
 }

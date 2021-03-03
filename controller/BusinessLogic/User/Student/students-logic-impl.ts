@@ -11,16 +11,38 @@ import StudentLogic from "./students-logic";
 
 
 export default class StudentLogicImpl implements StudentLogic {
-    async getAllCourses(studentId: string): Promise<Course[]> {
-        return await getCustomRepository(StudentRepo).getAllCourses(studentId);
+    async getAllLectures(studentId: string): Promise<Lecture[]> {
+        const student = await getRepository(Student).findOne(studentId);
+        if (student) {
+            const lectures = await student.lectures
+            return lectures;
+        }
+        else {
+            throw new Error("User not found!");
+        }
     }
+    async getAllCourses(studentId: string): Promise<Course[]> {
+        const student = await getRepository(Student).findOne(studentId);
+        if (student) {
+            const courses = await student.courses
+            console.log("courses are",courses);
+            
+            return courses;
+        }
+        else {
+            throw new Error("User not found!");
+        }
+
+    }
+
+    
     async createStudent(student: Student): Promise<Student> {
         const [repo, _] = UserPersistanceFactory("student")
         return await repo.save(student)
     }
 
     async attendLecture(student: Student, lecture: Lecture): Promise<void> {
-        student.lectures.push(lecture)
+        (await student.lectures).push(lecture)
         await getRepository(Student).save(student)
     }
 
