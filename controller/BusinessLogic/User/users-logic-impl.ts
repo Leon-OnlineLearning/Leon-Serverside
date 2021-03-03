@@ -9,24 +9,6 @@ import { getConnection, Repository } from "typeorm";
 import UsersLogic from "@controller/BusinessLogic/User/users-logic"
 
 
-// TODO: DISCUSS: you probably want to make a less flexible higher level function instead of these which call the 
-// database one more time, this performance overhead can be avoided
-// example 
-// instead of `createNewUser` it will be `createNewProfessor` for example 
-
-// clone this 
-// export async function createStudent(student :Student) {
-//     await createNewUser(student, "student")
-// }
-
-// export async function createProfessor(professor: Professor) {
-//     await createNewUser(professor, "professor")
-// }
-
-// export async function createAdmin(admin: Admin) {
-//     await createNewUser(admin, "admin")
-// }
-
 export class UsersLogicImpl implements UsersLogic {
 
     async deleteUserById(userId: string): Promise<void> {

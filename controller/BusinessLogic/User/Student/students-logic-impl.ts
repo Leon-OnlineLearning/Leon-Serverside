@@ -1,14 +1,19 @@
+import StudentRepo from "@controller/DataAccess/student-repo";
+import Course from "@models/Course";
 import Exam from "@models/Events/Exam";
 import Lecture from "@models/Events/Lecture";
 import StudentsExams from "@models/JoinTables/StudentExam";
 import Student from "@models/Users/Student";
 import User from "@models/Users/User";
 import UserPersistanceFactory from "@models/Users/UserFactory";
-import { getRepository } from "typeorm";
+import { getCustomRepository, getRepository } from "typeorm";
 import StudentLogic from "./students-logic";
 
 
 export default class StudentLogicImpl implements StudentLogic {
+    async getAllCourses(studentId: string): Promise<Course[]> {
+        return await getCustomRepository(StudentRepo).getAllCourses(studentId);
+    }
     async createStudent(student: Student): Promise<Student> {
         const [repo, _] = UserPersistanceFactory("student")
         return await repo.save(student)

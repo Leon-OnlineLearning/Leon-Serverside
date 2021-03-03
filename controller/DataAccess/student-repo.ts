@@ -1,3 +1,4 @@
+import Course from "@models/Course";
 import Student from "@models/Users/Student";
 import User from "@models/Users/User";
 import UserPersistanceFactory from "@models/Users/UserFactory";
@@ -23,5 +24,20 @@ export default class StudentRepo extends Repository<Student>{
                 .execute();
             return user;
         }
+    }
+    async getAllCourses(studentId: string) {
+        const res: any = await getConnection()
+            .createQueryBuilder()
+            .relation(Course, "courses")
+            .of(studentId)
+            .select()
+            .execute();
+        res.map((c: any) => {
+            const course = new Course()
+            course.id = c["courses_id"]
+            course.name = c["name"]
+            return course;
+        })
+        return res
     }
 }

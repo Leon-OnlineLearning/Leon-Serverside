@@ -1,6 +1,13 @@
+import Course from "@models/Course";
+import Exam from "@models/Events/Exam";
 import Lecture from "@models/Events/Lecture";
 import Professor from "@models/Users/Professor";
 
 interface ProfessorLogic {
     giveLecture(professor: Professor, lecture: Lecture) : Promise<void>;
+    createProfessor(professor: Professor) : Promise<Professor>;
+    deleteProfessorById(professorId: string) : Promise<void>;
+    updateProfessor(professorId: string, newData: Professor) : Promise<Professor>;
+    getAllExams(professorId:string) : Promise<Exam[]>;
+    getAllCourses(professorId: string) : Promise<Course[]>;
 }
