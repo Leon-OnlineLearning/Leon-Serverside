@@ -1,6 +1,7 @@
 import Course from "@models/Course";
 import Department from "@models/Department";
 import Professor from "@models/Users/Professor";
+import Student from "@models/Users/Student";
 import { IsFQDN, Max } from "class-validator";
 import { ChildEntity, Column, Entity, JoinColumn, ManyToMany, ManyToOne, OneToOne } from "typeorm";
 import Event from "./Event";
@@ -21,4 +22,7 @@ export default class Lecture extends Event{
 
     @ManyToMany(()=>Department, department => department.lectures)
     departments! : Department[]
+
+    @ManyToMany(()=> Student, student => student.lectures)
+    students! : Student[]
 }
