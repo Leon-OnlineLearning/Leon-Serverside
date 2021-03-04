@@ -3,3 +3,6 @@ node_modules/
 .vscode/
 build/
 todo
+# just in case chrome forced using https i've added the cert to gitignore
+localhost.pem
+localhost-key.pem
