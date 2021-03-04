@@ -51,11 +51,14 @@ passport.use(
         async (req, email, password, done) => {
             try {
 
+                let role;
                 if (!req.body.role || typeof req.body.role !== "string") {
-                    throw new Error("role wasn't provided properly");
+                    role = "student";
+                } else {
+                    role = req.body.role;
                 }
 
-                const [repo, user] = UserPersistanceFactory(req.body.role)
+                const [repo, user] = UserPersistanceFactory(role)
 
                 user.firstName = req.body.firstName;
                 user.lastName = req.body.lastName;
@@ -116,7 +119,7 @@ passport.use(new GoogleStrategy({
 },
     async function (_accessToken, _refreshToken, profile, done) {
         try {
-            const repo = getCustomRepository(StudentRepo)
+            const repo = getCustomRepository(UserRepo)
             // NOTE: all accounts signing up with google are going to be users 
             // and other types would be ignored anyway 
             // so i will use students repo here no need to do factory
