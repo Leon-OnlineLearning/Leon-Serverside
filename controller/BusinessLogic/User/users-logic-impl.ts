@@ -1,5 +1,5 @@
 import UserRepo from "@controller/DataAccess/user-repo";
-import { blockId } from "@controller/tokens";
+import { blockId } from "@controller/Tokens";
 import Admin from "@models/Users/Admin";
 import Professor from "@models/Users/Professor";
 import Student from "@models/Users/Student";

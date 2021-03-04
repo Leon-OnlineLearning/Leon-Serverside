@@ -44,7 +44,6 @@ export default class UserRepo extends Repository<User>{
     }
     async findOrCreate(user: User) {
         let res: User | undefined = await getRepository(Student).findOne({ where: { email: user.email } })
-        console.log(res);
         if (res) { return res }
         res = await getRepository(Professor).findOne( { where: { email: user.email } })
         if (res) { return res }

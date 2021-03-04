@@ -9,7 +9,6 @@ export async function hashPassword(password: unknown, saltRounds: number = 10) :
 }
 
 export async function comparePasswords(input: string, hashedPassword: string) {
-    console.log(input, hashedPassword);
     
     return await new Promise((resolve, reject) => {
         bcrypt.compare(input, hashedPassword, (err, result) => {

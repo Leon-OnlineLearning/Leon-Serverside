@@ -2,7 +2,7 @@ import User, { NonExistingUser } from "@models/Users/User";
 import passport from "passport";
 import { Strategy as LocalStrategy } from "passport-local";
 import { Strategy as JWTStrategy } from "passport-jwt";
-import { isTokenBlocked } from "@controller/tokens";
+import { isTokenBlocked } from "@controller/Tokens";
 import { OAuth2Strategy as GoogleStrategy } from "passport-google-oauth"
 import getCorrectUser from "@controller/BusinessLogic/User/validate-user";
 import { getConnection, getCustomRepository, getRepository } from "typeorm";

@@ -78,7 +78,6 @@ export async function isTokenBlocked(token: string) {
 
         return await new Promise((resolve, reject) => {
             client.get(`online:${payload["id"]}`, (err, reply) => {
-                console.log(reply, err);
 
                 if (err) reject(err)
                 else {

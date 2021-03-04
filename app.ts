@@ -1,9 +1,9 @@
 import "reflect-metadata";
 import express from "express"
 import databaseStartup from "@utils/database-startup"
-import authRouter from "@services/routes/User/authentication-routes"
-import userRouter from "@services/routes/User/secure-routes"
-import passport from "@services/auth"
+import authRouter from "@services/Routes/User/authentication-routes"
+import userRouter from "@services/Routes/User/SecureRoutes"
+import passport from "@services/Auth"
 import cookieParser from "cookie-parser"
 import https from "https";
 import fs from "fs"
@@ -17,7 +17,7 @@ app.use('/user', userRouter)
 
 const PORT = process.env.SERVER_PORT || 3333
 
-
+// NOTE: DO NOT DELETE THIS COMMENT!
 // for http in dev
 // uncomment this 
 // app.listen(PORT, async () => {

@@ -1,6 +1,6 @@
 import express from "express"
-import passport from "@services/auth"
-import { blockId, generateAccessToken, generateRefreshToken, isTokenValidAndExpired, getPayloadFromJWTNoExpiration, getUserFromJWT } from "@controller/tokens";
+import passport from "@services/Auth"
+import { blockId, generateAccessToken, generateRefreshToken, isTokenValidAndExpired, getPayloadFromJWTNoExpiration, getUserFromJWT } from "@controller/Tokens";
 import User from "@models/Users/User";
 
 const router = express.Router();
@@ -25,7 +25,6 @@ router.post('/signup', async (req, res) => {
 
 router.post('/login', passport.authenticate('login', { session: false }), async (req, res) => {
     const user: any = req.user;
-    console.log("user is", user);
     
     await login(user, res)
 })
