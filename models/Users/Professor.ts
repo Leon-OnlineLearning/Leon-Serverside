@@ -1,6 +1,7 @@
 import Course from "@models/Course";
 import Department from "@models/Department";
-import { ChildEntity, Entity, JoinTable, ManyToMany, ManyToOne } from "typeorm";
+import Exam from "@models/Events/Exam";
+import { ChildEntity, Entity, JoinTable, ManyToMany, ManyToOne, OneToMany } from "typeorm";
 import User from "./User";
 
 /**
@@ -12,7 +13,9 @@ export default class Professor extends User {
     @JoinTable()
     courses: Course[]
 
-    @ManyToOne(()=>Department, dep=>dep.professors)
+    @ManyToOne(() => Department, dep => dep.professors)
     department: Department
 
+    @OneToMany(() => Exam, e => e.professor)
+    exams!: Exam[]
 }

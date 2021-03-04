@@ -2,26 +2,59 @@ import Course from "@models/Course";
 import Department from "@models/Department";
 import Professor from "@models/Users/Professor";
 import Student from "@models/Users/Student";
+import { createQueryBuilder, getRepository } from "typeorm";
 import DepartmentsLogic from "./departments-logic";
 
 export default class DepartmentsLogicImpl implements DepartmentsLogic {
-    getAllCourse(departmentId: string): Promise<Course[]> {
-        throw new Error("Method not implemented.");
+    async getDepartmentById(departmentId: string): Promise<Department> {
+        const res = await getRepository(Department).findOne(departmentId);
+        if (res) return res;
+        else throw new Error("Invalid department id");
     }
-    getAllProfessor(departmentId: string): Promise<Professor[]> {
-        throw new Error("Method not implemented.");
+
+    async getAllCourse(departmentId: string): Promise<Course[]> {
+        const res = await getRepository(Department).createQueryBuilder()
+            .leftJoinAndSelect("department.courses", "course")
+            .where("department.id = :id", { id: departmentId })
+            .getOne()
+        if (res) return res.courses
+        else throw new Error("Invalid department id");
     }
-    getAllStudents(departmentId: string): Promise<Student[]> {
-        throw new Error("Method not implemented.");
+
+    async getAllProfessor(departmentId: string): Promise<Professor[]> {
+        const res = await getRepository(Department).createQueryBuilder()
+            .leftJoinAndSelect("department.professors", "professor")
+            .where("department.id = :id", { id: departmentId })
+            .getOne()
+        if (res) return res.professors
+        else throw new Error("Invalid department id");
     }
-    createDepartment(department: Department): Promise<Department> {
-        throw new Error("Method not implemented.");
+
+    async getAllStudents(departmentId: string): Promise<Student[]> {
+        const res = await getRepository(Department).createQueryBuilder()
+            .leftJoinAndSelect("department.students", "student")
+            .where("department.id = :id", { id: departmentId })
+            .getOne()
+        if (res) return res.students
+        else throw new Error("Invalid department id");
     }
-    deleteDepartment(departmentId: string): Promise<void> {
-        throw new Error("Method not implemented.");
+
+    async createDepartment(department: Department): Promise<Department> {
+        return getRepository(Department).save(department);
     }
-    updateDepartment(departmentId: string, newData: Department): Promise<Department> {
-        throw new Error("Method not implemented.");
+
+    async deleteDepartment(departmentId: string): Promise<void> {
+        await getRepository(Department).delete(departmentId);
+    }
+
+    async updateDepartment(departmentId: string, newData: Department): Promise<Department> {
+        const { id, ...newDepData } = newData
+        return await getRepository(Department).save(
+            {
+                id: departmentId,
+                ...newDepData
+            }
+        );
     }
 
 }

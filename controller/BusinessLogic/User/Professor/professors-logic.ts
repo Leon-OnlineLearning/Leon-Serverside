@@ -3,8 +3,7 @@ import Exam from "@models/Events/Exam";
 import Lecture from "@models/Events/Lecture";
 import Professor from "@models/Users/Professor";
 
-interface ProfessorLogic {
-    giveLecture(professor: Professor, lecture: Lecture) : Promise<void>;
+export default interface ProfessorLogic {
     createProfessor(professor: Professor) : Promise<Professor>;
     deleteProfessorById(professorId: string) : Promise<void>;
     updateProfessor(professorId: string, newData: Professor) : Promise<Professor>;

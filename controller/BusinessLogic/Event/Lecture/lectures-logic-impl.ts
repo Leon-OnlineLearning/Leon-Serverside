@@ -3,15 +3,26 @@ import { getRepository } from "typeorm";
 import LecturesLogic from "./lectures-logic";
 
 export default class LecturesLogicImpl implements LecturesLogic {
-    deleteLectureById(lectureId: string): Promise<void> {
-        throw new Error("Method not implemented.");
+    async deleteLectureById(lectureId: string): Promise<void> {
+        await getRepository(Lecture).delete(lectureId)
     }
-    updateLecture(lectureId: string, newData: Lecture): Promise<Lecture> {
-        throw new Error("Method not implemented.");
+
+    async updateLecture(lectureId: string, newData: Lecture): Promise<Lecture> {
+        const { id, ...newLecData } = newData;
+        return await getRepository(Lecture).save(
+            {
+                id: lectureId,
+                ...newLecData
+            }
+        )
     }
-    getLectureById(lectureId: string): Promise<Lecture> {
-        throw new Error("Method not implemented.");
+
+    async getLectureById(lectureId: string): Promise<Lecture> {
+        const res = await getRepository(Lecture).findOne(lectureId)
+        if (res) return res
+        else throw new Error("Invalid lecture id");
     }
+
     async createLecture(lecture: Lecture): Promise<Lecture> {
         return await getRepository(Lecture).save(lecture);
     }

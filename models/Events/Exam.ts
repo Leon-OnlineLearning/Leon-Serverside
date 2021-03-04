@@ -3,6 +3,7 @@ import Event  from "@models/Events/Event"
 import Course from "@models/Course";
 import StudentsExams from "@models/JoinTables/StudentExam";
 import Department from "@models/Department";
+import Professor from "@models/Users/Professor";
 
 @Entity()
 export default class Exam extends Event{
@@ -17,4 +18,7 @@ export default class Exam extends Event{
 
     @ManyToMany(()=>Department, department => department.exams)
     departments! : Department[]
+
+    @ManyToOne(()=>Professor, p=>p.exams)
+    professor! : Professor
 }
