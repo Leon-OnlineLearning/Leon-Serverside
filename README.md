@@ -1,4 +1,11 @@
 # Leon-Serverside
+Backend repository for Leon
+
+## Requirements
+- Mysql
+- Redis
+- Ts-Node (for development)
+- Node (for production)
 
 ## `.env` Fields
 ```
