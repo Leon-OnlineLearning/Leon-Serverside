@@ -24,11 +24,12 @@ passport.use('login',
     }, async (email, password, done) => {
         try {
             const correctUser = await getCorrectUser(email, password)
+            console.log("correctUser", correctUser);
 
             if (!correctUser) {
                 return done(null, false, { message: 'Incorrect password!' })
             }
-            
+
             done(null, correctUser)
         } catch (e) {
             if (e instanceof NonExistingUser) {
@@ -66,7 +67,7 @@ passport.use(
                 user.email = email;
 
                 await repo.save(user)
-                return done(null, user)
+                return done(null, { ...user, role })
             } catch (e) {
                 return done(e)
             }
@@ -119,7 +120,7 @@ passport.use(new GoogleStrategy({
 },
     async function (_accessToken, _refreshToken, profile, done) {
         try {
-            const repo = getCustomRepository(UserRepo)
+            const repo = new UserRepo()
             // NOTE: all accounts signing up with google are going to be users 
             // and other types would be ignored anyway 
             // so i will use students repo here no need to do factory
@@ -149,7 +150,7 @@ export const BlockedJWTMiddleware = async (req: any, res: any, next: any) => {
     try {
         if (await isTokenBlocked(token))
             res.status(401).send("Token Blocked!")
-        else 
+        else
             next()
     } catch (e) {
         res.status(401).send(e.message)

@@ -25,7 +25,6 @@ export default class StudentLogicImpl implements StudentLogic {
         const student = await getRepository(Student).findOne(studentId);
         if (student) {
             const courses = await student.courses
-            console.log("courses are",courses);
             
             return courses;
         }

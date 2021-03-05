@@ -11,19 +11,28 @@ import UsersLogic from "@controller/BusinessLogic/User/users-logic"
 
 export class UsersLogicImpl implements UsersLogic {
 
-    async deleteUserById(userId: string): Promise<void> {
-        await blockId(userId)
-        const userRepo = getConnection().getCustomRepository(UserRepo)
-        try {
-            await userRepo.delete(userId)
-        } catch (e) {
-            throw e;
-        }
-    }
-
     async getUserById(userId: string): Promise<User | undefined> {
-        const userRepo = getConnection().getCustomRepository(UserRepo)
-        return await userRepo.findOne(userId)
+        const userRepo = new UserRepo()
+        const userAndRole = await userRepo.findUserAndRoleById(userId)
+        const { role, ...user } = userAndRole
+        if (role === "student") {
+            const res = new Student()
+            res.setValuesFromJSON(user)
+            return res
+        } 
+        if (role === "admin") {
+            const res = new Admin()
+            res.setValuesFromJSON(user)
+            return res
+        }
+        if (role === "professor") {
+            const res = new Professor()
+            res.setValuesFromJSON(user)
+            return res
+        } else {
+            throw new Error("Invalid role");
+            
+        }
     }
 
     updateUserPrivileges(userId: string, newRole: string): Promise<void> {

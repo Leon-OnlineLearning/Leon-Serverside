@@ -9,7 +9,6 @@ export class NonExistingUser extends Error {
     }
 }
 
-@Entity({ name: "USERS" })
 export default abstract class User {
     @PrimaryGeneratedColumn("uuid")
     id: string;
@@ -37,7 +36,7 @@ export default abstract class User {
         }
     }
 
-    setValuesFromUser(user:User){
+    setValuesFromJSON(user: any) {
         this.email = user.email || this.email;
         this.firstName = user.firstName || this.email;
         this.lastName = user.lastName || this.email;

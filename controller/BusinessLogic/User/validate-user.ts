@@ -5,7 +5,7 @@ import { comparePasswords } from "@utils/passwords";
 import { getCustomRepository } from "typeorm";
 
 const getCorrectUser = async (email: string, password: string) => {
-    const repo = getCustomRepository(UserRepo)
+    const repo = new UserRepo()
     let user: any;
     try {
         user = await repo.findUserAndRoleByEmail(email)
@@ -16,21 +16,12 @@ const getCorrectUser = async (email: string, password: string) => {
         throw error
     }
 
-    let correctPassword = await comparePasswords(password, user["USERS_password"])
-    console.log('correct password: ', correctPassword);
+    let correctPassword = await comparePasswords(password, user.password)
 
     if (!correctPassword) {
         return false
     } else {
-        const [_, userObj] = UserPersistanceFactory(user["USERS_role"])
-        userObj.email = user["USERS_email"]
-        userObj.firstName = user["USERS_firstName"]
-        userObj.lastName = user["USERS_lastName"]
-        userObj.thirdPartyAccount = user["USERS_thirdPartyAccount"] === 1
-        userObj.password = user["USERS_password"]
-        console.log(userObj);
-
-        return {...userObj, role: user["USERS_role"]}
+        return user
     }
 }
 

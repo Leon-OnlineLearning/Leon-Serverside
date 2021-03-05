@@ -95,6 +95,7 @@ export async function isTokenBlocked(token: string) {
 export async function generateAccessToken(user: any, refresh: boolean = false) {
 
     const payload = { id: user["id"], firstName: user["firstName"], lastName: user["lastName"], role: user["role"] }
+    
     // if your will refresh no need to create new entries in cache or to renew 
     // the old ones because they hold the last login time
     if (!refresh) await registerPayload(payload)
@@ -121,8 +122,6 @@ export async function generateRefreshToken(user: any) {
 }
 
 export async function isTokenValidAndExpired(token: string): Promise<boolean> {
-
-    console.log("here....");
 
 
     try {
@@ -161,7 +160,7 @@ export async function getUserFromJWT(token: string) {
     try {
         const payload: any = await getPayloadFromJWTNoExpiration(token)
         const repo = getCustomRepository(UserRepo);
-        const user = await repo.findOne(payload["id"])
+        const user = await repo.findUserAndRoleById(payload["id"])
         return user
     } catch (e) {
         throw new Error("token not found")

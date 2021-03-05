@@ -1,7 +1,7 @@
 import "reflect-metadata";
 import express from "express"
 import databaseStartup from "@utils/database-startup"
-import authRouter from "@services/Routes/User/authentication-routes"
+import authRouter from "@services/Routes/User/AuthenticationRoutes"
 import userRouter from "@services/Routes/User/SecureRoutes"
 import passport from "@services/Auth"
 import cookieParser from "cookie-parser"
