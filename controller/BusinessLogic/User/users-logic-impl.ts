@@ -7,6 +7,7 @@ import User from "@models/Users/User";
 import UserPersistanceFactory from "@models/Users/UserFactory";
 import { getConnection, Repository } from "typeorm";
 import UsersLogic from "@controller/BusinessLogic/User/users-logic"
+import UserTypes from "@models/Users/UserTypes";
 
 
 export class UsersLogicImpl implements UsersLogic {
@@ -15,23 +16,23 @@ export class UsersLogicImpl implements UsersLogic {
         const userRepo = new UserRepo()
         const userAndRole = await userRepo.findUserAndRoleById(userId)
         const { role, ...user } = userAndRole
-        if (role === "student") {
+        if (role === UserTypes.STUDENT) {
             const res = new Student()
             res.setValuesFromJSON(user)
             return res
-        } 
-        if (role === "admin") {
+        }
+        if (role === UserTypes.ADMIN) {
             const res = new Admin()
             res.setValuesFromJSON(user)
             return res
         }
-        if (role === "professor") {
+        if (role === UserTypes.PROFESSOR) {
             const res = new Professor()
             res.setValuesFromJSON(user)
             return res
         } else {
             throw new Error("Invalid role");
-            
+
         }
     }
 

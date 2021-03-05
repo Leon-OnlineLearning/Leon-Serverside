@@ -2,21 +2,22 @@
  * Middlewares for authorization 
  */
 
+import UserTypes from "@models/Users/UserTypes";
 import { NextFunction, Request, Response } from "express";
 
 export function onlyAdmins(req: Request, res: Response, next: NextFunction) {
-    comparingRoles(req,res)
+    comparingRoles(req, res)
     next()
 }
 
 export function onlyProfessors(req: Request, res: Response, next: NextFunction) {
-    comparingRoles(req,res)
+    comparingRoles(req, res)
     next()
 }
 
 function comparingRoles(req: Request, res: Response) {
     const requestUser: any = req.user;
-    if (!isCorrectRole(requestUser, "admin")) {
+    if (!isCorrectRole(requestUser, UserTypes.ADMIN)) {
         res.status(400).json({ success: false, message: "Access denied" })
     }
 }

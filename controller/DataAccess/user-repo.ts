@@ -3,8 +3,8 @@ import Admin from "@models/Users/Admin";
 import Professor from "@models/Users/Professor";
 import Student from "@models/Users/Student";
 import User from "@models/Users/User";
-import UserPersistanceFactory from "@models/Users/UserFactory";
-import { EntityRepository, getConnection, getRepository, Repository } from "typeorm";
+import UserTypes from "@models/Users/UserTypes";
+import { getConnection, getRepository, Repository } from "typeorm";
 
 export default class UserRepo {
     async insertOrIgnore(user: User) {
@@ -17,19 +17,12 @@ export default class UserRepo {
     }
 
     async getRoleById(id: string) {
-        // const res = await getConnection().createQueryBuilder()
-        //     .select("USERS.role")
-        //     .from(User, "USERS")
-        //     .where("USERS.id = :id", { id: id })
-        //     .execute();
-        // return res[0]["USERS_role"]
-
         const student = await getRepository(Student).findOne(id)
-        if (student) return "student"
+        if (student) return UserTypes.STUDENT
         const professor = await getRepository(Professor).findOne(id)
-        if (professor) return "professor"
+        if (professor) return UserTypes.PROFESSOR
         const admin = await getRepository(Admin).findOne(id)
-        if (admin) return "admin"
+        if (admin) return UserTypes.ADMIN
         else {
             throw new Error("Invalid id");
         }
@@ -44,41 +37,41 @@ export default class UserRepo {
                 email: email
             }
         })
-        if (student) return { ...student, role: "student" }
+        if (student) return { ...student, role: UserTypes.STUDENT }
         const professor = await getRepository(Professor).findOne({
             where: {
                 email: email
             }
         })
-        if (professor) return { ...professor, role: "professor" }
+        if (professor) return { ...professor, role: UserTypes.PROFESSOR }
         const admin = await getRepository(Admin).findOne({
             where: {
                 email: email
             }
         })
-        if (admin) return { ...admin, role: "admin" }
+        if (admin) return { ...admin, role: UserTypes.ADMIN }
         else throw new Error("Invalid email");
 
     }
 
     async findUserAndRoleById(id: string) {
         const student = await getRepository(Student).findOne(id)
-        if (student) return { ...student, role: "student" }
+        if (student) return { ...student, role: UserTypes.STUDENT }
         const professor = await getRepository(Professor).findOne(id)
-        if (professor) return { ...professor, role: "professor" }
+        if (professor) return { ...professor, role: UserTypes.PROFESSOR }
         const admin = await getRepository(Admin).findOne(id)
-        if (admin) return { ...admin, role: "admin" }
+        if (admin) return { ...admin, role: UserTypes.ADMIN }
         else {
             throw new Error("Invalid id");
         }
     }
     async findOrCreate(user: User) {
         let res: User | undefined = await getRepository(Student).findOne({ where: { email: user.email } })
-        if (res) { return { res, role: "student" } }
+        if (res) { return { res, role: UserTypes.STUDENT } }
         res = await getRepository(Professor).findOne({ where: { email: user.email } })
-        if (res) { return { res, role: "professor" } }
+        if (res) { return { res, role: UserTypes.PROFESSOR } }
         res = await getRepository(Admin).findOne({ where: { email: user.email } })
-        if (res) { return { res, role: "admin" } }
-        return { ...(await getRepository(Student).save(user)), role: "student" }
+        if (res) { return { res, role: UserTypes.ADMIN } }
+        return { ...(await getRepository(Student).save(user)), role: UserTypes.STUDENT }
     }
 }

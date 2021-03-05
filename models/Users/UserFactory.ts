@@ -4,6 +4,7 @@ import Admin from "./Admin";
 import Professor from "./Professor";
 import Student from "./Student";
 import User from "./User";
+import UserTypes from "./UserTypes";
 
 /**
  * return a new user depending on the role provided
@@ -13,9 +14,9 @@ import User from "./User";
 export default function UserPersistanceFactory(role?: string): [Repository<Student | Admin | Professor>, Student | Admin | Professor] {
     if (!role) return [getRepository(Student), new Student()];
     const comparableRole = role.toLocaleLowerCase()
-    if (comparableRole === "professor") {
+    if (comparableRole === UserTypes.PROFESSOR) {
         return [getRepository(Professor), new Professor()];
-    } else if (comparableRole === "admin") {
+    } else if (comparableRole === UserTypes.ADMIN) {
         return [getRepository(Admin), new Admin()];
     } else {
         return [getRepository(Student), new Student()];

@@ -15,6 +15,7 @@ import UserPersistanceFactory from "@models/Users/UserFactory";
 import StudentRepo from "@controller/DataAccess/student-repo";
 import StudentLogicImpl from "@controller/BusinessLogic/User/Student/students-logic-impl";
 import StudentLogic from "@controller/BusinessLogic/User/Student/students-logic";
+import UserTypes from "@models/Users/UserTypes";
 
 
 passport.use('login',
@@ -54,7 +55,7 @@ passport.use(
 
                 let role;
                 if (!req.body.role || typeof req.body.role !== "string") {
-                    role = "student";
+                    role = UserTypes.STUDENT;
                 } else {
                     role = req.body.role;
                 }
