@@ -3,7 +3,6 @@
  */
 import { Router } from "express"
 import passport, { BlockedJWTMiddleware } from "@services/Auth"
-import { blockId } from "@controller/Tokens"
 
 const router = Router()
 

@@ -10,4 +10,5 @@ export default interface StudentLogic {
     getAllCourses(studentId: string) : Promise<Course[]>;
     // DISCUSS: is this really needed while you got the courses which in turn has lectures in it
     getAllLectures(studentId: string): Promise<Lecture[]>;
+    getAllStudents(skip?: number, take?: number): Promise<Student[]>;
 }
