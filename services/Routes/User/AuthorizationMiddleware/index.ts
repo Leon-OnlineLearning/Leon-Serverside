@@ -4,23 +4,27 @@
 
 import UserTypes from "@models/Users/UserTypes";
 import { NextFunction, Request, Response } from "express";
-import UserPrivileges from "./UserPrivilage";
+import UserPrivileges from "./UserPrivilege";
 
 export function onlyAdmins(req: Request, res: Response, next: NextFunction) {
-    comparingRoles(req, res, UserTypes.ADMIN)
-    next()
+    const requestUser: any = req.user;
+    if (!isCorrectRole(requestUser, UserTypes.ADMIN)) {
+        res.status(401).json({ success: false, message: "Access denied" })
+    } else {
+        next()
+    }
 }
 
 export function onlyProfessors(req: Request, res: Response, next: NextFunction) {
-    comparingRoles(req, res, UserTypes.PROFESSOR)
-    next()
+    const requestUser: any = req.user;
+    if (!isCorrectRole(requestUser, UserTypes.PROFESSOR)) {
+        res.status(401).json({ success: false, message: "Access denied" })
+    } else {
+        next()
+    }
 }
 
 function comparingRoles(req: Request, res: Response, role: UserTypes) {
-    const requestUser: any = req.user;
-    if (!isCorrectRole(requestUser, role)) {
-        res.status(400).json({ success: false, message: "Access denied" })
-    }
 }
 
 function isCorrectRole(user: any, role: UserTypes) {

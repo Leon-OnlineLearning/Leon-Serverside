@@ -7,11 +7,17 @@ import Student from "@models/Users/Student";
 import User from "@models/Users/User";
 import UserPersistanceFactory from "@models/Users/UserFactory";
 import UserTypes from "@models/Users/UserTypes";
-import { getCustomRepository, getRepository } from "typeorm";
+import { getCustomRepository, getRepository, Repository } from "typeorm";
 import StudentLogic from "./students-logic";
 
 
 export default class StudentLogicImpl implements StudentLogic {
+    async getAllStudents(skip: number, take: number): Promise<Student[]> {
+        const _take = take || 10;
+        const _skip = skip || 0;
+        const [res, _] = await getRepository(Student).findAndCount({ skip: _skip, take: _take })
+        return res;
+    }
     async getAllLectures(studentId: string): Promise<Lecture[]> {
         const student = await getRepository(Student).findOne(studentId);
         if (student) {
@@ -22,11 +28,12 @@ export default class StudentLogicImpl implements StudentLogic {
             throw new Error("User not found!");
         }
     }
+
     async getAllCourses(studentId: string): Promise<Course[]> {
         const student = await getRepository(Student).findOne(studentId);
         if (student) {
             const courses = await student.courses
-            
+
             return courses;
         }
         else {
@@ -35,7 +42,7 @@ export default class StudentLogicImpl implements StudentLogic {
 
     }
 
-    
+
     async createStudent(student: Student): Promise<Student> {
         const [repo, _] = UserPersistanceFactory(UserTypes.STUDENT)
         return await repo.save(student)
