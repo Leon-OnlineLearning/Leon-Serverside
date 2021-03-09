@@ -8,12 +8,6 @@ import Event from "./Event";
 
 @Entity()
 export default class Lecture extends Event{
-    @PrimaryGeneratedColumn("uuid")
-    id: string;
-
-    @Column()
-    title: string;
-
     @Column()
     @Max(2048)
     @IsFQDN() // TODO this might change 
