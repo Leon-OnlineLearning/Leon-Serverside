@@ -1,7 +1,27 @@
 import Course from "@models/Course";
+import Lecture from "@models/Events/Lecture";
 import { getRepository } from "typeorm";
 import CoursesLogic from "./courses-logic"
 export default class CourseLogicImpl implements CoursesLogic {
+    async getLecturesStatistics(courseId: string): Promise<{ lectureTitle: string, count: number }[]> {
+        const course = await getRepository(Course).findOne(courseId);
+        if (!course) {
+            throw new Error("Invalid course id");
+        }
+        const lectures: Lecture[] = await course?.lectures
+        if (!lectures) {
+            throw new Error("no lectures to be shown")
+        }
+
+        let res: { lectureTitle: string, count: number }[] = [];
+
+        lectures.forEach(async lecture => {
+            let students = await lecture.students
+            res.push({lectureTitle: lecture.title, count: students.length})
+        });
+
+        return res;
+    }
     async createCourse(course: Course): Promise<Course> {
         return await getRepository(Course).save(course);
     }

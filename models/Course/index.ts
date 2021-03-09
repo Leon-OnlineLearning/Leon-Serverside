@@ -14,7 +14,7 @@ export default class Course {
     name: string;
 
     @OneToMany(() => Lecture, lec => lec.course, { cascade: true, onDelete: "CASCADE" })
-    lectures: Lecture[]
+    lectures: Promise<Lecture[]>
 
     @OneToMany(() => Exam, exam => exam.course, { cascade: true, onDelete: "CASCADE" })
     exams: Exam[]

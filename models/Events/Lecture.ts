@@ -3,11 +3,17 @@ import Department from "@models/Department";
 import Professor from "@models/Users/Professor";
 import Student from "@models/Users/Student";
 import { IsFQDN, Max } from "class-validator";
-import { ChildEntity, Column, Entity, JoinColumn, ManyToMany, ManyToOne, OneToOne } from "typeorm";
+import { ChildEntity, Column, Entity, JoinColumn, ManyToMany, ManyToOne, OneToOne, PrimaryGeneratedColumn } from "typeorm";
 import Event from "./Event";
 
 @Entity()
 export default class Lecture extends Event{
+    @PrimaryGeneratedColumn("uuid")
+    id: string;
+
+    @Column()
+    title: string;
+
     @Column()
     @Max(2048)
     @IsFQDN() // TODO this might change 
