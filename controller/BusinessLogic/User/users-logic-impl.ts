@@ -4,8 +4,6 @@ import Admin from "@models/Users/Admin";
 import Professor from "@models/Users/Professor";
 import Student from "@models/Users/Student";
 import User from "@models/Users/User";
-import UserPersistanceFactory from "@models/Users/UserFactory";
-import { getConnection, Repository } from "typeorm";
 import UsersLogic from "@controller/BusinessLogic/User/users-logic"
 import UserTypes from "@models/Users/UserTypes";
 

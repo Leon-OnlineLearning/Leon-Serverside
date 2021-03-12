@@ -16,6 +16,7 @@ import StudentRepo from "@controller/DataAccess/student-repo";
 import StudentLogicImpl from "@controller/BusinessLogic/User/Student/students-logic-impl";
 import StudentLogic from "@controller/BusinessLogic/User/Student/students-logic";
 import UserTypes from "@models/Users/UserTypes";
+import UserClassMapper from "@models/Users/UserClassMapper";
 
 
 passport.use('login',
@@ -53,14 +54,16 @@ passport.use(
         async (req, email, password, done) => {
             try {
 
-                let role;
-                if (!req.body.role || typeof req.body.role !== "string") {
-                    role = UserTypes.STUDENT;
-                } else {
-                    role = req.body.role;
-                }
+                let role = UserTypes.STUDENT;
 
-                const [repo, user] = UserPersistanceFactory(role)
+                if (req.body.role && typeof req.body.role === "string") {
+                    role = req.body.role;
+                } 
+
+                // const [repo, user] = [getRepository(UserClassMapper[role]),UserClassMapper[role]]
+                const UserClass = UserClassMapper[role]
+                const user = new UserClass()
+                const repo = getRepository(UserClass)
 
                 user.firstName = req.body.firstName;
                 user.lastName = req.body.lastName;
@@ -125,7 +128,8 @@ passport.use(new GoogleStrategy({
             // NOTE: all accounts signing up with google are going to be users 
             // and other types would be ignored anyway 
             // so i will use students repo here no need to do factory
-            const [_, userObj] = UserPersistanceFactory();
+            // const [_, userObj] = UserPersistanceFactory();
+            const userObj = new UserClassMapper[UserTypes.STUDENT]()
             userObj.firstName = profile.name?.givenName || "No firstName";
             userObj.lastName = profile.name?.familyName || "No lastName";
             userObj.thirdPartyAccount = true;
