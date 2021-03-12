@@ -7,7 +7,16 @@ import User from "./User";
 import UserTypes from "./UserTypes";
 
 /**
- * return a new user depending on the role provided
+ * @deprecated
+ * Not supported after refactor 82f2c25b349417c0b4a3a01657dc7f336dc03b77
+ * REASONING: This function was used only because you have to pass the actual 
+ * subclass to typeorm repo to work correctly.
+ * This is bad, because every time we will add a new user probably service user
+ * we will have to change this too and add another case we have to check which 
+ * means more bugs we have to face.
+ * 
+ * For documentation about how to use the new approach please refer to the commit 
+ * mentioned above.
  * 
  * @param {string | undefined} role account's privileges group
  */
