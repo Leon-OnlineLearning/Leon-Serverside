@@ -12,7 +12,7 @@ router.post('/signup', async (req, res) => {
     passport.authenticate('signup', async (error, user) => {
         if (error) {
             res.status(422)
-            res.send(error)
+            res.send(error.message)
         }
         if (user) {
             const token = await generateAccessToken(user)

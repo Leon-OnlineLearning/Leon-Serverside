@@ -16,6 +16,8 @@ import StudentLogic from "./students-logic";
 
 export default class StudentLogicImpl implements StudentLogic {
     async getAllStudents(skip: number, take: number): Promise<Student[]> {
+        console.log("here");
+        
         const _take = take || 10;
         const _skip = skip || 0;
         const [res, _] = await getRepository(Student).findAndCount({ skip: _skip, take: _take })

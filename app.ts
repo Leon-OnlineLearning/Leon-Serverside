@@ -14,7 +14,7 @@ app.use(express.json())
 app.use(cookieParser())
 app.use(passport.initialize())
 app.use('/auth', authRouter)
-app.use('/user', userRouter)
+app.use('/users', userRouter)
 app.use('/students',studentRouter)
 
 const PORT = process.env.SERVER_PORT || 3333
