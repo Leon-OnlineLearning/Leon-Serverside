@@ -1,0 +1,40 @@
+version: '3'
+services:
+
+  postgresdb:
+    
+    image: 'postgres:13-alpine'
+    
+    ports:
+      - 5432:5432
+
+    environment:
+      # these are development credintials should use more secure
+      # postgres image use those to create user and db
+      - POSTGRES_USER=leon
+      - POSTGRES_PASSWORD=a
+      - POSTGRES_DB=leon
+
+    volumes:
+      - postgresdb:/var/lib/postgresql/data
+    
+  redisdb:
+    
+    image: 'redis:alpine'
+      # ports:
+    
+    ports:
+      - 6379:6379
+
+  server:
+    build: '.'
+  
+    ports: 
+      - 3000:3000
+  
+    volumes:
+      - .:/code
+ 
+      
+volumes:
+   postgresdb:
