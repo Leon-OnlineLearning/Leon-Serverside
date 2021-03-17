@@ -5,6 +5,7 @@
   "main": "app.js",
   "scripts": {
     "dev": "tsc && ef-tspm && nodemon",
+    "dev_docker": "npx tsc && ef-tspm && nodemon",
     "tsc": "tsc && ef-tspm",
     "clean": "rm -rf ./build"
   },
