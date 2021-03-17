@@ -19,26 +19,13 @@ app.use('/students',studentRouter)
 
 const PORT = process.env.SERVER_PORT || 3333
 
-// NOTE: DO NOT DELETE THIS COMMENT!
 // for http in dev
 // uncomment this 
-// app.listen(PORT, async () => {
-//     console.log(`listening on port ${PORT}`);
-//     await databaseStartup()
-// })
+app.listen(PORT, async () => {
+    console.log(`listening on port ${PORT}`);
+    await databaseStartup()
+})
 
 app.get("/sayHello",(req,res)=>{
     res.send("hello")
 })
-
-// for https in dev
-https.createServer({
-    key: fs.readFileSync('./localhost-key.pem'),
-    cert: fs.readFileSync('./localhost.pem'),
-    passphrase: 'a'
-}, app)
-    .listen(PORT, async () => {
-        console.log(`listening on port ${PORT}`);
-        
-        await databaseStartup()
-    });

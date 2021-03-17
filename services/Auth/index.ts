@@ -16,7 +16,7 @@ import StudentRepo from "@controller/DataAccess/student-repo";
 import StudentLogicImpl from "@controller/BusinessLogic/User/Student/students-logic-impl";
 import StudentLogic from "@controller/BusinessLogic/User/Student/students-logic";
 import UserTypes from "@models/Users/UserTypes";
-import UserClassMapper from "@models/Users/UserClassMapper";
+import UserClassFactory from "@models/Users/UserClassMapper";
 
 
 passport.use('login',
@@ -61,7 +61,7 @@ passport.use(
                 } 
 
                 // const [repo, user] = [getRepository(UserClassMapper[role]),UserClassMapper[role]]
-                const UserClass = UserClassMapper[role]
+                const UserClass = UserClassFactory(role)
                 const user = new UserClass()
                 const repo = getRepository(UserClass)
 
@@ -129,7 +129,8 @@ passport.use(new GoogleStrategy({
             // and other types would be ignored anyway 
             // so i will use students repo here no need to do factory
             // const [_, userObj] = UserPersistanceFactory();
-            const userObj = new UserClassMapper[UserTypes.STUDENT]()
+            const UserClass = UserClassFactory(UserTypes.STUDENT)
+            const userObj = new UserClass()
             userObj.firstName = profile.name?.givenName || "No firstName";
             userObj.lastName = profile.name?.familyName || "No lastName";
             userObj.thirdPartyAccount = true;

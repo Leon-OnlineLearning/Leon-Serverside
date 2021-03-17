@@ -5,7 +5,7 @@ import Lecture from "@models/Events/Lecture";
 import StudentsExams from "@models/JoinTables/StudentExam";
 import Student from "@models/Users/Student";
 import User from "@models/Users/User";
-import UserClassMapper from "@models/Users/UserClassMapper";
+import UserClassFactory from "@models/Users/UserClassMapper";
 import UserPersistanceFactory from "@models/Users/UserFactory";
 import UserTypes from "@models/Users/UserTypes";
 import { getCustomRepository, getRepository, Repository } from "typeorm";
@@ -46,7 +46,7 @@ export default class StudentLogicImpl implements StudentLogic {
 
     async createStudent(student: Student): Promise<Student> {
         // const [repo, _] = UserPersistanceFactory(UserTypes.STUDENT)
-        const repo = getRepository(UserClassMapper["student"])
+        const repo = getRepository(UserClassFactory(UserTypes.STUDENT))
         return await repo.save(student)
     }
 
