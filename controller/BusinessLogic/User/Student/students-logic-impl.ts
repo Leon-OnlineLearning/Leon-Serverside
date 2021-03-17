@@ -8,7 +8,9 @@ import User from "@models/Users/User";
 import UserClassFactory from "@models/Users/UserClassMapper";
 import UserPersistanceFactory from "@models/Users/UserFactory";
 import UserTypes from "@models/Users/UserTypes";
-import { getCustomRepository, getRepository, Repository } from "typeorm";
+import { hashPassword } from "@utils/passwords";
+import { validateOrReject } from "class-validator";
+import { getRepository } from "typeorm";
 import StudentLogic from "./students-logic";
 
 
@@ -44,9 +46,14 @@ export default class StudentLogicImpl implements StudentLogic {
     }
 
 
+    /**
+     * Creat new student assume password is no hashed yet
+     * @param student 
+     * @returns resulted student
+     */
     async createStudent(student: Student): Promise<Student> {
-        // const [repo, _] = UserPersistanceFactory(UserTypes.STUDENT)
         const repo = getRepository(UserClassFactory(UserTypes.STUDENT))
+        student.password = await hashPassword(student.password)
         return await repo.save(student)
     }
 
