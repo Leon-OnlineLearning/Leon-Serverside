@@ -1,30 +1,49 @@
 version: '3'
 services:
 
-  postgresdb:
+  # postgresdb:
+  #   image: 'postgres:13-alpine'
     
-    image: 'postgres:13-alpine'
+  #   ports:
+  #     - 5432
+
+  #   environment:
+  #     # these are development credintials should use more secure
+  #     # postgres image use those to create user and db
+  #     - POSTGRES_USER=leon
+  #     - POSTGRES_PASSWORD=a
+  #     - POSTGRES_DB=leon
+
+  #   volumes:
+  #     - postgresdb:/var/lib/postgresql/data
+
+  mysqldb:
+   
+    image: 'mysql:latest'    
+
+    # command: --bind-address=127.0.0.1
     
     ports:
-      - 5432:5432
+      - 3306
+    
 
     environment:
-      # these are development credintials should use more secure
-      # postgres image use those to create user and db
-      - POSTGRES_USER=leon
-      - POSTGRES_PASSWORD=a
-      - POSTGRES_DB=leon
+      - MYSQL_DATABASE=leon
+      - MYSQL_PASSWORD=leon
+      - MYSQL_USER=leon
+      - MYSQL_RANDOM_ROOT_PASSWORD=true
 
     volumes:
-      - postgresdb:/var/lib/postgresql/data
-    
+      - mysqldb:/var/lib/mysql
+
+
   redisdb:
     
     image: 'redis:alpine'
       # ports:
     
     ports:
-      - 6379:6379
+      - 6379
 
   server:
     build: '.'
@@ -37,4 +56,4 @@ services:
  
       
 volumes:
-   postgresdb:
+   mysqldb:
