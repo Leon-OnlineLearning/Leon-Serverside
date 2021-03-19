@@ -50,7 +50,7 @@ export default class UserRepo {
             }
         })
         if (admin) return { ...admin, role: UserTypes.ADMIN }
-        else throw new Error("Invalid email");
+        else return []
 
     }
 

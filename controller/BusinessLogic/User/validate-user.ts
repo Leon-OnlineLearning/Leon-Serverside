@@ -8,10 +8,10 @@ const getCorrectUser = async (email: string, password: string) => {
     const repo = new UserRepo()
     let user: any;
     try {
-        user = await repo.findUserAndRoleByEmail(email)
-        if (user.length == 0) {
-            throw new NonExistingUser("Invalid Email!")
-        }
+    user = await repo.findUserAndRoleByEmail(email)
+    if (user.length == 0) {
+        throw new NonExistingUser("Invalid Email!")
+    }
     } catch (error) {
         throw error
     }
