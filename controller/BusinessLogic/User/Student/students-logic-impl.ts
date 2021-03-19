@@ -20,6 +20,17 @@ import ProfessorLogicIml from "../Professor/professors-logic-impl";
 
 
 export default class StudentLogicImpl implements StudentLogic {
+    async updateStudent(studentId: string, newData: Student): Promise<Student> {
+        const student = await this.getStudentById(studentId)
+        if (!student) throw new Error("Student doesn't exist");
+        student.setValuesFromJSON(newData)
+        return await getRepository(Student).save(student);
+    }
+
+    getStudentById(studentId: string) : Promise<Student | undefined> {
+        return getRepository(Student).findOne(studentId);
+    }
+
     getStudentByEmail(email: string) : Promise<Student | undefined> {
         return getRepository(Student).findOne({
             where : {email: email}

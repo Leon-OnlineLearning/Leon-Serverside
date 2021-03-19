@@ -75,28 +75,4 @@ export default class UserRepo {
         return { ...(await getRepository(Student).save(user)), role: UserTypes.STUDENT }
     }
 
-    // /**
-    //  * checks if use with speicifc email exist then return it or undifined if it
-    //  * doesn't
-    //  * @param email 
-    //  * @returns 
-    //  */
-    // async emailExist(email: string) {
-    //     // TODO: [room for improvement] using joins could element these 3 calls into 
-    //     // a single one but would complicate the calling logic
-    //     // and has a coupling potential 
-    //     // so it will be left for later
-    //     const student = await getRepository(Student).findOne({
-    //         where : {email: email}
-    //     })
-    //     if (student) return student
-    //     const professor = await getRepository(Professor).findOne({
-    //         where : { email: email }
-    //     })
-    //     if (professor) return professor
-    //     const admin = await getRepository(Admin).findOne({
-    //         where : {email: email}
-    //     })
-    //     if (admin) return admin
-    // }
 }

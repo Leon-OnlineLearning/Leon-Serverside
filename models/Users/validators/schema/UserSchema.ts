@@ -1,6 +1,6 @@
 import Joi from "joi"
 import { IsStrongPassword } from ".."
-const UserValidationSchema = Joi.object({
+export const UserValidationSchema = Joi.object({
     email: Joi.string()
         .email()
         .required(),
@@ -20,4 +20,19 @@ const UserValidationSchema = Joi.object({
         .required()
 })
 
-export default UserValidationSchema;
+export const UserPartialValidatorSchema = Joi.object({
+    email: Joi.string()
+        .email(),
+    firstName: Joi.string()
+        .min(2),
+    lastName: Joi.string()
+        .min(2),
+    password: Joi.string()
+        .custom((value, helper) => {
+            if (!IsStrongPassword(value)) {
+                return helper.message({ custom: "password is not strong" })
+            }
+            return true
+        })
+})
+

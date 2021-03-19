@@ -44,6 +44,15 @@ export default abstract class User {
         this.id = user.id || this.id;
         this.thirdPartyAccount = user.thirdPartyAccount || this.thirdPartyAccount;
     }
+
+    async summary() {
+        return {
+            firstName : this.firstName,
+            lastName :this.lastName,
+            email: this.email,
+            id: this.id
+        }
+    }
 }
 
 class NotPasswordOrThirdParty extends Error {
