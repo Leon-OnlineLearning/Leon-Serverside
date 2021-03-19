@@ -23,8 +23,12 @@ router.get('/', onlyAdmins, async (req, res) => {
 router.post('/', onlyAdmins, AdminParser, async (req, res) => {
     const request = req as UserRequest
     const logic: AdminLogic = new AdminLogicImpl()
-    const student = await logic.createAdmin(request.account as Admin)
-    res.send(student)
+    try {
+        const student = await logic.createAdmin(request.account as Admin)
+        res.send(student)
+    } catch (e) {
+        res.status(400).send({success:false, message: e.message})
+    }
 })
 
 export default router;

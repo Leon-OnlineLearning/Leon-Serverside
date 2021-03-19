@@ -1,14 +1,33 @@
 import Course from "@models/Course";
 import Exam from "@models/Events/Exam";
 import Professor from "@models/Users/Professor";
+import { AccountWithSimilarEmailExist } from "@models/Users/User";
 import { getRepository } from "typeorm";
+import AdminLogic from "../Admin/admin-logic";
+import AdminLogicImpl from "../Admin/admin-logic-impl";
+import StudentLogic from "../Student/students-logic";
+import StudentLogicImpl from "../Student/students-logic-impl";
 import ProfessorLogic from "./professors-logic"
 
 export default class ProfessorLogicIml implements ProfessorLogic {
+    getProfessorByEmail(email: string): Promise<Professor | undefined> {
+        return getRepository(Professor).findOne({ where: { email } })
+    }
+    getProfessorById(id: string): Promise<Professor | undefined> {
+        return getRepository(Professor).findOne(id)
+    }
     async getAllProfessors(): Promise<Professor[]> {
         return await getRepository(Professor).find();
     }
     async createProfessor(professor: Professor): Promise<Professor> {
+        // check in student and admin that there is no account with the same email
+        const studentLogic : StudentLogic = new StudentLogicImpl()
+        const student = await studentLogic.getStudentByEmail(professor.email)
+        if (student) throw new AccountWithSimilarEmailExist()
+        const adminLogic : AdminLogic = new AdminLogicImpl()
+        const admin = await adminLogic.getAdminByEmail(professor.email)
+        if (admin) throw new AccountWithSimilarEmailExist()
+
         return await getRepository(Professor).save(professor)
     }
     async deleteProfessorById(professorId: string): Promise<void> {

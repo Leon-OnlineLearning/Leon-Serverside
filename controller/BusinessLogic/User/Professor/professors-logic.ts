@@ -10,4 +10,6 @@ export default interface ProfessorLogic {
     getAllExams(professorId:string) : Promise<Exam[]>;
     getAllCourses(professorId: string) : Promise<Course[]>;
     getAllProfessors(): Promise<Professor[]>;
+    getProfessorByEmail(email:string): Promise<Professor | undefined>;
+    getProfessorById(id: string): Promise<Professor | undefined>;
 }

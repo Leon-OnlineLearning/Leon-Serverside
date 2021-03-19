@@ -5,4 +5,6 @@ export default interface AdminLogic {
     deleteAdminById(adminId: string) : Promise<void>;
     updateAdmin(adminId: string, newData: Admin) : Promise<Admin>;
     getAllAdmins(): Promise<Admin[]>;
+    getAdminById(id: string): Promise<Admin| undefined>;
+    getAdminByEmail(email : string): Promise<Admin | undefined>;
 }

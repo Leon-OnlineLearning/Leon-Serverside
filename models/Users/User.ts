@@ -52,3 +52,10 @@ class NotPasswordOrThirdParty extends Error {
         this.message = "Local user assigned without password"
     }
 }
+
+export class AccountWithSimilarEmailExist extends Error {
+    constructor(message? : string| undefined) {
+        super(message)
+        this.message = "Account with similar email already exist"
+    }
+}

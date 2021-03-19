@@ -139,7 +139,7 @@ passport.use(new GoogleStrategy({
             } else {
                 throw new Error("Email is not provided");
             }
-            const persistedUser = await repo.findOrCreate(userObj);
+            const persistedUser = await repo.findOrCreateStudent(userObj);
             return done(null, persistedUser);
         } catch (e) {
             return done(e);

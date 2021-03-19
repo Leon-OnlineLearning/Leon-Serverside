@@ -11,10 +11,20 @@ import UserTypes from "@models/Users/UserTypes";
 import { hashPassword } from "@utils/passwords";
 import { validateOrReject } from "class-validator";
 import { getRepository } from "typeorm";
+import AdminLogic from "../Admin/admin-logic";
+import AdminLogicImpl from "../Admin/admin-logic-impl";
 import StudentLogic from "./students-logic";
+import { AccountWithSimilarEmailExist } from "@models/Users/User"
+import ProfessorLogic from "../Professor/professors-logic";
+import ProfessorLogicIml from "../Professor/professors-logic-impl";
 
 
 export default class StudentLogicImpl implements StudentLogic {
+    getStudentByEmail(email: string) : Promise<Student | undefined> {
+        return getRepository(Student).findOne({
+            where : {email: email}
+        })
+    }
     async getAllStudents(skip: number, take: number): Promise<Student[]> {
         console.log("here");
         
@@ -54,6 +64,13 @@ export default class StudentLogicImpl implements StudentLogic {
      * @returns resulted student
      */
     async createStudent(student: Student): Promise<Student> {
+        const adminLogic: AdminLogic = new AdminLogicImpl()
+        const admin = await adminLogic.getAdminByEmail(student.email)
+        if (admin) throw new AccountWithSimilarEmailExist()
+        const professorLogic : ProfessorLogic = new ProfessorLogicIml()
+        const professor = await professorLogic.getProfessorByEmail(student.email)
+        if (professor) throw new AccountWithSimilarEmailExist()
+
         const repo = getRepository(UserClassFactory(UserTypes.STUDENT))
         student.password = await hashPassword(student.password)
         return await repo.save(student)
