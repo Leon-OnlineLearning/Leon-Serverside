@@ -9,4 +9,5 @@ export default interface ProfessorLogic {
     updateProfessor(professorId: string, newData: Professor) : Promise<Professor>;
     getAllExams(professorId:string) : Promise<Exam[]>;
     getAllCourses(professorId: string) : Promise<Course[]>;
+    getAllProfessors(): Promise<Professor[]>;
 }

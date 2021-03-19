@@ -5,6 +5,9 @@ import { getRepository } from "typeorm";
 import ProfessorLogic from "./professors-logic"
 
 export default class ProfessorLogicIml implements ProfessorLogic {
+    async getAllProfessors(): Promise<Professor[]> {
+        return await getRepository(Professor).find();
+    }
     async createProfessor(professor: Professor): Promise<Professor> {
         return await getRepository(Professor).save(professor)
     }

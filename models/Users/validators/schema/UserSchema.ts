@@ -17,6 +17,7 @@ const UserValidationSchema = Joi.object({
             }
             return true
         })
+        .required()
 })
 
 export default UserValidationSchema;

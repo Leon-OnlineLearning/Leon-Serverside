@@ -1,11 +1,13 @@
-import { Request, Router } from "express"
+import { Router } from "express"
 import passport, { BlockedJWTMiddleware } from "@services/Auth"
 import { onlyAdmins } from "../AuthorizationMiddleware"
 import StudentLogic from "@controller/BusinessLogic/User/Student/students-logic"
 import StudentLogicImpl from "@controller/BusinessLogic/User/Student/students-logic-impl"
-import StudentParser from "../BodyParserMiddleware/StudentParser"
-import Student from "@models/Users/Student"
+import AdminParser from "../BodyParserMiddleware/AdminParser"
 import { UserRequest } from "../BodyParserMiddleware/UserParser"
+import Admin from "@models/Users/Admin"
+import AdminLogic from "@controller/BusinessLogic/User/Admin/admin-logic"
+import AdminLogicImpl from "@controller/BusinessLogic/User/Admin/admin-logic-impl"
 
 const router = Router()
 
@@ -18,10 +20,10 @@ router.get('/', onlyAdmins, async (req, res) => {
     res.send(students)
 })
 
-router.post('/', onlyAdmins, StudentParser, async (req, res) => {
+router.post('/', onlyAdmins, AdminParser, async (req, res) => {
     const request = req as UserRequest
-    const logic: StudentLogic = new StudentLogicImpl()
-    const student = await logic.createStudent(request.account as Student)
+    const logic: AdminLogic = new AdminLogicImpl()
+    const student = await logic.createAdmin(request.account as Admin)
     res.send(student)
 })
 
