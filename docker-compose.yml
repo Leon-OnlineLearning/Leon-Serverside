@@ -25,9 +25,9 @@ services:
     
 
     environment:
-      - MYSQL_DATABASE=leon
-      - MYSQL_PASSWORD=leon
-      - MYSQL_USER=leon
+      - MYSQL_DATABASE=${DATABASE_NAME}
+      - MYSQL_PASSWORD=${DB_PASSWORD}
+      - MYSQL_USER=${DB_USERNAME}
       - MYSQL_RANDOM_ROOT_PASSWORD=true
 
     volumes:
@@ -45,8 +45,7 @@ services:
     build: '.'
   
     ports: 
-      - 3000:3000
-  
+      - ${SERVER_PORT}:${SERVER_PORT}
     volumes:
       - .:/code
  
