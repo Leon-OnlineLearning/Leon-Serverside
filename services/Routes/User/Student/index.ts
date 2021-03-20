@@ -3,13 +3,15 @@ import passport, { BlockedJWTMiddleware } from "@services/Auth"
 import { onlyAdmins } from "../AuthorizationMiddleware"
 import StudentLogic from "@controller/BusinessLogic/User/Student/students-logic"
 import StudentLogicImpl from "@controller/BusinessLogic/User/Student/students-logic-impl"
-import { StudentParser, StudentPartialParser, StudentRequest } from "../BodyParserMiddleware/StudentParser"
+import { StudentParser, StudentRequest } from "../BodyParserMiddleware/StudentParser"
 import Student from "@models/Users/Student"
+import BodyParserMiddleware from "../BodyParserMiddleware/BodyParserMiddleware"
 
 const router = Router()
-
 router.use(BlockedJWTMiddleware)
 router.use(passport.authenticate('access-token', { session: false }))
+
+const parser: BodyParserMiddleware = new StudentParser()
 
 router.get('/', onlyAdmins, async (req, res) => {
     const logic: StudentLogic = new StudentLogicImpl()
@@ -17,7 +19,7 @@ router.get('/', onlyAdmins, async (req, res) => {
     res.send(students)
 })
 
-router.post('/', onlyAdmins, StudentParser, async (req, res) => {
+router.post('/', onlyAdmins, parser.completeParser, async (req, res) => {
     const request = req as StudentRequest
     const logic: StudentLogic = new StudentLogicImpl()
     try {
@@ -28,7 +30,7 @@ router.post('/', onlyAdmins, StudentParser, async (req, res) => {
     }
 })
 
-router.put('/:studentId', StudentPartialParser, async (req, res) => {
+router.put('/:studentId', parser.partialParser, async (req, res) => {
     const request = req as StudentRequest
     const logic: StudentLogic = new StudentLogicImpl()
     try {
