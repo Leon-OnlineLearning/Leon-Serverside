@@ -4,10 +4,9 @@ import databaseStartup from "@utils/database-startup"
 import authRouter from "@services/Routes/User/AuthenticationRoutes"
 import userRouter from "@services/Routes/User/SecureRoutes"
 import studentRouter from "@services/Routes/User/Student"
+import professorRouter from "@services/Routes/User/Professor"
 import passport from "@services/Auth"
 import cookieParser from "cookie-parser"
-import https from "https";
-import fs from "fs"
 
 const app = express()
 app.use(express.json())
@@ -16,6 +15,7 @@ app.use(passport.initialize())
 app.use('/auth', authRouter)
 app.use('/users', userRouter)
 app.use('/students',studentRouter)
+app.use('/professors', professorRouter)
 
 const PORT = process.env.SERVER_PORT || 3333
 
