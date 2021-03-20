@@ -3,9 +3,9 @@ import passport, { BlockedJWTMiddleware } from "@services/Auth"
 import { onlyAdmins, onlyStudents } from "../AuthorizationMiddleware"
 import StudentLogic from "@controller/BusinessLogic/User/Student/students-logic"
 import StudentLogicImpl from "@controller/BusinessLogic/User/Student/students-logic-impl"
-import { StudentParser, StudentRequest } from "../BodyParserMiddleware/StudentParser"
+import { StudentParser, StudentRequest } from "../../BodyParserMiddleware/StudentParser"
 import Student from "@models/Users/Student"
-import BodyParserMiddleware from "../BodyParserMiddleware/BodyParserMiddleware"
+import BodyParserMiddleware from "../../BodyParserMiddleware/BodyParserMiddleware"
 import paginationParameters from "@services/Routes/utils/pagination"
 
 const router = Router()

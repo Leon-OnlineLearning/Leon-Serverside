@@ -6,8 +6,8 @@ import StudentLogicImpl from "@controller/BusinessLogic/User/Student/students-lo
 import Admin from "@models/Users/Admin"
 import AdminLogic from "@controller/BusinessLogic/User/Admin/admin-logic"
 import AdminLogicImpl from "@controller/BusinessLogic/User/Admin/admin-logic-impl"
-import BodyParserMiddleware from "../BodyParserMiddleware/BodyParserMiddleware"
-import { AdminParser, AdminRequest } from "../BodyParserMiddleware/AdminParser"
+import BodyParserMiddleware from "../../BodyParserMiddleware/BodyParserMiddleware"
+import { AdminParser, AdminRequest } from "../../BodyParserMiddleware/AdminParser"
 import paginationParameters from "@services/Routes/utils/pagination"
 
 const router = Router()
