@@ -45,4 +45,28 @@ router.delete('/:adminId', onlyAdmins, async (req, res) => {
     }
 })
 
+router.put('/:adminId', onlyAdmins, parser.partialParser, async (req, res) => {
+    const request = req as AdminRequest
+    const logic: AdminLogic = new AdminLogicImpl()
+    try {
+        const admin = await logic.updateAdmin(req.params.adminId, request.account)
+        res.send(admin.summary())
+    } catch (e) {
+        res.status(400).send({ message: e.message, success: false })
+    }
+})
+
+router.get("/:adminId", onlyAdmins, async (req, res) => {
+    const request = req as AdminRequest
+    const logic: AdminLogic = new AdminLogicImpl()
+    try {
+        const admin = await logic.getAdminById(req.params.adminId)
+        if (!admin)
+            res.status(400).send({ message: "Admin is not found", success: false })
+        res.send(admin?.summary())
+    } catch (e) {
+        res.status(400).send({ message: e.message, success: false })
+    }
+})
+
 export default router;

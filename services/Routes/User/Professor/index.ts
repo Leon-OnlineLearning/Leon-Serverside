@@ -16,7 +16,6 @@ router.use(passport.authenticate('access-token', { session: false }))
 const parser: BodyParserMiddleware = new ProfessorParser()
 
 router.get('/', onlyAdmins, async (req, res) => {
-    // TODO implement pagination
     const logic: ProfessorLogic = new ProfessorLogicImpl()
     const [skip, take] = paginationParameters(req)
     const professors = await logic.getAllProfessors(skip, take)
