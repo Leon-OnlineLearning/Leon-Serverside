@@ -4,14 +4,16 @@ import Lecture from "@models/Events/Lecture";
 import Student from "@models/Users/Student";
 
 export default interface StudentLogic {
-    createStudent(student: Student) : Promise<Student>;
-    attendLecture(student: Student, lecture: Lecture) : Promise<void>;
-    attendExam(student: Student, exam: Exam) : Promise<void>;
-    getAllCourses(studentId: string) : Promise<Course[]>;
+    createStudent(student: Student): Promise<Student>;
+    attendLecture(studentId: string, lectureId: string): Promise<void>;
+    attendExam(studentId: string, examId: string): Promise<void>;
+    getAllCourses(studentId: string): Promise<Course[]>;
+    addCourse(studentId: string, courseId: string): Promise<void>;
+    cancelCourse(studentId: string, courseId: string): Promise<void>;
     // DISCUSS: is this really needed while you got the courses which in turn has lectures in it
     getAllLectures(studentId: string): Promise<Lecture[]>;
     getAllStudents(skip?: number, take?: number): Promise<Student[]>;
-    getStudentByEmail(email: string) : Promise<Student | undefined> ;
+    getStudentByEmail(email: string): Promise<Student | undefined>;
     updateStudent(studentId: string, newData: Student): Promise<Student>;
-    getStudentById(studentId:string) : Promise<Student | undefined>;
+    getStudentById(studentId: string): Promise<Student | undefined>;
 }

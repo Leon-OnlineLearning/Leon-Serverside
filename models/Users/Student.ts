@@ -16,7 +16,7 @@ export default class Student extends User {
             ...userSummary,
             examsId: this.studentExam.map(exam => exam.id),
             departmentId: this.department.id,
-            lecturesIds : (await (this.lectures)).map(lec => lec.id),
+            lecturesIds: (await (this.lectures)).map(lec => lec.id),
             year: this.year
         }
     }
@@ -36,8 +36,10 @@ export default class Student extends User {
     )
     lectures!: Promise<Lecture[]>;
 
-    @ManyToMany(()=> Course, c => c.students)
-    courses! : Promise<Course[]>
+    @ManyToMany(() => Course, c => c.students, {
+        cascade: true
+    })
+    courses!: Course[]
 
     @Column()
     @Min(1)
