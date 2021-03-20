@@ -1,11 +1,12 @@
 import { Request, Router } from "express"
 import passport, { BlockedJWTMiddleware } from "@services/Auth"
-import { onlyAdmins } from "../AuthorizationMiddleware"
+import { onlyAdmins, onlyStudents } from "../AuthorizationMiddleware"
 import StudentLogic from "@controller/BusinessLogic/User/Student/students-logic"
 import StudentLogicImpl from "@controller/BusinessLogic/User/Student/students-logic-impl"
 import { StudentParser, StudentRequest } from "../BodyParserMiddleware/StudentParser"
 import Student from "@models/Users/Student"
 import BodyParserMiddleware from "../BodyParserMiddleware/BodyParserMiddleware"
+import paginationParameters from "@services/Routes/utils/pagination"
 
 const router = Router()
 router.use(BlockedJWTMiddleware)
@@ -19,10 +20,7 @@ const parser: BodyParserMiddleware = new StudentParser()
  */
 router.get('/', onlyAdmins, async (req, res) => {
     const logic: StudentLogic = new StudentLogicImpl()
-    const page: any = req.query.page
-    const limit : any = req.query.page
-    const skip = page && limit ? (parseInt(page) - 1) * parseInt(limit) : undefined
-    const take = limit ? parseInt(limit) : undefined
+    const [skip, take] = paginationParameters(req)
     const students = await logic.getAllStudents(skip, take)
     res.send(students)
 })
@@ -49,7 +47,7 @@ router.put('/:studentId', parser.completeParser, async (req, res) => {
     }
 })
 
-router.patch('/:studentId', parser.partialParser, async (req, res) => {
+router.patch('/:studentId', onlyStudents ,parser.partialParser, async (req, res) => {
     const request = req as StudentRequest
     const logic: StudentLogic = new StudentLogicImpl()
     try {

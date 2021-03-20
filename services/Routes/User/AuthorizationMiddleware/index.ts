@@ -24,7 +24,11 @@ export function onlyProfessors(req: Request, res: Response, next: NextFunction) 
     }
 }
 
-function comparingRoles(req: Request, res: Response, role: UserTypes) {
+export function onlyStudents(req: Request, res: Response, next: NextFunction) {
+    const requestUser: any = req.user;
+    if (!isCorrectRole(requestUser, UserTypes.STUDENT)) {
+        res.send(401).json({ success: false, message: "Access denied" })
+    }
 }
 
 function isCorrectRole(user: any, role: UserTypes) {

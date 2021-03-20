@@ -9,7 +9,7 @@ export default interface ProfessorLogic {
     updateProfessor(professorId: string, newData: Professor) : Promise<Professor>;
     getAllExams(professorId:string) : Promise<Exam[]>;
     getAllCourses(professorId: string) : Promise<Course[]>;
-    getAllProfessors(): Promise<Professor[]>;
+    getAllProfessors(skip? : number, take? : number): Promise<Professor[]>;
     getProfessorByEmail(email:string): Promise<Professor | undefined>;
     getProfessorById(id: string): Promise<Professor | undefined>;
 }

@@ -5,17 +5,6 @@ import { Request, Response, NextFunction } from "express"
 import UserParser from "./UserParser";
 import BodyParserMiddleware from "./BodyParserMiddleware"
 import Joi from "joi";
-// async completeParser(req: Request, res: Response, next: NextFunction ) {
-//       try {
-//          const professor: Professor = await UserParser(UserValidationSchema, req) as Professor
-//          const professorReq = req as ProfessorRequest
-//          professorReq.account = professor
-//          next()
-//          return
-//       } catch (e) {
-//          res.status(400).send({ message: e.message, success: false })
-//       }
-// }
 export default class ProfessorParser implements BodyParserMiddleware {
    parserClosure(validationSchema: Joi.ObjectSchema) {
       return async (req: Request, res: Response, next: NextFunction) => {

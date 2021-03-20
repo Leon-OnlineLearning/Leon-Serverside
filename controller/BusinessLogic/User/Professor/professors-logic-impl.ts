@@ -16,8 +16,11 @@ export default class ProfessorLogicIml implements ProfessorLogic {
     getProfessorById(id: string): Promise<Professor | undefined> {
         return getRepository(Professor).findOne(id)
     }
-    async getAllProfessors(): Promise<Professor[]> {
-        return await getRepository(Professor).find();
+    async getAllProfessors(skip?: number, take?: number): Promise<Professor[]> {
+        const _take = take || 10;
+        const _skip = skip || 0;
+        const [res, _] = await getRepository(Professor).findAndCount({ skip: _skip, take: _take })
+        return res;
     }
     async createProfessor(professor: Professor): Promise<Professor> {
         // check in student and admin that there is no account with the same email

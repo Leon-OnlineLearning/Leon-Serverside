@@ -45,34 +45,6 @@ export class StudentParser implements BodyParserMiddleware {
    partialParser = this.parserClosure(StudentPartialValidatorSchema)
 }
 
-// export async function StudentParser(req: Request, res: Response, next: NextFunction) {
-//    try {
-//       // do user validation
-//       const student: Student = await UserParser(UserValidationSchema, req) as Student
-//       // do the rest of validation for student mandatory entries (i.e. year)
-//       await StudentValidationSchema.validateAsync(student)
-//       const studentReq = req as StudentRequest
-//       studentReq.account = student
-//       next()
-//       return;
-//    } catch (e) {
-//       res.status(400).send({ message: e.message, success: false })
-//    }
-// }
-
-// export async function StudentPartialParser(req: Request, res: Response, next: NextFunction) {
-//    try {
-//       const student: Student = await UserParser(UserPartialValidatorSchema, req) as Student
-//       await StudentPartialValidatorSchema.validateAsync(student)
-//       const studentRequest = req as StudentRequest
-//       studentRequest.account = student
-//       next()
-//       return;
-//    } catch (e) {
-//       res.status(400).send({ message: e.message, success: false })
-//    }
-// }
-
 export interface StudentRequest extends Request {
    account: Student
 }

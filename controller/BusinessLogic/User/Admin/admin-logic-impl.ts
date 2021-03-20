@@ -31,8 +31,11 @@ export default class AdminLogicImpl implements AdminLogic {
         newData.id = adminId;
         return getRepository(Admin).save(newData)
     }
-    getAllAdmins(): Promise<Admin[]> {
-        return getRepository(Admin).find()
+    async getAllAdmins(skip? :number, take?: number): Promise<Admin[]> {
+        const _take = take || 10;
+        const _skip = skip || 0;
+        const [res, _] = await getRepository(Admin).findAndCount({ skip: _skip, take: _take })
+        return res;
     }
 
 }
