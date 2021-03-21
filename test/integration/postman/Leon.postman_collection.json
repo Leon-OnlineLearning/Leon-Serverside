@@ -56,7 +56,7 @@
 					"script": {
 						"exec": [
 							"pm.test('should create a new user',()=>{",
-							"    pm.response.to.have.status(200);",
+							"    pm.response.to.have.status(201);",
 							"})",
 							"",
 							"pm.test('should return valid fields', ()=> {",
@@ -173,7 +173,7 @@
 					"script": {
 						"exec": [
 							"pm.test('should create course successfully',()=>{",
-							"    pm.response.to.have.status(200)",
+							"    pm.response.to.have.status(201)",
 							"})",
 							"",
 							"pm.test('should return valid fields', ()=>{",
