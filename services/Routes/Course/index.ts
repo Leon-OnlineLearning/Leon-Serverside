@@ -29,7 +29,7 @@ router.post('/', parser.completeParser, async (req, res) => {
     const courseReq = req as CourseRequest
     try {
         const course = await logic.createCourse(courseReq.course)
-        res.send(course)
+        res.status(201).send(course)
     } catch (e) {
         res.status(400).send({ message: e.message, success: false })
     }

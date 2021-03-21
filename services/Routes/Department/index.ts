@@ -40,7 +40,7 @@ router.post('/', parser.completeParser, async (req, res) => {
     const depReq = req as DepartmentRequest
     try {
         const department = await logic.createDepartment(depReq.department)
-        res.send(department)
+        res.status(201).send(department)
     } catch (e) {
         res.status(400).send({ success: false, message: e.message })
     }

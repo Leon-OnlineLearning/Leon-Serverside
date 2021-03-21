@@ -27,7 +27,7 @@ router.post('/', parser.completeParser, async (req, res) => {
     const lectReq = req as LectureRequest
     try {
         const exam = await logic.createLecture(lectReq.lecture)
-        res.send(exam)
+        res.status(201).send(exam)
     } catch (e) {
         res.status(400).send({ success: false, message: e.message })
     }
