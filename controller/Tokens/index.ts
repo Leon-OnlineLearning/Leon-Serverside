@@ -166,3 +166,7 @@ export async function getUserFromJWT(token: string) {
         throw new Error("token not found")
     }
 }
+
+export const closeCacheConnection = async () => {
+    client.quit()
+}

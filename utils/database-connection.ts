@@ -1,4 +1,4 @@
-import { createConnection } from "typeorm"
+import { Connection, createConnection } from "typeorm"
 
 const connectionInfo = {
     host: process.env.HOST || 'localhost',
@@ -8,9 +8,10 @@ const connectionInfo = {
     database: process.env.DATABASE_NAME || 'leon',
 }
 
-const initializeConnection = async () => {
+let connection : Connection;
+export const initializeDBMSConnection = async () => {
     
-    const connection = await createConnection(
+    connection = await createConnection(
         {
             type: "mysql",
             logging: true,
@@ -28,4 +29,6 @@ const initializeConnection = async () => {
     await connection.synchronize();
 }
 
-export default initializeConnection;
+export const destructDBMSConnection = async () => {
+    await connection.close()
+}

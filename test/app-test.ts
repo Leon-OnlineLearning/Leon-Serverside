@@ -1,3 +1,4 @@
+// a replica for app startup file to be used by super test
 import "reflect-metadata";
 import express from "express"
 import { databaseStartup } from "@utils/database"
@@ -19,7 +20,7 @@ app.use(cookieParser())
 app.use(passport.initialize())
 app.use('/auth', authRouter)
 app.use('/users', userRouter)
-app.use('/students', studentRouter)
+app.use('/students',studentRouter)
 app.use('/professors', professorRouter)
 app.use('/admins', adminRouter)
 app.use('/courses', courseRouter)
@@ -31,11 +32,9 @@ const PORT = process.env.SERVER_PORT || 3333
 
 // for http in dev
 // uncomment this 
-app.listen(PORT, async () => {
-    console.log(`listening on port ${PORT}`);
-    await databaseStartup()
-})
+// app.listen(PORT, async () => {
+//     console.log(`listening on port ${PORT}`);
+//     databaseStartup()
+// })
 
-app.get("/sayHello", (req, res) => {
-    res.send("hello")
-})
+export default app;
