@@ -25,7 +25,7 @@ router.post('/signup', async (req, res) => {
 
 router.post('/login', passport.authenticate('login', { session: false }), async (req, res) => {
     const user: any = req.user;
-    
+
     await login(user, res)
 })
 
@@ -39,12 +39,12 @@ async function login(user: any, res: any) {
 router.post('/refreshToken', passport.authenticate('refresh-token', { session: false }), async (req, res) => {
 
     // check if the old token is valid and expired
-    let validAndExpired = await isTokenValidAndExpired(req.cookies['jwt'] || req.body["oldToken"])
+    let validAndExpired = await isTokenValidAndExpired(req.cookies['jwt'] || req.body["jwt"])
     // if so send new token with payload generated from user call from the id
     // otherwise send 400 bad request
 
     if (validAndExpired) {
-        const user = await getUserFromJWT(req.cookies['jwt'])
+        const user = await getUserFromJWT(req.cookies['jwt'] || req.body['jwt'])
         const token = await generateAccessToken(user, true)
         res.cookie('jwt', token, { httpOnly: true })
         res.send({ success: true, token, message: "new token generated" })
@@ -54,7 +54,7 @@ router.post('/refreshToken', passport.authenticate('refresh-token', { session: f
 })
 
 router.post('/logout', async (req, res) => {
-    const token = req.cookies['jwt']
+    const token = req.cookies['jwt'] || req.body['jwt']
     try {
         const user: any = await getPayloadFromJWTNoExpiration(token)
         await blockId(user["id"])
@@ -71,7 +71,7 @@ router.get('/google', passport.authenticate('google', {
 }));
 
 router.get('/google/redirect', passport.authenticate('google', { session: false }), async (req: any, res) => {
-    
+
     await login(req.user, res)
 })
 

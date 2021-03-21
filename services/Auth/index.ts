@@ -17,6 +17,7 @@ import StudentLogicImpl from "@controller/BusinessLogic/User/Student/students-lo
 import StudentLogic from "@controller/BusinessLogic/User/Student/students-logic";
 import UserTypes from "@models/Users/UserTypes";
 import UserClassFactory from "@models/Users/UserClassMapper";
+import { NextFunction, Request, Response } from "express";
 
 
 passport.use('login',
@@ -85,7 +86,7 @@ passport.use(
     new JWTStrategy({
         jwtFromRequest: (req) => {
             let token = null;
-            if (req && req.cookies) token = req.cookies['jwt'];
+            if (req && (req.cookies || req.body['jwt'])) token = req.cookies['jwt'] || req.body['jwt'];
             return token
         },
         secretOrKey: process.env.JWT_SECRET || 'leon',
@@ -147,10 +148,11 @@ passport.use(new GoogleStrategy({
     }
 ));
 
-export const BlockedJWTMiddleware = async (req: any, res: any, next: any) => {
+export const BlockedJWTMiddleware = async (req: Request, res: Response, next: NextFunction) => {
     // get the token from request cookies
+    // it will favor the cookies over the body
     let token;
-    if (req && req.cookies) token = req.cookies['jwt'];
+    if (req && (req.cookies || req.body['jwt'])) token = req.cookies['jwt'] || req.body['jwt'];
 
     // if blocked:token exist in cache 
     try {
