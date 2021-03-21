@@ -40,7 +40,7 @@ router.post('/', parser.completeParser, async (req, res) => {
     const examReq = req as ExamRequest
     try {
         const exam = await logic.createExam(examReq.exam)
-        res.send(exam)
+        res.status(201).send(exam)
     } catch (e) {
         res.status(400).send({ success: false, message: e.message })
     }

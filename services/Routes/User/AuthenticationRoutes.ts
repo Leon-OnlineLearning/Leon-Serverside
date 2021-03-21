@@ -18,7 +18,7 @@ router.post('/signup', async (req, res) => {
             const token = await generateAccessToken(user)
             const refreshToken = await generateRefreshToken(user)
             res.cookie('jwt', token, { httpOnly: true })
-            res.json({ success: true, token, refreshToken, email: user["email"], firstName: user["firstName"], lastName: user["lastName"] })
+            res.status(201).json({ success: true, token, refreshToken, email: user["email"], firstName: user["firstName"], lastName: user["lastName"] })
         }
     })(req, res)
 })

@@ -29,7 +29,7 @@ router.post('/', onlyAdmins, parser.completeParser, async (req, res) => {
     const logic: AdminLogic = new AdminLogicImpl()
     try {
         const admin = await logic.createAdmin(request.account as Admin)
-        res.send(admin.summary())
+        res.status(201).send(admin.summary())
     } catch (e) {
         res.status(400).send({ success: false, message: e.message })
     }

@@ -30,7 +30,7 @@ router.post('/', onlyAdmins, parser.completeParser, async (req, res) => {
     const logic: StudentLogic = new StudentLogicImpl()
     try {
         const student = await logic.createStudent(request.account as Student)
-        res.send(student.summary())
+        res.status(201).send(student.summary())
     } catch (e) {
         res.status(400).send({ success: false, message: e.message })
     }
@@ -62,7 +62,7 @@ router.post('/:studentId/lectures', async (req, res) => {
     const logic: StudentLogic = new StudentLogicImpl()
     try {
         await logic.attendLecture(req.params.studentId, req.body.lectureId)
-        res.send({ success: true })
+        res.status(201).send({ success: true })
     } catch (e) {
         res.status(400).send({ message: e.message, success: false })
     }
@@ -82,7 +82,7 @@ router.post('/:studentId/exams', async (req, res) => {
     const logic: StudentLogic = new StudentLogicImpl()
     try {
         await logic.attendExam(req.params.studentId, req.body.examId)
-        res.send({ success: true })
+        res.status(201).send({ success: true })
     } catch (e) {
         res.status(400).send({ message: e.message, success: false })
     }
@@ -105,7 +105,7 @@ router.post('/:studentId/courses', async (req, res) => {
     const logic: StudentLogic = new StudentLogicImpl()
     try {
         await logic.addCourse(req.params.studentId, req.body.course)
-        res.send({ success: true })
+        res.status(201).send({ success: true })
     } catch (e) {
         res.status(400).send({ message: e.message, success: false })
     }
