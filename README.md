@@ -1,25 +1,9 @@
-# Leon-Serverside
-Backend repository for Leon
+# Leon-Serverside Testing branch
 
-## Requirements
-- Mysql
-- Redis
-- Ts-Node (for development)
-- Node (for production)
-
-## `.env` Fields
-```
-DATABASE_NAME
-USERNAME
-PASSWORD
-HOST
-DATABASE_PORT
-SERVER_PORT
-CONNECTION_POOLS
-JWT_SECRET
-JWT_REFRESH_SECRET
-INVALID_TOKEN_SERVER
-INVALID_TOKEN_PORT
-GOOGLE_OAUTH2_CLIENT_ID
-GOOGLE_OAUTH2_CLIENT_SECRET
-```
+## Integration testing
+### How to?
+- Install postman
+- Set an environment with `port` variable to the server port in you config
+- Import collection @ `test/integration/postman/Leon.postman_collection.json`
+- Run the collection in order
+- Set back and watch the results 😁

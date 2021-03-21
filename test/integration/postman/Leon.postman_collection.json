@@ -1,0 +1,240 @@
+{
+	"info": {
+		"_postman_id": "5b5ce609-7bdb-44e7-aad5-1be8538c028b",
+		"name": "Leon",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "SayHello",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test('Say Hello, Hello',()=> {",
+							"    pm.expect(pm.response.text()).to.be.oneOf(['hello'])",
+							"    pm.response.to.have.status(200)",
+							"})"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:{{port}}/sayHello",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "{{port}}",
+					"path": [
+						"sayHello"
+					]
+				},
+				"description": "Check if the server is up and lisitening to our requests "
+			},
+			"response": []
+		},
+		{
+			"name": "Create Admin Account",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test('should create a new user',()=>{",
+							"    pm.response.to.have.status(200);",
+							"})",
+							"",
+							"pm.test('should return valid fields', ()=> {",
+							"    const resp = pm.response.json();",
+							"    pm.expect(resp.success).to.be.ok;",
+							"    pm.expect(resp.token).to.be.ok;",
+							"    pm.expect(resp.refreshToken).to.be.ok;",
+							"    pm.expect(resp.email).to.be.ok;",
+							"    pm.expect(resp.firstName).to.be.ok;",
+							"    pm.expect(resp.lastName).to.be.ok;",
+							"    pm.expect(resp.password).to.be.undefined;",
+							"})"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"const email = `random${Date.now()}.admin.email@gmail.com`",
+							"const password = \"RanDoM_PassW123\"",
+							"pm.environment.set('email',email)",
+							"pm.environment.set('password', password)"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"email\": \"{{email}}\",\n    \"password\": \"{{password}}\",\n    \"firstName\": \"random\",\n    \"lastName\": \"lname\",\n    \"role\": \"admin\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:{{port}}/auth/signup",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "{{port}}",
+					"path": [
+						"auth",
+						"signup"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Login",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test('Login successfully',()=>{",
+							"    pm.response.to.have.status(200)",
+							"})",
+							"",
+							"pm.test('Return valid fields', ()=> {",
+							"    const result = pm.response.json()",
+							"    // i couldn't find a way to do a post request script :(",
+							"    // pm.environment.set('jwt', result.token)",
+							"    // pm.environment.set('refreshToken', result.refreshToken)    ",
+							"    pm.expect(result.token).to.be.ok;",
+							"    pm.expect(result.refreshToken).to.be.ok;",
+							"    pm.expect(result.password).to.be.undefined;",
+							"})"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"email\": \"{{email}}\",\n    \"password\": \"{{password}}\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:{{port}}/auth/login",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "{{port}}",
+					"path": [
+						"auth",
+						"login"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create a new course",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test('should create course successfully',()=>{",
+							"    pm.response.to.have.status(200)",
+							"})",
+							"",
+							"pm.test('should return valid fields', ()=>{",
+							"    const data = pm.response.json()",
+							"    pm.environment.set('courseId', data.id);",
+							"    pm.expect(data.name).to.be.ok;",
+							"    pm.expect(data.id).to.be.ok;",
+							"})"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"name\": \"course1\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:{{port}}/courses",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "{{port}}",
+					"path": [
+						"courses"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"auth": {
+		"type": "bearer"
+	},
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	]
+}
