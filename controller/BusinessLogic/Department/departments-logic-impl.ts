@@ -6,6 +6,12 @@ import { createQueryBuilder, getRepository } from "typeorm";
 import DepartmentsLogic from "./departments-logic";
 
 export default class DepartmentsLogicImpl implements DepartmentsLogic {
+    async getAllDepartments(skip?: number, take?: number): Promise<Department[]> {
+        const _take = take || 10;
+        const _skip = skip || 0;
+        const [res, _] = await getRepository(Department).findAndCount({ skip: _skip, take: _take })
+        return res;
+    }
     async getDepartmentById(departmentId: string): Promise<Department> {
         const res = await getRepository(Department).findOne(departmentId);
         if (res) return res;

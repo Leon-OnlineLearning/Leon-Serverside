@@ -14,6 +14,8 @@ export default class LectureParser implements BodyParserMiddleware {
             const lectureReq = req as LectureRequest
             try {
                 await validatorSchema.validateAsync(lecture)
+                next()
+                return
             } catch (e) {
                 res.status(400).send({ success: false, message: e.message })
             }
@@ -24,5 +26,5 @@ export default class LectureParser implements BodyParserMiddleware {
 }
 
 export interface LectureRequest extends Request {
-    lecture : Lecture
+    lecture: Lecture
 }

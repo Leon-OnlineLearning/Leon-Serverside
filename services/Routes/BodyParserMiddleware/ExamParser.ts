@@ -16,6 +16,8 @@ export default class ExamParser implements BodyParserMiddleware {
             examReq.exam = exam
             try {
                 await validatorSchema.validateAsync(exam)
+                next()
+                return
             } catch (e) {
                 res.status(400).send({ success: false, message: e.message })
             }

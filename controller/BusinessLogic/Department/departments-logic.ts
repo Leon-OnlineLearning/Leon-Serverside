@@ -14,4 +14,5 @@ export default interface DepartmentsLogic {
     getAllProfessor(departmentId: string): Promise<Professor[]>;
     getAllStudents(departmentId: string): Promise<Student[]>;
     getDepartmentById(departmentId: string): Promise<Department>;
+    getAllDepartments(skip?:number, take?: number): Promise<Department[]>;
 }
