@@ -10,7 +10,6 @@ import Event from "./Event";
 export default class Lecture extends Event{
     @Column()
     @Max(2048)
-    @IsFQDN() // TODO this might change 
     path: string
 
     @ManyToOne(()=>Course, course => course.lectures)
