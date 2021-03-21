@@ -95,7 +95,7 @@ export async function isTokenBlocked(token: string) {
 export async function generateAccessToken(user: any, refresh: boolean = false) {
 
     const payload = { id: user["id"], firstName: user["firstName"], lastName: user["lastName"], role: user["role"] }
-    
+
     // if your will refresh no need to create new entries in cache or to renew 
     // the old ones because they hold the last login time
     if (!refresh) await registerPayload(payload)
@@ -168,5 +168,12 @@ export async function getUserFromJWT(token: string) {
 }
 
 export const closeCacheConnection = async () => {
-    client.quit()
+    await new Promise<void>((resolve) => {
+        client.quit(() => {
+            resolve();
+        });
+    });
+    // redis.quit() creates a thread to close the connection.
+    // We wait until all threads have been run once to ensure the connection closes.
+    await new Promise(resolve => setImmediate(resolve));
 }

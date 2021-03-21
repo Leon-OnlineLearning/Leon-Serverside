@@ -1,7 +1,6 @@
 // a replica for app startup file to be used by super test
 import "reflect-metadata";
 import express from "express"
-import { databaseStartup } from "@utils/database"
 import authRouter from "@services/Routes/User/AuthenticationRoutes"
 import userRouter from "@services/Routes/User/SecureRoutes"
 import studentRouter from "@services/Routes/User/Student"

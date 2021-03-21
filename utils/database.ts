@@ -15,5 +15,5 @@ export async function databaseStartup() {
 
 export async function databaseTeardown() {
     await destructDBMSConnection()
-    closeCacheConnection()
+    await closeCacheConnection()
 }
