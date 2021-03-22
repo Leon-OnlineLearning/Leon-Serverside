@@ -29,11 +29,4 @@ app.use('/departments', departmentRouter)
 
 const PORT = process.env.SERVER_PORT || 3333
 
-// for http in dev
-// uncomment this 
-// app.listen(PORT, async () => {
-//     console.log(`listening on port ${PORT}`);
-//     databaseStartup()
-// })
-
 export default app;

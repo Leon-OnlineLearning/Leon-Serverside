@@ -12,6 +12,5 @@ export function IsStrongPassword(password: string) {
         /[0-9]/g.test(password) &&
         password.length > 8
     );
-    console.log(res);
     return(res)
 }

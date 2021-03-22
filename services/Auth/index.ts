@@ -27,7 +27,6 @@ passport.use('login',
     }, async (email, password, done) => {
         try {
             const correctUser = await getCorrectUser(email, password)
-            console.log("correctUser", correctUser);
 
             if (!correctUser) {
                 return done(null, false, { message: 'Incorrect password!' })
