@@ -10,12 +10,12 @@ import User from "./User";
 @Entity()
 export default class Professor extends User {
     async summary() {
-        const userSummary = super.summary()
+        const userSummary = await super.summary()
         return {
             ...userSummary,
-            coursesIds: this.courses.map(course => course.id),
-            departmentId: this.department.id,
-            examsId: this.exams.map(exam => exam.id)
+            coursesIds: this.courses ? this.courses.map(course => course.id) : [],
+            departmentId: this.department ? this.department.id : undefined,
+            examsId: this.exams ? this.exams.map(exam => exam.id) : []
         }
     }
     @ManyToMany(() => Course, { cascade: true })
