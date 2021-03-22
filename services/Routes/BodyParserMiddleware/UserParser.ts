@@ -17,7 +17,7 @@ import Joi from "joi";
  * @returns 
  */
 export default async function UserParser(validatorSchema: Joi.ObjectSchema, req: Request): Promise<User> {
-    let usr: any;
+    let usr: any = {};
     usr.firstName = req.body.firstName;
     usr.lastName = req.body.lastName;
     usr.email = req.body.email;

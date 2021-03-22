@@ -4,6 +4,7 @@ import BodyParserMiddleware from "@services/Routes/BodyParserMiddleware/BodyPars
 import LectureParser, { LectureRequest } from "@services/Routes/BodyParserMiddleware/LectureParser"
 import LecturesLogic from "@controller/BusinessLogic/Event/Lecture/lectures-logic"
 import LecturesLogicImpl from "@controller/BusinessLogic/Event/Lecture/lectures-logic-impl"
+import { onlyProfessors } from "@services/Routes/User/AuthorizationMiddleware"
 
 const router = Router()
 
@@ -12,17 +13,17 @@ router.use(passport.authenticate('access-token', { session: false }))
 
 const parser: BodyParserMiddleware = new LectureParser()
 
-router.get('/:examId', async (req, res) => {
+router.get('/:lectureId', async (req, res) => {
     const logic: LecturesLogic = new LecturesLogicImpl()
     try {
-        const exam = await logic.getLectureById(req.params.examId);
+        const exam = await logic.getLectureById(req.params.lectureId);
         res.send(exam)
     } catch (e) {
         res.status(400).send({ success: false, message: e.message })
     }
 })
 
-router.post('/', parser.completeParser, async (req, res) => {
+router.post('/', onlyProfessors, parser.completeParser, async (req, res) => {
     const logic: LecturesLogic = new LecturesLogicImpl()
     const lectReq = req as LectureRequest
     try {

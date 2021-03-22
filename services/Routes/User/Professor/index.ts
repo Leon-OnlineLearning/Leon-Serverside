@@ -26,8 +26,10 @@ router.post('/', onlyAdmins, parser.completeParser, async (req, res) => {
     const request = req as ProfessorRequest
     const logic: ProfessorLogic = new ProfessorLogicImpl()
     try {
-        const professor = await logic.createProfessor(request.account as Professor)
-        res.status(201).send(professor.summary())
+        const _professor = await logic.createProfessor(request.account) 
+        const professor = new Professor()
+        professor.setValuesFromJSON(_professor)
+        res.status(201).send(await professor.summary())
     } catch (e) {
         res.status(400).send({ success: false, message: e.message })
     }
