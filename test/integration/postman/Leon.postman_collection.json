@@ -166,6 +166,48 @@
 			"response": []
 		},
 		{
+			"name": "Login with wrong password",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test('should fail logic with incorrect password', ()=> {",
+							"    pm.response.to.have.status(401)",
+							"})"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"email\": \"{{email}}\",\n    \"password\": \"invalidPassword\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:3333/auth/login",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3333",
+					"path": [
+						"auth",
+						"login"
+					]
+				}
+			},
+			"response": []
+		},
+		{
 			"name": "Create a new course",
 			"event": [
 				{
@@ -208,6 +250,270 @@
 					"port": "{{port}}",
 					"path": [
 						"courses"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create course with no name",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test('it should fail creating a course with no name', ()=> {",
+							"    pm.response.to.have.status(400)",
+							"}) "
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:{{port}}/courses",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "{{port}}",
+					"path": [
+						"courses"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create new department",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test('it should create department', ()=> {",
+							"    pm.response.to.have.status(201)",
+							"})",
+							"",
+							"pm.test('it should result valid fields', ()=> {",
+							"    const data = pm.response.json()",
+							"    pm.environment.set('departmentId', data.id)",
+							"    pm.expect(data.id).to.be.ok;",
+							"    pm.expect(data.name).to.be.ok;",
+							"})"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"name\": \"department1\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:{{port}}/departments",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "{{port}}",
+					"path": [
+						"departments"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create Professor with same email",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test('shouldn\\'t create two accounts with the same email', ()=> {",
+							"    pm.response.to.have.status(400)",
+							"})"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"firstName\": \"prfoessor1\",\n    \"lastName\": \"lastName1\",\n    \"email\": \"{{email}}\",\n    \"password\": \"WhaTeveR_123\",\n    \"role\": \"admin\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:{{port}}/professors",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "{{port}}",
+					"path": [
+						"professors"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create valid professor account",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"const professorEmail = `professor${Date.now()}@professor.com`",
+							"pm.environment.set('professorEmail', professorEmail)"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test('should create a valid user', ()=> {",
+							"    pm.response.to.have.status(201)",
+							"})",
+							"",
+							"pm.test('should return valid fields', ()=> {",
+							"     const resp = pm.response.json();",
+							"    pm.expect(resp.email).to.be.ok;",
+							"    pm.expect(resp.firstName).to.be.ok;",
+							"    pm.expect(resp.lastName).to.be.ok;",
+							"    pm.expect(resp.password).to.be.undefined;",
+							"})"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"firstName\": \"prfoessor1\",\n    \"lastName\": \"lastName1\",\n    \"email\": \"{{professorEmail}}\",\n    \"password\": \"WhaTeveR_123\",\n    \"role\": \"admin\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:{{port}}/professors",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "{{port}}",
+					"path": [
+						"professors"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Log Admin Out",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test('should logout successfully',()=> {",
+							"    pm.response.to.have.status(205)",
+							"})"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:{{port}}/auth/logout",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "{{port}}",
+					"path": [
+						"auth",
+						"logout"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create professor after logout",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"const professorEmail = `professor${Date.now()}@professor.com`",
+							"pm.environment.set('professorEmail', professorEmail)"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test('should fail creating user after logout', ()=> {",
+							"    pm.response.to.have.status(401)",
+							"})"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"firstName\": \"prfoessor1\",\n    \"lastName\": \"lastName1\",\n    \"email\": \"{{professorEmail}}\",\n    \"password\": \"WhaTeveR_123\",\n    \"role\": \"admin\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:{{port}}/professors",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "{{port}}",
+					"path": [
+						"professors"
 					]
 				}
 			},
