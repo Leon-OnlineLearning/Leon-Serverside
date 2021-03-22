@@ -1,5 +1,5 @@
 # Leon-Serverside Testing branch
-
+**DON'T FORGET TO SET TESTING VARIABLE TO TRUE**
 ## Integration testing
 ### How to?
 - Install postman
