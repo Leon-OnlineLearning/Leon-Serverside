@@ -3,7 +3,7 @@ import passport from "passport";
 import { Strategy as LocalStrategy } from "passport-local";
 import { Strategy as JWTStrategy } from "passport-jwt";
 import { isTokenBlocked } from "@controller/Tokens";
-import { OAuth2Strategy as GoogleStrategy } from "passport-google-oauth"
+import { OAuth2Strategy as GoogleStrategy, Profile } from "passport-google-oauth"
 import getCorrectUser from "@controller/BusinessLogic/User/validate-user";
 import { getConnection, getCustomRepository, getRepository } from "typeorm";
 import UserRepo from "@controller/DataAccess/user-repo";
@@ -18,6 +18,7 @@ import StudentLogic from "@controller/BusinessLogic/User/Student/students-logic"
 import UserTypes from "@models/Users/UserTypes";
 import UserClassFactory from "@models/Users/UserClassMapper";
 import { NextFunction, Request, Response } from "express";
+import { UserPartialValidatorSchema, UserValidationSchema } from "@models/Users/validators/schema/UserSchema";
 
 
 passport.use('login',
@@ -58,7 +59,8 @@ passport.use(
 
                 if (req.body.role && typeof req.body.role === "string") {
                     role = req.body.role;
-                } 
+                }
+
 
                 // const [repo, user] = [getRepository(UserClassMapper[role]),UserClassMapper[role]]
                 const UserClass = UserClassFactory(role)
@@ -69,6 +71,8 @@ passport.use(
                 user.lastName = req.body.lastName;
                 user.password = await hashPassword(password);
                 user.email = email;
+
+                await UserValidationSchema.validateAsync({ ...user, password })
 
                 await repo.save(user)
                 return done(null, { ...user, role })
@@ -117,6 +121,32 @@ passport.use(
     )
 )
 
+/**
+ *  convert information provided by google to information that we can use in our app
+ */
+export async function googleInfoToUserInfoMapper(profile: Profile) {
+    let _userObj: any = {}
+    _userObj.firstName = profile.name?.givenName;
+    _userObj.lastName = profile.name?.familyName;
+    _userObj.thirdPartyAccount = true;
+
+    if (profile.emails) {
+        _userObj.email = profile.emails[0].value
+    } else {
+        throw new Error("Email is not provided");
+    }
+
+    try {
+        await UserPartialValidatorSchema.validateAsync(_userObj)
+    } catch (e) {
+        throw e;
+    }
+
+    const userObj = new Student()
+    userObj.setValuesFromJSON(_userObj)
+    return userObj;
+}
+
 passport.use(new GoogleStrategy({
     clientID: process.env.GOOGLE_OAUTH2_CLIENT_ID || "google_client_id",
     clientSecret: process.env.GOOGLE_OAUTH2_CLIENT_SECRET || "TOP_SECRET",
@@ -129,16 +159,7 @@ passport.use(new GoogleStrategy({
             // and other types would be ignored anyway 
             // so i will use students repo here no need to do factory
             // const [_, userObj] = UserPersistanceFactory();
-            const UserClass = UserClassFactory(UserTypes.STUDENT)
-            const userObj = new UserClass()
-            userObj.firstName = profile.name?.givenName || "No firstName";
-            userObj.lastName = profile.name?.familyName || "No lastName";
-            userObj.thirdPartyAccount = true;
-            if (profile.emails) {
-                userObj.email = profile.emails[0].value
-            } else {
-                throw new Error("Email is not provided");
-            }
+            const userObj = await googleInfoToUserInfoMapper(profile);
             const persistedUser = await repo.findOrCreateStudent(userObj);
             return done(null, persistedUser);
         } catch (e) {
