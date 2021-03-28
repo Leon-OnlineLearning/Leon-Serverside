@@ -11,7 +11,7 @@ router.post('/signup', async (req, res) => {
     }
     passport.authenticate('signup', async (error, user) => {
         if (error) {
-            res.status(422)
+            res.status(400)
             res.send(error.message)
         }
         if (user) {
