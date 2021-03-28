@@ -6,16 +6,64 @@
 	},
 	"item": [
 		{
-			"name": "SayHello",
+			"name": "Hello",
+			"item": [
+				{
+					"name": "SayHello",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Say Hello, Hello',()=> {",
+									"    pm.expect(pm.response.text()).to.be.oneOf(['hello'])",
+									"    pm.response.to.have.status(200)",
+									"})"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:{{port}}/sayHello",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "{{port}}",
+							"path": [
+								"sayHello"
+							]
+						},
+						"description": "Check if the server is up and lisitening to our requests "
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Create Admin Account With weak password",
 			"event": [
 				{
 					"listen": "test",
 					"script": {
 						"exec": [
-							"pm.test('Say Hello, Hello',()=> {",
-							"    pm.expect(pm.response.text()).to.be.oneOf(['hello'])",
-							"    pm.response.to.have.status(200)",
-							"})"
+							"pm.test('should fail create admin with weak password',()=>{",
+							"    pm.response.to.have.status(400);",
+							"})",
+							""
 						],
 						"type": "text/javascript"
 					}
@@ -24,32 +72,44 @@
 					"listen": "prerequest",
 					"script": {
 						"exec": [
-							""
+							"const email = `random${Date.now()}.admin.email@gmail.com`",
+							"const password = \"weak password\"",
+							"pm.environment.set('email',email)",
+							"pm.environment.set('password', password)"
 						],
 						"type": "text/javascript"
 					}
 				}
 			],
 			"request": {
-				"method": "GET",
+				"method": "POST",
 				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"email\": \"{{email}}\",\n    \"password\": \"{{password}}\",\n    \"firstName\": \"random\",\n    \"lastName\": \"lname\",\n    \"role\": \"admin\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
 				"url": {
-					"raw": "http://localhost:{{port}}/sayHello",
+					"raw": "http://localhost:{{port}}/auth/signup",
 					"protocol": "http",
 					"host": [
 						"localhost"
 					],
 					"port": "{{port}}",
 					"path": [
-						"sayHello"
+						"auth",
+						"signup"
 					]
-				},
-				"description": "Check if the server is up and lisitening to our requests "
+				}
 			},
 			"response": []
 		},
 		{
-			"name": "Create Admin Account",
+			"name": "Create Admin Account Copy",
 			"event": [
 				{
 					"listen": "test",
