@@ -26,7 +26,7 @@ router.post('/', onlyAdmins, parser.completeParser, async (req, res) => {
     const request = req as ProfessorRequest
     const logic: ProfessorLogic = new ProfessorLogicImpl()
     try {
-        const _professor = await logic.createProfessor(request.account) 
+        const _professor = await logic.createProfessor(request.account)
         const professor = new Professor()
         professor.setValuesFromJSON(_professor)
         res.status(201).send(await professor.summary())
@@ -77,5 +77,26 @@ router.get("/:professorId/exams", async (req, res) => {
     }
 })
 
-router.get("")
+router.post('/:professorId/courses', async (req, res) => {
+    const logic: ProfessorLogic = new ProfessorLogicImpl()
+    if (!req.body.courseId) res.status(400).send({ success: false, message: 'course id is not found in body' })
+    try {
+        await logic.assignCourseToProfessor(req.params.professorId, req.body.courseId);
+        res.send({ success: true })
+    }
+    catch (e) {
+        res.status(400).send({ success: false, message: e.message })
+    }
+})
+
+router.get('/:professorId/courses', async (req, res) => {
+    const logic: ProfessorLogic = new ProfessorLogicImpl()
+    try {
+        const courses = await logic.getAllCourses(req.params.professorId)
+        res.json(courses)
+    } catch (e) {
+        res.status(400).send({ success: false, message: e.message })
+    }
+})
+
 export default router;

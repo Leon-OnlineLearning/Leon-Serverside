@@ -11,5 +11,6 @@ export default interface ProfessorLogic {
     getAllCourses(professorId: string) : Promise<Course[]>;
     getAllProfessors(skip? : number, take? : number): Promise<Professor[]>;
     getProfessorByEmail(email:string): Promise<Professor | undefined>;
-    getProfessorById(id: string): Promise<Professor | undefined>;
+    getProfessorById(id: string): Promise<Professor>;
+    assignCourseToProfessor(id: string, courseId: string) : Promise<void>;
 }

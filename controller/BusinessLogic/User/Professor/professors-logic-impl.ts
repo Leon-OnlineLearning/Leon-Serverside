@@ -1,8 +1,10 @@
+import CoursesLogic from "@controller/BusinessLogic/Course/courses-logic";
+import CourseLogicImpl from "@controller/BusinessLogic/Course/courses-logic-impl";
 import Course from "@models/Course";
 import Exam from "@models/Events/Exam";
 import Professor from "@models/Users/Professor";
 import { AccountWithSimilarEmailExist } from "@models/Users/User";
-import { getRepository } from "typeorm";
+import { createQueryBuilder, getRepository } from "typeorm";
 import AdminLogic from "../Admin/admin-logic";
 import AdminLogicImpl from "../Admin/admin-logic-impl";
 import StudentLogic from "../Student/students-logic";
@@ -10,11 +12,32 @@ import StudentLogicImpl from "../Student/students-logic-impl";
 import ProfessorLogic from "./professors-logic"
 
 export default class ProfessorLogicIml implements ProfessorLogic {
+
+    async assignCourseToProfessor(id: string, courseId: string): Promise<void> {
+        let professor;
+        let course;
+        try {
+            const courseLogic: CoursesLogic = new CourseLogicImpl()
+            professor = await this.getProfessorById(id);
+            course = await courseLogic.getCoursesById(courseId)
+        } catch (e) {
+            throw e;
+        }
+        professor.courses = []
+        professor.courses.push(course)
+        getRepository(Professor).save(professor);
+    }
+
     getProfessorByEmail(email: string): Promise<Professor | undefined> {
         return getRepository(Professor).findOne({ where: { email } })
     }
-    getProfessorById(id: string): Promise<Professor | undefined> {
-        return getRepository(Professor).findOne(id)
+
+    async getProfessorById(id: string): Promise<Professor> {
+        const professor = await getRepository(Professor).findOne(id)
+        if (!professor) {
+            throw new Error("Invalid professor id");
+        }
+        return professor
     }
     async getAllProfessors(skip?: number, take?: number): Promise<Professor[]> {
         const _take = take || 10;
@@ -24,10 +47,10 @@ export default class ProfessorLogicIml implements ProfessorLogic {
     }
     async createProfessor(professor: Professor): Promise<Professor> {
         // check in student and admin that there is no account with the same email
-        const studentLogic : StudentLogic = new StudentLogicImpl()
+        const studentLogic: StudentLogic = new StudentLogicImpl()
         const student = await studentLogic.getStudentByEmail(professor.email)
         if (student) throw new AccountWithSimilarEmailExist()
-        const adminLogic : AdminLogic = new AdminLogicImpl()
+        const adminLogic: AdminLogic = new AdminLogicImpl()
         const admin = await adminLogic.getAdminByEmail(professor.email)
         if (admin) throw new AccountWithSimilarEmailExist()
 
@@ -44,19 +67,28 @@ export default class ProfessorLogicIml implements ProfessorLogic {
         })
     }
     async getAllExams(professorId: string): Promise<Exam[]> {
-        const res = await getRepository(Professor).createQueryBuilder()
+        const res = await getRepository(Professor).createQueryBuilder("professor")
             .leftJoinAndSelect("professor.exams", "exam")
-            .where("professor.id = id", { id: professorId })
+            .where("professor.id = :id", { id: professorId })
             .getOne()
         if (res) return res.exams
         else throw new Error("Invalid professor id");
     }
+
     async getAllCourses(professorId: string): Promise<Course[]> {
-        const res = await getRepository(Professor).createQueryBuilder()
+        const res: any = await getRepository(Professor).createQueryBuilder("professor")
             .leftJoinAndSelect("professor.courses", "course")
             .where("professor.id = :id", { id: professorId })
             .getOne()
-        if (res) return res.courses
+
+        if (res) {
+            if (res.courses) {
+                return res.courses
+            }
+            else {
+                return []
+            }
+        }
         else throw new Error("Invalid professor id")
     }
 
