@@ -109,7 +109,7 @@
 			"response": []
 		},
 		{
-			"name": "Create Admin Account Copy",
+			"name": "Create Admin Account",
 			"event": [
 				{
 					"listen": "test",
@@ -316,6 +316,43 @@
 			"response": []
 		},
 		{
+			"name": "Get course",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test('should get a valid course', ()=> {",
+							"    pm.response.to.have.status(200);",
+							"    const responseData = pm.response.json();",
+							"    pm.expect(responseData.id).to.be.ok;",
+							"    pm.expect(responseData.name).to.be.ok;",
+							"    pm.expect(responseData.professor).to.be.undefined;",
+							"})"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:{{port}}/courses/{{courseId}}",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "{{port}}",
+					"path": [
+						"courses",
+						"{{courseId}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
 			"name": "Create course with no name",
 			"event": [
 				{
@@ -396,6 +433,42 @@
 			"response": []
 		},
 		{
+			"name": "Get department",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test('should get a valid course', ()=> {",
+							"    pm.response.to.have.status(200);",
+							"    const responseData = pm.response.json();",
+							"    pm.expect(responseData.id).to.be.ok;",
+							"    pm.expect(responseData.name).to.be.ok;",
+							"})"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:{{port}}/departments/{{departmentId}}",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "{{port}}",
+					"path": [
+						"departments",
+						"{{departmentId}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
 			"name": "Create Professor with same email",
 			"event": [
 				{
@@ -458,8 +531,11 @@
 							"})",
 							"",
 							"pm.test('should return valid fields', ()=> {",
-							"     const resp = pm.response.json();",
+							"    const resp = pm.response.json();",
+							"",
 							"    pm.expect(resp.email).to.be.ok;",
+							"    pm.expect(resp.id).to.be.ok;",
+							"    pm.environment.set('professorId', resp.id);",
 							"    pm.expect(resp.firstName).to.be.ok;",
 							"    pm.expect(resp.lastName).to.be.ok;",
 							"    pm.expect(resp.password).to.be.undefined;",
@@ -574,6 +650,147 @@
 					"port": "{{port}}",
 					"path": [
 						"professors"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Login",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test('Login successfully',()=>{",
+							"    pm.response.to.have.status(200)",
+							"})",
+							"",
+							"pm.test('Return valid fields', ()=> {",
+							"    const result = pm.response.json()",
+							"    // i couldn't find a way to do a post request script :(",
+							"    // pm.environment.set('jwt', result.token)",
+							"    // pm.environment.set('refreshToken', result.refreshToken)    ",
+							"    pm.expect(result.token).to.be.ok;",
+							"    pm.expect(result.refreshToken).to.be.ok;",
+							"    pm.expect(result.password).to.be.undefined;",
+							"})"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"email\": \"{{email}}\",\n    \"password\": \"{{password}}\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:{{port}}/auth/login",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "{{port}}",
+					"path": [
+						"auth",
+						"login"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Assing course to professor",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test('should assign test to professor', ()=>{",
+							"    pm.response.to.have.status(200)",
+							"    const resp = pm.response.json()",
+							"    pm.expect(resp.success).to.be.true;",
+							"})"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"courseId\": \"{{courseId}}\" \n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:{{port}}/professors/{{professorId}}/courses",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "{{port}}",
+					"path": [
+						"professors",
+						"{{professorId}}",
+						"courses"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get all courses",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test('should successfully get course',()=>{",
+							"    pm.response.to.have.status(200)",
+							"    const resp = pm.response.json()",
+							"    pm.expect(resp.length).to.be.ok; // check if the result is an array",
+							"})",
+							"",
+							"pm.test('should get valid course data if found',()=>{",
+							"    const resp = pm.response.json()",
+							"    resp.forEach(course => {",
+							"        pm.expect(course.id).to.be.ok;",
+							"        pm.expect(course.name).to.be.ok;",
+							"    })",
+							"})"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:{{port}}/professors/{{professorId}}/courses",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "{{port}}",
+					"path": [
+						"professors",
+						"{{professorId}}",
+						"courses"
 					]
 				}
 			},
