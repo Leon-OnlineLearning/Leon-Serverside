@@ -8,6 +8,7 @@ import Professor from "@models/Users/Professor"
 import BodyParserMiddleware from "../../BodyParserMiddleware/BodyParserMiddleware"
 import { TableForeignKey } from "typeorm"
 import paginationParameters from "@services/Routes/utils/pagination"
+import simpleFinalMWDecorator from "@services/utils/RequestDecorator"
 
 const router = Router()
 router.use(BlockedJWTMiddleware)
@@ -16,87 +17,71 @@ router.use(passport.authenticate('access-token', { session: false }))
 const parser: BodyParserMiddleware = new ProfessorParser()
 
 router.get('/', onlyAdmins, async (req, res) => {
-    const logic: ProfessorLogic = new ProfessorLogicImpl()
-    const [skip, take] = paginationParameters(req)
-    const professors = await logic.getAllProfessors(skip, take)
-    res.send(professors.map(prof => prof.summary()))
+    simpleFinalMWDecorator(res, async () => {
+        const logic: ProfessorLogic = new ProfessorLogicImpl()
+        const [skip, take] = paginationParameters(req)
+        const professors = await logic.getAllProfessors(skip, take)
+        return professors.map(prof => prof.summary())
+    })
 })
 
 router.post('/', onlyAdmins, parser.completeParser, async (req, res) => {
-    const request = req as ProfessorRequest
-    const logic: ProfessorLogic = new ProfessorLogicImpl()
-    try {
-        const _professor = await logic.createProfessor(request.account)
-        const professor = new Professor()
-        professor.setValuesFromJSON(_professor)
+    simpleFinalMWDecorator(res, async () => {
+        const request = req as ProfessorRequest
+        const logic: ProfessorLogic = new ProfessorLogicImpl()
+        const professor = await logic.createProfessor(request.account)
         res.status(201).send(await professor.summary())
-    } catch (e) {
-        res.status(400).send({ success: false, message: e.message })
-    }
+    }, 201)
 })
 
 router.put('/:professorId', onlyProfessors, parser.completeParser, async (req, res) => {
-    const request = req as ProfessorRequest
-    const logic: ProfessorLogic = new ProfessorLogicImpl()
-    try {
+    simpleFinalMWDecorator(res, async () => {
+        const request = req as ProfessorRequest
+        const logic: ProfessorLogic = new ProfessorLogicImpl()
         const professor = await logic.updateProfessor(req.params.professorId, request.account as Professor)
-        res.send(professor.summary())
-    } catch (e) {
-        res.send(400).send({ success: false, message: e.message })
-    }
+        return professor.summary()
+    })
 })
 
 router.patch("/:professorId", onlyProfessors, parser.partialParser, async (req, res) => {
-    const request = req as ProfessorRequest
-    const logic: ProfessorLogic = new ProfessorLogicImpl()
-    try {
+    simpleFinalMWDecorator(res, async () => {
+        const request = req as ProfessorRequest
+        const logic: ProfessorLogic = new ProfessorLogicImpl()
         const professor = await logic.updateProfessor(req.params.professorId, request.account as Professor)
-        res.send(professor.summary())
-    } catch (e) {
-        res.send(400).send({ success: false, message: e.message })
-    }
+        return professor.summary()
+    })
 })
 
 router.delete("/:professorId", onlyAdmins, async (req, res) => {
-    const logic: ProfessorLogic = new ProfessorLogicImpl()
-    try {
+    simpleFinalMWDecorator(res, async () => {
+        const logic: ProfessorLogic = new ProfessorLogicImpl()
         await logic.deleteProfessorById(req.params.professorId)
-        res.send({ success: true })
-    } catch (e) {
-        res.send(400).send({ success: false, message: e.message })
-    }
+    }, 204)
 })
 
 router.get("/:professorId/exams", async (req, res) => {
-    const logic: ProfessorLogic = new ProfessorLogicImpl()
-    try {
+    simpleFinalMWDecorator(res, async () => {
+        const logic: ProfessorLogic = new ProfessorLogicImpl()
         const exams = await logic.getAllExams(req.params.professorId)
         res.send(exams)
-    } catch (e) {
-        res.send(400).send({ success: false, message: e.message })
-    }
+    })
 })
 
 router.post('/:professorId/courses', async (req, res) => {
-    const logic: ProfessorLogic = new ProfessorLogicImpl()
     if (!req.body.courseId) res.status(400).send({ success: false, message: 'course id is not found in body' })
-    try {
+    simpleFinalMWDecorator(res, async () => {
+        const logic: ProfessorLogic = new ProfessorLogicImpl()
         await logic.assignCourseToProfessor(req.params.professorId, req.body.courseId);
         res.send({ success: true })
-    }
-    catch (e) {
-        res.status(400).send({ success: false, message: e.message })
-    }
+    })
 })
 
 router.get('/:professorId/courses', async (req, res) => {
-    const logic: ProfessorLogic = new ProfessorLogicImpl()
-    try {
+    simpleFinalMWDecorator(res, async () => {
+        const logic: ProfessorLogic = new ProfessorLogicImpl()
         const courses = await logic.getAllCourses(req.params.professorId)
-        res.json(courses)
-    } catch (e) {
-        res.status(400).send({ success: false, message: e.message })
-    }
+        return courses
+    })
 })
 
 export default router;

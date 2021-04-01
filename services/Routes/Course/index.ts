@@ -6,6 +6,7 @@ import { CourseParser, CourseRequest } from "../BodyParserMiddleware/CourseParse
 import CoursesLogic from "@controller/BusinessLogic/Course/courses-logic"
 import CourseLogicImpl from "@controller/BusinessLogic/Course/courses-logic-impl"
 import { onlyProfessors } from "../User/AuthorizationMiddleware"
+import simpleFinalMWDecorator from "@services/utils/RequestDecorator"
 
 const router = Router()
 
@@ -15,65 +16,53 @@ router.use(passport.authenticate('access-token', { session: false }))
 const parser: BodyParserMiddleware = new CourseParser()
 
 router.get('/:courseId', async (req, res) => {
-    const logic: CoursesLogic = new CourseLogicImpl()
-    try {
+    simpleFinalMWDecorator(res, async () => {
+        const logic: CoursesLogic = new CourseLogicImpl()
         const course = await logic.getCoursesById(req.params.courseId)
         res.send(course)
-    } catch (e) {
-        res.status(400).send({ message: e.message, success: false })
-    }
+    })
 })
 
 router.post('/', parser.completeParser, async (req, res) => {
-    const logic: CoursesLogic = new CourseLogicImpl()
-    const courseReq = req as CourseRequest
-    try {
+    simpleFinalMWDecorator(res, async () => {
+        const logic: CoursesLogic = new CourseLogicImpl()
+        const courseReq = req as CourseRequest
         const course = await logic.createCourse(courseReq.course)
         res.status(201).send(course)
-    } catch (e) {
-        res.status(400).send({ message: e.message, success: false })
-    }
+    })
 })
 
 router.put('/:courseId', parser.completeParser, async (req, res) => {
-    const logic: CoursesLogic = new CourseLogicImpl()
-    const courseReq = req as CourseRequest
-    try {
+    simpleFinalMWDecorator(res, async () => {
+        const logic: CoursesLogic = new CourseLogicImpl()
+        const courseReq = req as CourseRequest
         const course = await logic.updateCourse(req.params.courseId, courseReq.course)
-        res.send(course)
-    } catch (e) {
-        res.status(400).send({ message: e.message, success: false })
-    }
+        return course
+    }, 201)
 })
 
 router.patch('/:courseId', parser.partialParser, async (req, res) => {
-    const logic: CoursesLogic = new CourseLogicImpl()
-    const courseReq = req as CourseRequest
-    try {
+    simpleFinalMWDecorator(res, async () => {
+        const logic: CoursesLogic = new CourseLogicImpl()
+        const courseReq = req as CourseRequest
         const course = await logic.updateCourse(req.params.courseId, courseReq.course)
-        res.send(course)
-    } catch (e) {
-        res.status(400).send({ message: e.message, success: false })
-    }
+        return course
+    }, 201)
 })
 
 router.delete('/:courseId', async (req, res) => {
-    const logic: CoursesLogic = new CourseLogicImpl()
-    try {
+    simpleFinalMWDecorator(res, async () => {
+        const logic: CoursesLogic = new CourseLogicImpl()
         await logic.deleteCourseById(req.params.courseId)
-        res.send({ success: true })
-    } catch (e) {
-        res.status(400).send({ message: e.message, success: false })
-    }
+    }, 204)
 })
 
 router.get('/:courseId/stats', onlyProfessors, async (req, res) => {
-    const logic: CoursesLogic = new CourseLogicImpl()
-    try {
+    simpleFinalMWDecorator(res, async () => {
+        const logic: CoursesLogic = new CourseLogicImpl()
         const stats = await logic.getLecturesStatistics(req.params.courseId)
-        res.send(stats)
-    } catch (e) {
-        res.status(400).send({ message: e.message, success: false })
-    }
+        return stats
+    })
 })
+
 export default router;

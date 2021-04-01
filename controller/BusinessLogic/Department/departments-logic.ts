@@ -4,6 +4,7 @@ import Professor from "@models/Users/Professor";
 import Student from "@models/Users/Student";
 
 export default interface DepartmentsLogic {
+    addProfessorToDepartment(departmentId: string, professorId: any): Promise<void>;
     createDepartment(department: Department): Promise<Department>;
     deleteDepartment(departmentId: string): Promise<void>;
     /**
