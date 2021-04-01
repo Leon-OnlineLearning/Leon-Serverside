@@ -19,7 +19,7 @@ router.get('/:courseId', async (req, res) => {
     simpleFinalMWDecorator(res, async () => {
         const logic: CoursesLogic = new CourseLogicImpl()
         const course = await logic.getCoursesById(req.params.courseId)
-        res.send(course)
+        return course
     })
 })
 
@@ -28,8 +28,8 @@ router.post('/', parser.completeParser, async (req, res) => {
         const logic: CoursesLogic = new CourseLogicImpl()
         const courseReq = req as CourseRequest
         const course = await logic.createCourse(courseReq.course)
-        res.status(201).send(course)
-    })
+        return course
+    },201)
 })
 
 router.put('/:courseId', parser.completeParser, async (req, res) => {
