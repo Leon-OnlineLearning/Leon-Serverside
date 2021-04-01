@@ -8,6 +8,7 @@ import Student from "@models/Users/Student"
 import BodyParserMiddleware from "../../BodyParserMiddleware/BodyParserMiddleware"
 import paginationParameters from "@services/Routes/utils/pagination"
 import simpleFinalMWDecorator from "@services/utils/RequestDecorator"
+import DepartmentsLogicImpl from "@controller/BusinessLogic/Department/departments-logic-impl"
 
 const router = Router()
 router.use(BlockedJWTMiddleware)
@@ -32,9 +33,14 @@ router.post('/', onlyAdmins, parser.completeParser, async (req, res) => {
     simpleFinalMWDecorator(res, async () => {
         const request = req as StudentRequest
         const logic: StudentLogic = new StudentLogicImpl()
-        const _student = await logic.createStudent(request.account as Student)
+        const studentData = request.account
+        const depLogic = new DepartmentsLogicImpl()
+        const department = await depLogic.getDepartmentById(req.body.departmentId)
+        studentData.department = department
+        const _student = await logic.createStudent(studentData)
         const student = new Student()
         student.setValuesFromJSON(_student)
+        
         return student.summary()
     }, 201)
 })

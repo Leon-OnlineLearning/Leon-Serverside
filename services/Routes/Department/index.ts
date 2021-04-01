@@ -68,7 +68,7 @@ router.delete('/:departmentId', async (req, res) => {
 })
 
 router.get('/:departmentId/professors', async (req, res) => {
-    simpleFinalMWDecorator(res, async ()=>{
+    simpleFinalMWDecorator(res, async () => {
         const logic: DepartmentsLogic = new DepartmentsLogicImpl()
         const professors = await logic.getAllProfessor(req.params.departmentId)
         return professors
@@ -77,7 +77,7 @@ router.get('/:departmentId/professors', async (req, res) => {
 
 
 router.get('/:departmentId/students', async (req, res) => {
-    simpleFinalMWDecorator(res,async () => {
+    simpleFinalMWDecorator(res, async () => {
         const logic: DepartmentsLogic = new DepartmentsLogicImpl()
         const students = await logic.getAllStudents(req.params.departmentId)
         return students
@@ -87,8 +87,8 @@ router.get('/:departmentId/students', async (req, res) => {
 router.post('/:departmentId/professors', async (req, res) => {
     simpleFinalMWDecorator(res, async () => {
         const logic: DepartmentsLogic = new DepartmentsLogicImpl()
-        await logic.addProfessorToDepartment(req.params.departmentId,req.body.professorId)
-    })
+        await logic.addProfessorToDepartment(req.params.departmentId, req.body.professorId)
+    }, 204)
 })
 
 export default router;

@@ -7,7 +7,7 @@ import DepartmentsLogic from "./departments-logic";
 
 export default class DepartmentsLogicImpl implements DepartmentsLogic {
     async addProfessorToDepartment(departmentId: string, professorId: any): Promise<void> {
-        const department = await getRepository(Department).findOne(departmentId);
+        const department = await getRepository(Department).findOne(departmentId, { relations: ["professors"] });
         if (!department) throw new Error("Invalid department Id");
         const professor = await getRepository(Professor).findOne(professorId);
         if (!professor) throw new Error("Invalid professor Id");

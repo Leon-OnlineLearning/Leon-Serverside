@@ -21,11 +21,16 @@ const simpleFinalMWDecorator = async (response: Response,
     try {
         const res = await responseLogic()
         if (res == null) {
-            response.send({ success: true })
+            response.status(successCode).send({ success: true })
         } else response.status(successCode).send(res)
         return
     } catch (e) {
-        response.status(errorCode).send({ success: false, message: e.message })
+        if (parseInt(process.env.BLOCK_ON_ERRORS ?? "0")) {
+            console.error(e.stack)
+            response.status(500).send({ success: false })
+        } else {
+            response.status(errorCode).send({ success: false, message: e.message })
+        }
     }
 }
 

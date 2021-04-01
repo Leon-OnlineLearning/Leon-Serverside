@@ -15,7 +15,7 @@ export const initializeDBMSConnection = async () => {
         {
             type: "mysql",
             // logging: true,
-            logger: "simple-console",
+            // logger: "simple-console",
             ...connectionInfo,
             entities: [
                 __dirname + "/../models/**/*.ts"
