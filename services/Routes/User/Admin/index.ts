@@ -29,7 +29,9 @@ router.post('/', onlyAdmins, parser.completeParser, async (req, res) => {
     simpleFinalMWDecorator(res, async () => {
         const request = req as AdminRequest
         const logic: AdminLogic = new AdminLogicImpl()
-        const admin = await logic.createAdmin(request.account as Admin)
+        const _admin = await logic.createAdmin(request.account as Admin)
+        const admin = new Admin()
+        admin.setValuesFromJSON(_admin)
         return admin.summary()
     }, 201)
 })
@@ -58,7 +60,7 @@ router.get("/:adminId", onlyAdmins, async (req, res) => {
             res.status(400).send({ message: "Admin is not found", success: false })
             return
         }
-        res.send(admin.summary())
+        return admin.summary()
     } catch (e) {
         res.status(400).send({ message: e.message, success: false })
     }

@@ -29,8 +29,10 @@ router.post('/', onlyAdmins, parser.completeParser, async (req, res) => {
     simpleFinalMWDecorator(res, async () => {
         const request = req as ProfessorRequest
         const logic: ProfessorLogic = new ProfessorLogicImpl()
-        const professor = await logic.createProfessor(request.account)
-        res.status(201).send(await professor.summary())
+        const _professor = await logic.createProfessor(request.account)
+        const professor = new Professor()
+        professor.setValuesFromJSON(_professor)
+        return professor.summary()
     }, 201)
 })
 
@@ -63,7 +65,7 @@ router.get("/:professorId/exams", async (req, res) => {
     simpleFinalMWDecorator(res, async () => {
         const logic: ProfessorLogic = new ProfessorLogicImpl()
         const exams = await logic.getAllExams(req.params.professorId)
-        res.send(exams)
+        return exams
     })
 })
 
@@ -72,7 +74,6 @@ router.post('/:professorId/courses', async (req, res) => {
     simpleFinalMWDecorator(res, async () => {
         const logic: ProfessorLogic = new ProfessorLogicImpl()
         await logic.assignCourseToProfessor(req.params.professorId, req.body.courseId);
-        res.send({ success: true })
     })
 })
 

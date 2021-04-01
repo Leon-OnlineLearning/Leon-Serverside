@@ -32,7 +32,9 @@ router.post('/', onlyAdmins, parser.completeParser, async (req, res) => {
     simpleFinalMWDecorator(res, async () => {
         const request = req as StudentRequest
         const logic: StudentLogic = new StudentLogicImpl()
-        const student = await logic.createStudent(request.account as Student)
+        const _student = await logic.createStudent(request.account as Student)
+        const student = new Student()
+        student.setValuesFromJSON(_student)
         return student.summary()
     }, 201)
 })

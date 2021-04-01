@@ -14,18 +14,18 @@ import { Response } from "express"
  * will return {success:true}, in case of exception will return 
  * {success: false, message: error.message}
  */
-const simpleFinalMWDecorator = async (res: Response,
+const simpleFinalMWDecorator = async (response: Response,
     responseLogic: () => Promise<any>,
     successCode: number = 200,
     errorCode: number = 400) => {
     try {
         const res = await responseLogic()
         if (res == null) {
-            res.send({ success: true })
-        } else res.status(successCode).send(res)
+            response.send({ success: true })
+        } else response.status(successCode).send(res)
         return
     } catch (e) {
-        res.status(errorCode).send({ success: false, message: e.message })
+        response.status(errorCode).send({ success: false, message: e.message })
     }
 }
 
