@@ -4,6 +4,21 @@ import UserInputError from "@services/utils/UserInputError";
 import { getRepository } from "typeorm";
 import CoursesLogic from "./courses-logic"
 export default class CourseLogicImpl implements CoursesLogic {
+    async getLecturesForCourse(courseId: string) {
+        const course = await getRepository(Course).findOne(courseId, { relations: ['lectures'] })
+        if (!course) { throw new UserInputError("invalid course id"); }
+        return course.lectures
+    }
+
+    async addLectureToCourse(courseId: string, lectureId: any) {
+        const course = await getRepository(Course).findOne(courseId);
+        if (!course) throw new UserInputError("Invalid course id");
+        const lecture = await getRepository(Lecture).findOne(lectureId);
+        if (!lecture) throw new UserInputError("Invalid lecture id");
+        (await course.lectures).push(lecture);
+        getRepository(Course).save(course);
+    }
+
     async getLecturesStatistics(courseId: string): Promise<{ lectureTitle: string, count: number }[]> {
         const course = await getRepository(Course).findOne(courseId);
         if (!course) {
@@ -18,7 +33,7 @@ export default class CourseLogicImpl implements CoursesLogic {
 
         lectures.forEach(async lecture => {
             let students = await lecture.students
-            res.push({lectureTitle: lecture.title, count: students.length})
+            res.push({ lectureTitle: lecture.title, count: students.length })
         });
 
         return res;

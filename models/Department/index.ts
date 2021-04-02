@@ -7,7 +7,7 @@ import Student from "@models/Users/Student";
 import { Min } from "class-validator";
 import { Column, Entity, JoinTable, ManyToMany, ManyToOne, OneToMany, OneToOne, PrimaryGeneratedColumn } from "typeorm";
 
-@Entity()
+@Entity({ name: "departments" })
 export default class Department {
     @PrimaryGeneratedColumn("uuid")
     id: string;
@@ -16,21 +16,21 @@ export default class Department {
     @Min(3)
     name: string;
 
-    @ManyToMany(()=> Course, crs => crs.departments)
+    @ManyToMany(() => Course, crs => crs.departments)
     @JoinTable({
         name: "DEPARTMENT_COURSES"
     })
     courses: Course[]
 
-    @OneToMany(()=>Professor, prof=>prof.department)
+    @OneToMany(() => Professor, prof => prof.department)
     professors!: Professor[]
-    
-    @OneToMany(()=>Student, student=>student.department)
+
+    @OneToMany(() => Student, student => student.department)
     students!: Student[]
 
-    @ManyToOne(()=>Lecture, l => l.departments)
+    @ManyToOne(() => Lecture, l => l.departments)
     lectures!: Lecture[]
 
-    @ManyToOne(()=>Exam, exam => exam.departments)
+    @ManyToOne(() => Exam, exam => exam.departments)
     exams!: Exam[]
 }

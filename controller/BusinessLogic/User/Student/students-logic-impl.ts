@@ -112,6 +112,11 @@ export default class StudentLogicImpl implements StudentLogic {
         if (!student) { throw new UserInputError("Student is not found") }
         const lecture = await getRepository(Lecture).findOne(lectureId)
         if (!lecture) { throw new UserInputError("Lecture is not found") }
+        // if (student.year !== lecture.year) { throw new UserInputError("Student is in a different year that the lecure") };
+        // const resdep = lecture.departments.find((dep) => { dep.id === student.department.id });
+        // if (!resdep) {
+        //     throw new UserInputError("Student and lecture are in different departments");
+        // }
         (await student.lectures).push(lecture)
         await getRepository(Student).save(student)
     }

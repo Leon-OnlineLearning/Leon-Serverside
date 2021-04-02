@@ -73,8 +73,8 @@ router.post('/:studentId/lectures', async (req, res) => {
 router.get('/:studentId/lectures', async (req, res) => {
     simpleFinalMWDecorator(res, async () => {
         const logic: StudentLogic = new StudentLogicImpl()
-        const courses = await logic.getAllCourses(req.params.studentId)
-        return courses
+        const lectures = await logic.getAllLectures(req.params.studentId)
+        return lectures
     })
 })
 

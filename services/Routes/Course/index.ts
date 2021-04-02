@@ -5,7 +5,7 @@ import BodyParserMiddleware from "@services/Routes/BodyParserMiddleware/BodyPars
 import { CourseParser, CourseRequest } from "../BodyParserMiddleware/CourseParser"
 import CoursesLogic from "@controller/BusinessLogic/Course/courses-logic"
 import CourseLogicImpl from "@controller/BusinessLogic/Course/courses-logic-impl"
-import { onlyProfessors } from "../User/AuthorizationMiddleware"
+import { onlyAdmins, onlyProfessors } from "../User/AuthorizationMiddleware"
 import simpleFinalMWDecorator from "@services/utils/RequestDecorator"
 
 const router = Router()
@@ -29,7 +29,7 @@ router.post('/', parser.completeParser, async (req, res) => {
         const courseReq = req as CourseRequest
         const course = await logic.createCourse(courseReq.course)
         return course
-    },201)
+    }, 201)
 })
 
 router.put('/:courseId', parser.completeParser, async (req, res) => {
@@ -65,4 +65,17 @@ router.get('/:courseId/stats', onlyProfessors, async (req, res) => {
     })
 })
 
+router.post('/:courseId/lectures', onlyProfessors, async (req, res) => {
+    simpleFinalMWDecorator(res, async () => {
+        const logic: CoursesLogic = new CourseLogicImpl()
+        await logic.addLectureToCourse(req.params.courseId, req.body.lectureId)
+    }, 201)
+})
+
+router.get('/:courseId/lectures', async (req,res) => {
+    simpleFinalMWDecorator(res, async () => {
+        const logic : CoursesLogic = new CourseLogicImpl()
+        return await logic.getLecturesForCourse(req.params.courseId)
+    })
+})
 export default router;
