@@ -1,3 +1,10 @@
+/**
+ *  About user default year 
+ *      if new student has signed up with google 
+ *      it will be in the first year by default
+ *      because we don't have enough info comming from google
+ */
+
 import User, { NonExistingUser } from "@models/Users/User";
 import passport from "passport";
 import { Strategy as LocalStrategy } from "passport-local";
@@ -18,8 +25,7 @@ import StudentLogic from "@controller/BusinessLogic/User/Student/students-logic"
 import UserTypes from "@models/Users/UserTypes";
 import UserClassFactory from "@models/Users/UserClassMapper";
 import { NextFunction, Request, Response } from "express";
-import { UserPartialValidatorSchema, UserValidationSchema } from "@models/Users/validators/schema/UserSchema";
-
+import { UserPartialValidatorSchema, UserThirdPartySchema, UserValidationSchema } from "@models/Users/validators/schema/UserSchema";
 
 passport.use('login',
     new LocalStrategy({
@@ -124,26 +130,31 @@ passport.use(
 /**
  *  convert information provided by google to information that we can use in our app
  */
-export async function googleInfoToUserInfoMapper(profile: Profile) {
+export async function googleInfoToUserInfoMapper(profile: any) {
     let _userObj: any = {}
-    _userObj.firstName = profile.name?.givenName;
-    _userObj.lastName = profile.name?.familyName;
+    console.log(profile);
+    
+    _userObj.firstName = profile.given_name;
+    _userObj.lastName = profile.given_name;
     _userObj.thirdPartyAccount = true;
+    _userObj.year = 1; //default year value is the first year
 
-    if (profile.emails) {
-        _userObj.email = profile.emails[0].value
+    if (profile.email) {
+        _userObj.email = profile.email
     } else {
         throw new Error("Email is not provided");
     }
 
     try {
-        await UserPartialValidatorSchema.validateAsync(_userObj)
+        await UserThirdPartySchema.validateAsync(_userObj)
     } catch (e) {
         throw e;
     }
 
     const userObj = new Student()
     userObj.setValuesFromJSON(_userObj)
+    console.log(_userObj, userObj);
+    
     return userObj;
 }
 

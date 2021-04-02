@@ -1,9 +1,14 @@
 import express from "express"
 import passport from "@services/Auth"
 import { blockId, generateAccessToken, generateRefreshToken, isTokenValidAndExpired, getPayloadFromJWTNoExpiration, getUserFromJWT } from "@controller/Tokens";
-import User from "@models/Users/User";
+import { IdTokenClient, OAuth2Client } from "google-auth-library"
+import { googleInfoToUserInfoMapper } from "@services/Auth"
+import UserRepo from "@controller/DataAccess/user-repo";
+
 
 const router = express.Router();
+
+const googleOAuth2Client = new OAuth2Client(process.env["GOOGLE_OAUTH2_CLIENT_ID"], process.env["GOOGLE_OAUTH2_CLIENT_SECRET"])
 
 router.post('/signup', async (req, res) => {
     if (!req.body["email"] || !req.body["password"]) {
@@ -65,13 +70,34 @@ router.post('/logout', async (req, res) => {
     }
 })
 
-router.get('/google', passport.authenticate('google', {
-    scope: ["profile", "email"],
-    session: false
-}));
+// router.get('/google', passport.authenticate('google', {
+//     scope: ["profile", "email"],
+//     session: false
+// }));
+
+const verifyGoogleJwt = async (tokenId: string) => {
+    const ticket = await googleOAuth2Client.verifyIdToken(
+        {
+            idToken: tokenId,
+        }
+    )
+    const payload = ticket.getPayload()
+    console.log(payload);
+    
+    return payload;
+
+}
+
+router.post('/google', async (req, res) => {
+    const repo = new UserRepo()
+    const payload = await verifyGoogleJwt(req.body.tokenId)
+
+    const userObj = await googleInfoToUserInfoMapper(payload);
+    const persistedUser = await repo.findOrCreateStudent(userObj);
+    await login(persistedUser, res)
+})
 
 router.get('/google/redirect', passport.authenticate('google', { session: false }), async (req: any, res) => {
-
     await login(req.user, res)
 })
 

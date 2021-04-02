@@ -12,8 +12,12 @@ import courseRouter from "@services/Routes/Course"
 import departmentRouter from "@services/Routes/Department"
 import passport from "@services/Auth"
 import cookieParser from "cookie-parser"
+import cors from "cors"
 
 const app = express()
+app.use(cors({
+    origin:"http://localhost:3000"
+}))
 app.use(express.json())
 app.use(cookieParser())
 app.use(passport.initialize())

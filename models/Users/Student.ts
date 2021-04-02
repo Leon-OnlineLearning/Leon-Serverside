@@ -22,6 +22,7 @@ export default class Student extends User {
     setValuesFromJSON(student: any) {
         super.setValuesFromJSON(student)
         this.department = student.department
+        this.year = student.year
     }
 
     @OneToMany(() => StudentsExams, se => se.student, { cascade: true, onDelete: "CASCADE" })
