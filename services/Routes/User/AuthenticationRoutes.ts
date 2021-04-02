@@ -82,7 +82,6 @@ const verifyGoogleJwt = async (tokenId: string) => {
         }
     )
     const payload = ticket.getPayload()
-    console.log(payload);
     
     return payload;
 

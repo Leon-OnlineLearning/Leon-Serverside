@@ -29,7 +29,10 @@ const simpleFinalMWDecorator = async (response: Response,
             console.error(e.stack)
             response.status(500).send({ success: false })
         } else {
-            response.status(errorCode).send({ success: false, message: e.message })
+            if (e.name === 'UserInputError')
+                response.status(errorCode).send({ success: false, message: e.message })
+            else 
+                console.error(e.stack)
         }
     }
 }

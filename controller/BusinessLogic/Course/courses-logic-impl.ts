@@ -1,16 +1,17 @@
 import Course from "@models/Course";
 import Lecture from "@models/Events/Lecture";
+import UserInputError from "@services/utils/UserInputError";
 import { getRepository } from "typeorm";
 import CoursesLogic from "./courses-logic"
 export default class CourseLogicImpl implements CoursesLogic {
     async getLecturesStatistics(courseId: string): Promise<{ lectureTitle: string, count: number }[]> {
         const course = await getRepository(Course).findOne(courseId);
         if (!course) {
-            throw new Error("Invalid course id");
+            throw new UserInputError("Invalid course id");
         }
         const lectures: Lecture[] = await course?.lectures
         if (!lectures) {
-            throw new Error("no lectures to be shown")
+            throw new UserInputError("no lectures to be shown")
         }
 
         let res: { lectureTitle: string, count: number }[] = [];
@@ -42,7 +43,7 @@ export default class CourseLogicImpl implements CoursesLogic {
         if (course)
             return course;
         else
-            throw new Error("Invalid course id");
+            throw new UserInputError("Invalid course id");
 
     }
 

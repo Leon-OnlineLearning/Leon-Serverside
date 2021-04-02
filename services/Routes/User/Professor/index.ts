@@ -25,6 +25,21 @@ router.get('/', onlyAdmins, async (req, res) => {
     })
 })
 
+router.post('/:professorId/lectures',onlyProfessors, async(req,res)=>{
+    simpleFinalMWDecorator(res,async()=>{
+        const logic : ProfessorLogic = new ProfessorLogicImpl()
+        await logic.assignLectureToProfessor(req.params.professorId,req.body.lectureId);
+    })
+})
+
+router.get('/:professorId/lectures', async (req,res)=>{
+    simpleFinalMWDecorator(res, async()=>{
+        const logic: ProfessorLogic = new ProfessorLogicImpl()
+        const lectures = await logic.getLectures(req.params.professorId)
+        return lectures
+    })
+})
+
 router.post('/', onlyAdmins, parser.completeParser, async (req, res) => {
     simpleFinalMWDecorator(res, async () => {
         const request = req as ProfessorRequest

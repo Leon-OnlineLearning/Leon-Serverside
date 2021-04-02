@@ -2,15 +2,16 @@ import Course from "@models/Course";
 import Department from "@models/Department";
 import Professor from "@models/Users/Professor";
 import Student from "@models/Users/Student";
+import UserInputError from "@services/utils/UserInputError";
 import { createQueryBuilder, getRepository } from "typeorm";
 import DepartmentsLogic from "./departments-logic";
 
 export default class DepartmentsLogicImpl implements DepartmentsLogic {
     async addProfessorToDepartment(departmentId: string, professorId: any): Promise<void> {
         const department = await getRepository(Department).findOne(departmentId, { relations: ["professors"] });
-        if (!department) throw new Error("Invalid department Id");
+        if (!department) throw new UserInputError("Invalid department Id");
         const professor = await getRepository(Professor).findOne(professorId);
-        if (!professor) throw new Error("Invalid professor Id");
+        if (!professor) throw new UserInputError("Invalid professor Id");
         department.professors.push(professor)
         getRepository(Department).save(department);
     }
@@ -23,7 +24,7 @@ export default class DepartmentsLogicImpl implements DepartmentsLogic {
     async getDepartmentById(departmentId: string): Promise<Department> {
         const res = await getRepository(Department).findOne(departmentId);
         if (res) return res;
-        else throw new Error("Invalid department id");
+        else throw new UserInputError("Invalid department id");
     }
 
     async getAllCourse(departmentId: string): Promise<Course[]> {
@@ -32,7 +33,7 @@ export default class DepartmentsLogicImpl implements DepartmentsLogic {
             .where("department.id = :id", { id: departmentId })
             .getOne()
         if (res) return res.courses
-        else throw new Error("Invalid department id");
+        else throw new UserInputError("Invalid department id");
     }
 
     async getAllProfessor(departmentId: string): Promise<Professor[]> {
@@ -41,7 +42,7 @@ export default class DepartmentsLogicImpl implements DepartmentsLogic {
             .where("department.id = :id", { id: departmentId })
             .getOne()
         if (res) return res.professors
-        else throw new Error("Invalid department id");
+        else throw new UserInputError("Invalid department id");
     }
 
     async getAllStudents(departmentId: string): Promise<Student[]> {
@@ -50,7 +51,7 @@ export default class DepartmentsLogicImpl implements DepartmentsLogic {
             .where("department.id = :id", { id: departmentId })
             .getOne()
         if (res) return res.students
-        else throw new Error("Invalid department id");
+        else throw new UserInputError("Invalid department id");
     }
 
     async createDepartment(department: Department): Promise<Department> {

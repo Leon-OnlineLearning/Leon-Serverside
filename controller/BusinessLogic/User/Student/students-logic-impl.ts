@@ -17,15 +17,16 @@ import StudentLogic from "./students-logic";
 import { AccountWithSimilarEmailExist } from "@models/Users/User"
 import ProfessorLogic from "../Professor/professors-logic";
 import ProfessorLogicIml from "../Professor/professors-logic-impl";
+import UserInputError from "@services/utils/UserInputError";
 
 
 export default class StudentLogicImpl implements StudentLogic {
 
     async cancelCourse(studentId: string, courseId: string): Promise<void> {
         const student = await getRepository(Student).findOne(studentId)
-        if (!student) throw new Error("Student is not found");
+        if (!student) throw new UserInputError("Student is not found");
         const course = await getRepository(Course).findOne(courseId)
-        if (!course) throw new Error("Course is not found")
+        if (!course) throw new UserInputError("Course is not found")
         student.courses = student.courses.filter(
             course => course.id !== courseId
         )
@@ -34,16 +35,16 @@ export default class StudentLogicImpl implements StudentLogic {
 
     async addCourse(studentId: string, courseId: string): Promise<void> {
         const student = await getRepository(Student).findOne(studentId)
-        if (!student) throw new Error("Student is not found");
+        if (!student) throw new UserInputError("Student is not found");
         const course = await getRepository(Course).findOne(courseId);
-        if (!course) throw new Error("Course is not found");
+        if (!course) throw new UserInputError("Course is not found");
         student.courses.push(course)
         await getRepository(Student).save(student)
     }
 
     async updateStudent(studentId: string, newData: Student): Promise<Student> {
         const student = await this.getStudentById(studentId)
-        if (!student) throw new Error("Student doesn't exist");
+        if (!student) throw new UserInputError("Student doesn't exist");
         student.setValuesFromJSON(newData)
         return await getRepository(Student).save(student);
     }
@@ -70,7 +71,7 @@ export default class StudentLogicImpl implements StudentLogic {
             return lectures;
         }
         else {
-            throw new Error("User not found!");
+            throw new UserInputError("User not found!");
         }
     }
 
@@ -82,7 +83,7 @@ export default class StudentLogicImpl implements StudentLogic {
             return courses;
         }
         else {
-            throw new Error("User not found!");
+            throw new UserInputError("User not found!");
         }
 
     }
@@ -108,18 +109,18 @@ export default class StudentLogicImpl implements StudentLogic {
 
     async attendLecture(studentId: string, lectureId: string): Promise<void> {
         const student = await getRepository(Student).findOne(studentId)
-        if (!student) { throw new Error("Student is not found") }
+        if (!student) { throw new UserInputError("Student is not found") }
         const lecture = await getRepository(Lecture).findOne(lectureId)
-        if (!lecture) { throw new Error("Lecture is not found") }
+        if (!lecture) { throw new UserInputError("Lecture is not found") }
         (await student.lectures).push(lecture)
         await getRepository(Student).save(student)
     }
 
     async attendExam(studentId: string, examId: string): Promise<void> {
         const student = await getRepository(Student).findOne(studentId)
-        if (!student) { throw new Error("Student is not found") }
+        if (!student) { throw new UserInputError("Student is not found") }
         const exam = await getRepository(Exam).findOne(examId)
-        if (!exam) { throw new Error("Exam is not found") }
+        if (!exam) { throw new UserInputError("Exam is not found") }
         const studentExam = new StudentsExams();
         studentExam.exam = exam;
         studentExam.student = student

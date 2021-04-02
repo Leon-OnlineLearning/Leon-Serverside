@@ -6,6 +6,7 @@ import Student from "@models/Users/Student";
 import User from "@models/Users/User";
 import UsersLogic from "@controller/BusinessLogic/User/users-logic"
 import UserTypes from "@models/Users/UserTypes";
+import UserInputError from "@services/utils/UserInputError";
 
 
 export class UsersLogicImpl implements UsersLogic {
@@ -29,7 +30,7 @@ export class UsersLogicImpl implements UsersLogic {
             res.setValuesFromJSON(user)
             return res
         } else {
-            throw new Error("Invalid role");
+            throw new UserInputError("Invalid role");
 
         }
     }

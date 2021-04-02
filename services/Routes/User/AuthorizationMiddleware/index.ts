@@ -17,6 +17,7 @@ export function onlyAdmins(req: Request, res: Response, next: NextFunction) {
 
 export function onlyProfessors(req: Request, res: Response, next: NextFunction) {
     const requestUser: any = req.user;
+    
     if (!isCorrectRole(requestUser, UserTypes.PROFESSOR)) {
         res.status(401).json({ success: false, message: "Access denied" })
     } else {

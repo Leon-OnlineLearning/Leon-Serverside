@@ -1,3 +1,4 @@
+import UserInputError from "@services/utils/UserInputError"
 import { IsEmail, Min } from "class-validator"
 import { BeforeInsert, Column, Entity, PrimaryGeneratedColumn, TableInheritance } from "typeorm"
 
@@ -62,9 +63,8 @@ class NotPasswordOrThirdParty extends Error {
     }
 }
 
-export class AccountWithSimilarEmailExist extends Error {
-    constructor(message? : string| undefined) {
-        super(message)
-        this.message = "Account with similar email already exist"
+export class AccountWithSimilarEmailExist extends UserInputError {
+    constructor() {
+        super("Account with similar email already exist")
     }
 }

@@ -4,6 +4,7 @@ import Lecture from "@models/Events/Lecture";
 import Professor from "@models/Users/Professor";
 
 export default interface ProfessorLogic {
+    getLectures(professorId: string) : Promise<Lecture[]>;
     createProfessor(professor: Professor) : Promise<Professor>;
     deleteProfessorById(professorId: string) : Promise<void>;
     updateProfessor(professorId: string, newData: Professor) : Promise<Professor>;
@@ -13,4 +14,5 @@ export default interface ProfessorLogic {
     getProfessorByEmail(email:string): Promise<Professor | undefined>;
     getProfessorById(id: string): Promise<Professor>;
     assignCourseToProfessor(id: string, courseId: string) : Promise<void>;
+    assignLectureToProfessor(professorId: string, lectureId: string): Promise<void>;
 }

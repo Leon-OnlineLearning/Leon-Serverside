@@ -26,8 +26,8 @@ router.post('/', onlyProfessors, parser.completeParser, async (req, res) => {
     simpleFinalMWDecorator(res, async () => {
         const logic: LecturesLogic = new LecturesLogicImpl()
         const lectReq = req as LectureRequest
-        const exam = await logic.createLecture(lectReq.lecture)
-        return exam
+        const lecture = await logic.createLecture(lectReq.lecture)
+        return lecture
     }, 201)
 })
 

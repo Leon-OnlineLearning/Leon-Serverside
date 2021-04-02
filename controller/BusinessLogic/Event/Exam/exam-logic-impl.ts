@@ -1,4 +1,5 @@
 import Exam from "@models/Events/Exam";
+import UserInputError from "@services/utils/UserInputError";
 import { getRepository } from "typeorm";
 import ExamsLogic from "./exam-logic";
 
@@ -6,7 +7,7 @@ export default class ExamsLogicImpl implements ExamsLogic {
     async getExamById(examId: string): Promise<Exam> {
         const res = await getRepository(Exam).findOne(examId)
         if (res) return res
-        else throw new Error("Invalid exam id");
+        else throw new UserInputError("Invalid exam id");
     }
 
     async updateExam(examId: string, newData: Exam): Promise<Exam> {

@@ -26,6 +26,7 @@ import jwt, { JsonWebTokenError } from "jsonwebtoken"
 import User from "@models/Users/User";
 import { getCustomRepository, getRepository } from "typeorm";
 import UserRepo from "@controller/DataAccess/user-repo";
+import UserInputError from "@services/utils/UserInputError";
 
 const client = redis.createClient({
     host: process.env.INVALID_TOKEN_SERVER || '127.0.0.1',
@@ -163,7 +164,7 @@ export async function getUserFromJWT(token: string) {
         const user = await repo.findUserAndRoleById(payload["id"])
         return user
     } catch (e) {
-        throw new Error("token not found")
+        throw new UserInputError("token not sent")
     }
 }
 

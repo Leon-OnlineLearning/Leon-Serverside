@@ -26,6 +26,7 @@ import UserTypes from "@models/Users/UserTypes";
 import UserClassFactory from "@models/Users/UserClassMapper";
 import { NextFunction, Request, Response } from "express";
 import { UserPartialValidatorSchema, UserThirdPartySchema, UserValidationSchema } from "@models/Users/validators/schema/UserSchema";
+import UserInputError from "@services/utils/UserInputError";
 
 passport.use('login',
     new LocalStrategy({
@@ -132,7 +133,6 @@ passport.use(
  */
 export async function googleInfoToUserInfoMapper(profile: any) {
     let _userObj: any = {}
-    console.log(profile);
     
     _userObj.firstName = profile.given_name;
     _userObj.lastName = profile.given_name;
@@ -142,7 +142,7 @@ export async function googleInfoToUserInfoMapper(profile: any) {
     if (profile.email) {
         _userObj.email = profile.email
     } else {
-        throw new Error("Email is not provided");
+        throw new UserInputError("Email is not provided");
     }
 
     try {
@@ -153,7 +153,6 @@ export async function googleInfoToUserInfoMapper(profile: any) {
 
     const userObj = new Student()
     userObj.setValuesFromJSON(_userObj)
-    console.log(_userObj, userObj);
     
     return userObj;
 }

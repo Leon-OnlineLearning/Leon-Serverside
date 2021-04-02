@@ -11,9 +11,11 @@ export default class LectureParser implements BodyParserMiddleware {
             lecture.eventTime = new Date(req.body.eventTime)
             lecture.path = req.body.path
             lecture.title = req.body.title
+            lecture.year = req.body.year
             const lectureReq = req as LectureRequest
             try {
                 await validatorSchema.validateAsync(lecture)
+                lectureReq.lecture = lecture
                 next()
                 return
             } catch (e) {
