@@ -5,7 +5,7 @@ import { type } from "os";
 
 export default interface CoursesLogic {
     getLecturesForCourse(courseId: string): any;
-    addLectureToCourse(courseId: string, lectureId: any);
+    addLectureToCourse(courseId: string, lectureId: any): Promise<void>;
     createCourse(course: Course): Promise<Course>;
     deleteCourseById(courseId: string): Promise<void>;
     updateCourse(courseId: string, newData: Course): Promise<Course>;

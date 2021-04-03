@@ -21,23 +21,17 @@ export default class CourseLogicImpl implements CoursesLogic {
 
     async getLecturesStatistics(courseId: string): Promise<{ lectureTitle: string, count: number }[]> {
         const course = await getRepository(Course).findOne(courseId);
-        if (!course) {
-            throw new UserInputError("Invalid course id");
+        if (!course) { throw new UserInputError("Invalid course id"); }
+        const lectures: Lecture[] = await course.lectures
+        if (!lectures) { throw new UserInputError("no lectures to be shown") }
+        let res: any = {}
+        for (let lecture of lectures) {
+            let students = await lecture.students;
+            res[lecture.title] = students.length;
         }
-        const lectures: Lecture[] = await course?.lectures
-        if (!lectures) {
-            throw new UserInputError("no lectures to be shown")
-        }
-
-        let res: { lectureTitle: string, count: number }[] = [];
-
-        lectures.forEach(async lecture => {
-            let students = await lecture.students
-            res.push({ lectureTitle: lecture.title, count: students.length })
-        });
-
         return res;
     }
+
     async createCourse(course: Course): Promise<Course> {
         return await getRepository(Course).save(course);
     }
