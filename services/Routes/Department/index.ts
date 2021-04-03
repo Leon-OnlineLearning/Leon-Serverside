@@ -91,4 +91,19 @@ router.post('/:departmentId/professors', async (req, res) => {
     }, 204)
 })
 
+router.post('/:departmentId/courses', async (req, res) => {
+    simpleFinalMWDecorator(res, async () => {
+        const logic: DepartmentsLogic = new DepartmentsLogicImpl()
+        await logic.addCourseToDepartment(req.params.departmentId, req.body.courseId)
+    })
+})
+
+router.get('/:departmentId/courses', async (req, res) => {
+    simpleFinalMWDecorator(res, async () => {
+        const logic: DepartmentsLogic = new DepartmentsLogicImpl()
+        const courses = await logic.getAllCourse(req.params.departmentId)
+        return courses
+    })
+})
+
 export default router;

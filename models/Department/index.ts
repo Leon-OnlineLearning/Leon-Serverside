@@ -20,7 +20,7 @@ export default class Department {
     @JoinTable({
         name: "DEPARTMENT_COURSES"
     })
-    courses: Course[]
+    courses: Promise<Course[]>
 
     @OneToMany(() => Professor, prof => prof.department)
     professors!: Professor[]
