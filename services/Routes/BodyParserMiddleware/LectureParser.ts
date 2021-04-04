@@ -10,7 +10,7 @@ export default class LectureParser implements BodyParserMiddleware {
             const lecture = new Lecture()
             lecture.startTime = new Date(req.body.startTime)
             lecture.endTime = new Date(req.body.endTime)
-            lecture.path = req.body.path
+            lecture.path = `${process.env['SERVER_BASE_DOMAIN']}:${process.env['SERVER_PORT']}/${process.env['UPLOADED_LECTURES_PATH']}${req.file.filename}`
             lecture.title = req.body.title
             lecture.year = req.body.year
             const lectureReq = req as LectureRequest

@@ -6,8 +6,13 @@ import LecturesLogic from "@controller/BusinessLogic/Event/Lecture/lectures-logi
 import LecturesLogicImpl from "@controller/BusinessLogic/Event/Lecture/lectures-logic-impl"
 import { onlyProfessors } from "@services/Routes/User/AuthorizationMiddleware"
 import simpleFinalMWDecorator from "@services/utils/RequestDecorator"
+import multer from "multer"
+import Lecture from "@models/Events/Lecture"
+import UserInputError from "@services/utils/UserInputError"
 
 const router = Router()
+
+const uploader = multer({ dest: process.env['UPLOADED_LECTURES_PATH'] })
 
 router.use(BlockedJWTMiddleware)
 router.use(passport.authenticate('access-token', { session: false }))
@@ -22,7 +27,7 @@ router.get('/:lectureId', async (req, res) => {
     })
 })
 
-router.post('/', onlyProfessors, parser.completeParser, async (req, res) => {
+router.post('/', onlyProfessors, uploader.single('lectureFile'), parser.completeParser, async (req, res) => {
     simpleFinalMWDecorator(res, async () => {
         const logic: LecturesLogic = new LecturesLogicImpl()
         const lectReq = req as LectureRequest

@@ -1,3 +1,4 @@
+import Course from "@models/Course";
 import Lecture from "@models/Events/Lecture";
 import UserInputError from "@services/utils/UserInputError";
 import { getRepository } from "typeorm";
