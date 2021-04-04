@@ -18,27 +18,61 @@ import { AccountWithSimilarEmailExist } from "@models/Users/User"
 import ProfessorLogic from "../Professor/professors-logic";
 import ProfessorLogicIml from "../Professor/professors-logic-impl";
 import UserInputError from "@services/utils/UserInputError";
+import StudentLectureAttendance from "@models/JoinTables/StudentLectureAttended";
 
 
 export default class StudentLogicImpl implements StudentLogic {
 
+    async getStudentAttendance(studentId: string): Promise<any> {
+        const student = await getRepository(Student).findOne(studentId)
+        if (!student) { throw new UserInputError("Invalid student id") }
+        // for each course get the lectures
+        const courses = await student.courses
+        let res: any = {};
+        for (let course of courses) {
+            const qb = getRepository(Lecture).createQueryBuilder("lec")
+            const courseLectures = await course.lectures
+            const attendedLectures = await qb
+                .where("lec.courseId = :courseId", { courseId: course.id })
+                .andWhere("lec.id IN" + qb.subQuery()
+                    .select("lectureId")
+                    .from(StudentLectureAttendance, "st_lec_at")
+                    .where("st_lec_at.studentId = :studentId", { studentId })
+                    .getQuery()).getMany()
+            let _res: Array<any> = []
+            const attendedLecturesTitle = attendedLectures.map(al => al.title);
+            for (let lec of courseLectures) {
+                _res.push({
+                    lectureTitle: lec.title,
+                    attended: attendedLecturesTitle.indexOf(lec.title) !== -1
+                })
+            }
+            res = {...res, [course.name]: _res};
+
+        }
+        return res;
+    }
+
     async getAllEvents(studentId: string) {
         const student = await getRepository(Student).findOne(studentId)
         if (!student) throw new UserInputError("Invalid student Id");
-        const lectures = await student.lectures;
+        let lectures : Array<Lecture> = [];
+        for (const sla of await student.studentLectureAttendance) {
+            lectures.push(await sla.lecture)
+        }
         const studentExams = student.studentExam
         let exams = []
-        let res : any= []
+        let res: any = []
         if (studentExams) {
             for (const studentExam of studentExams) {
                 exams.push(await studentExam.exam)
             }
             exams.forEach(ex => {
-                res.push({...ex, eventType: 'exam'})
+                res.push({ ...ex, eventType: 'exam' })
             })
         }
         lectures.forEach(lec => {
-            res.push({...lec, eventType: 'lecture'})
+            res.push({ ...lec, eventType: 'lecture' })
         })
         return res
     }
@@ -48,9 +82,11 @@ export default class StudentLogicImpl implements StudentLogic {
         if (!student) throw new UserInputError("Student is not found");
         const course = await getRepository(Course).findOne(courseId)
         if (!course) throw new UserInputError("Course is not found")
-        student.courses = student.courses.filter(
-            course => course.id !== courseId
-        )
+        const newCourses: Array<Course> = [];
+        for (let course of (await student.courses)) {
+            newCourses.push(course)
+        }
+        student.courses = Promise.resolve(newCourses);
         getRepository(Student).save(student)
     }
 
@@ -59,7 +95,8 @@ export default class StudentLogicImpl implements StudentLogic {
         if (!student) throw new UserInputError("Student is not found");
         const course = await getRepository(Course).findOne(courseId);
         if (!course) throw new UserInputError("Course is not found");
-        student.courses.push(course)
+
+        (await student.courses).push(course)
         await getRepository(Student).save(student)
     }
 
@@ -79,16 +116,21 @@ export default class StudentLogicImpl implements StudentLogic {
             where: { email: email }
         })
     }
+
     async getAllStudents(skip: number, take: number): Promise<Student[]> {
         const _take = take || 10;
         const _skip = skip || 0;
         const [res, _] = await getRepository(Student).findAndCount({ skip: _skip, take: _take })
         return res;
     }
+
     async getAllLectures(studentId: string): Promise<Lecture[]> {
         const student = await getRepository(Student).findOne(studentId);
         if (student) {
-            const lectures = await student.lectures
+            let lectures :Array<Lecture> = [];
+            for (const sla of await student.studentLectureAttendance) {
+                lectures.push(await sla.lecture);
+            }
             return lectures;
         }
         else {
@@ -133,13 +175,17 @@ export default class StudentLogicImpl implements StudentLogic {
         if (!student) { throw new UserInputError("Student is not found") }
         const lecture = await getRepository(Lecture).findOne(lectureId)
         if (!lecture) { throw new UserInputError("Lecture is not found") }
-        // if (student.year !== lecture.year) { throw new UserInputError("Student is in a different year that the lecure") };
-        // const resdep = lecture.departments.find((dep) => { dep.id === student.department.id });
-        // if (!resdep) {
-        //     throw new UserInputError("Student and lecture are in different departments");
-        // }
-        (await student.lectures).push(lecture)
-        await getRepository(Student).save(student)
+        const studentCourses = await student.courses;
+        const lectureCourse = await lecture.course;
+        if (!studentCourses.length) throw new UserInputError("Student hasn't assigned any courses yet!");
+        if (!lectureCourse) throw new UserInputError("Lecture is not assigned to a course yet!");
+        if (studentCourses.map(c => c.name).indexOf(lectureCourse.name) === -1)
+            throw new UserInputError("Student deson't have access to this course");
+        const sla = new StudentLectureAttendance();
+        sla.lecture = Promise.resolve(lecture);
+        sla.student = Promise.resolve(student);
+        (await student.studentLectureAttendance).push(sla);
+        await getRepository(StudentLectureAttendance).save(sla);
     }
 
     async attendExam(studentId: string, examId: string): Promise<void> {

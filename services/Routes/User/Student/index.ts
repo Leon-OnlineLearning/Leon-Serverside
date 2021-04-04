@@ -119,4 +119,11 @@ router.get('/:studentId/events', async (req, res)=>{
     })
 })
 
+router.get('/:studentId/attendance', async (req,res) => {
+    simpleFinalMWDecorator(res, async()=>{
+        const logic: StudentLogic = new StudentLogicImpl()
+        return await logic.getStudentAttendance(req.params.studentId);
+    })
+})
+
 export default router;

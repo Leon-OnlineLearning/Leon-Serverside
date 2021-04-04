@@ -26,7 +26,7 @@ export default class CourseLogicImpl implements CoursesLogic {
         if (!lectures) { throw new UserInputError("no lectures to be shown") }
         let res: any = {}
         for (let lecture of lectures) {
-            let students = await lecture.students;
+            let students = (await lecture.studentLectureAttendance).map(sla => sla.student);
             res[lecture.title] = students.length;
         }
         return res;

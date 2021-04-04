@@ -104,7 +104,8 @@
 						"auth",
 						"signup"
 					]
-				}
+				},
+				"description": "Sign up with role\n\n**DO NOT DEPEND ON IT AS IT IS** the role part will be removed in the alpha version and replaced with admin account from config file [see this issue](https://github.com/Leon-OnlineLearning/Leon-Serverside/issues/10) for more information."
 			},
 			"response": []
 		},
@@ -287,6 +288,16 @@
 						],
 						"type": "text/javascript"
 					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"const courseName = \"course1\";",
+							"pm.environment.set('courseName', courseName);"
+						],
+						"type": "text/javascript"
+					}
 				}
 			],
 			"request": {
@@ -294,7 +305,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n    \"name\": \"course1\"\n}",
+					"raw": "{\n    \"name\": \"{{courseName}}\"\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -909,7 +920,11 @@
 					"script": {
 						"exec": [
 							"const dateTimeNow = new Date()",
-							"pm.environment.set('dateTimeNow',dateTimeNow)"
+							"pm.environment.set('lectureStartDate',dateTimeNow)",
+							"let dateTimeAfterHour = new Date(dateTimeNow.getTime())",
+							"dateTimeAfterHour.setHours(dateTimeAfterHour.getHours() + 1)",
+							"pm.environment.set('lectureEndDate',dateTimeAfterHour)",
+							"pm.environment.set('lectureTitle','lecture1')"
 						],
 						"type": "text/javascript"
 					}
@@ -925,7 +940,8 @@
 							"pm.test('it should have valid fields',()=>{",
 							"    const resp = pm.response.json()",
 							"    pm.expect(resp.title).to.be.ok;",
-							"    pm.expect(resp.eventTime).to.be.ok;",
+							"    pm.expect(resp.startTime).to.be.ok;",
+							"    pm.expect(resp.endTime).to.be.ok;",
 							"    pm.expect(resp.path).to.be.ok;",
 							"    pm.expect(resp.year).to.be.ok;",
 							"    pm.expect(resp.id).to.be.ok;",
@@ -941,7 +957,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n    \"title\": \"lecture1\",\n    \"year\": 2,\n    \"eventTime\": \"{{dateTimeNow}}\",\n    \"path\": \"http://localhost:{{port}}/lectures/2/lecture1.pdf\"\n}",
+					"raw": "{\n    \"title\": \"{{lectureTitle}}\",\n    \"year\": 2,\n    \"startTime\": \"{{lectureStartDate}}\",\n    \"endTime\": \"{{lectureEndDate}}\",\n    \"path\": \"http://localhost:{{port}}/lectures/2/lecture1.pdf\"\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -1046,13 +1062,149 @@
 			"response": []
 		},
 		{
-			"name": "Attend Lecture",
+			"name": "Assign lecture to course",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test('it should return successfully',()=>{",
+							"    pm.response.to.have.status(200);",
+							"    const resp = pm.response.json(); ",
+							"    pm.expect(resp.success).to.be.true;",
+							"})"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"lectureId\": \"{{lectureId}}\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:{{port}}/courses/{{courseId}}/lectures",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "{{port}}",
+					"path": [
+						"courses",
+						"{{courseId}}",
+						"lectures"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Attend Lecture without assigning to course",
 			"event": [
 				{
 					"listen": "test",
 					"script": {
 						"exec": [
 							"pm.test('should return successfully',()=>{",
+							"    pm.response.to.have.status(400);",
+							"    const resp = pm.response.json()",
+							"    pm.expect(resp.success).to.be.false;",
+							"})"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"lectureId\": \"{{lectureId}}\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:{{port}}/students/{{studentId}}/lectures",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "{{port}}",
+					"path": [
+						"students",
+						"{{studentId}}",
+						"lectures"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Assign student to course",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test('should return successfully',()=>{",
+							"    pm.response.to.have.status(201);",
+							"    const resp = pm.response.json()",
+							"    pm.expect(resp.success).to.be.true;",
+							"})"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"courseId\": \"{{courseId}}\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:{{port}}/students/{{studentId}}/courses",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "{{port}}",
+					"path": [
+						"students",
+						"{{studentId}}",
+						"courses"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Attend Lecture after assigning to course",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test('should return successfully',()=>{",
+							"    console.log(pm.response);",
 							"    pm.response.to.have.status(201);",
 							"    const resp = pm.response.json()",
 							"    pm.expect(resp.success).to.be.true;",
@@ -1138,7 +1290,7 @@
 					"script": {
 						"exec": [
 							"pm.test('should return successfully',()=>{",
-							"    pm.response.to.have.status(201)",
+							"    pm.response.to.have.status(200)",
 							"})"
 						],
 						"type": "text/javascript"
@@ -1208,6 +1360,288 @@
 						"courses",
 						"{{courseId}}",
 						"lectures"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Add course to department",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test('it should return successfully',()=>{",
+							"    pm.response.to.have.status(200)",
+							"})"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"courseId\": \"{{courseId}}\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:{{port}}/departments/{{departmentId}}/courses",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "{{port}}",
+					"path": [
+						"departments",
+						"{{departmentId}}",
+						"courses"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get courses from department",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test('it should return successfully',()=>{",
+							"    pm.response.to.have.status(200)",
+							"})",
+							"",
+							"pm.test('it should return valid courses',()=>{",
+							"    const resp = pm.response.json()",
+							"    pm.expect(Array.isArray(resp)).to.be.true;",
+							"    pm.expect(resp[0].id).to.equal(pm.environment.get('courseId'))",
+							"})"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:{{port}}/departments/{{departmentId}}/courses",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "{{port}}",
+					"path": [
+						"departments",
+						"{{departmentId}}",
+						"courses"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get lecture statatistics",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test('it should return successfully',()=>{",
+							"    pm.response.to.have.status(200)",
+							"})",
+							"",
+							"pm.test('it should return valid statistics',()=>{",
+							"    const resp = pm.response.json();",
+							"    pm.expect(",
+							"        resp[pm.environment.get('lectureName')]",
+							"    ).to.equal(1);",
+							"})"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:{{port}}/courses/{{courseId}}/stats",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "{{port}}",
+					"path": [
+						"courses",
+						"{{courseId}}",
+						"stats"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get all events for student",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test('it should return successfully',()=>{",
+							"    pm.response.to.have.status(200)",
+							"})",
+							"",
+							"pm.test('it should return valid fields',()=>{",
+							"    const resp = pm.response.json()",
+							"    pm.expect(Array.isArray(resp)).to.be.true;",
+							"    pm.expect(resp[0].eventType).to.equal('lecture');",
+							"    pm.expect(resp[0].id).to.equal(",
+							"        pm.environment.get('lectureId')",
+							"    );",
+							"})"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:{{port}}/students/{{studentId}}/events",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "{{port}}",
+					"path": [
+						"students",
+						"{{studentId}}",
+						"events"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get student attendance",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test('it should return successfully',()=>{",
+							"    pm.response.to.have.status(200);",
+							"})",
+							"",
+							"pm.test('it should return valid response', ()=>{",
+							"    const resp = pm.response.json();",
+							"    pm.expect(Array.isArray(resp[pm.environment.get('courseName')])).to.be.true;",
+							"    const courseData = resp[pm.environment.get('courseName')]",
+							"    pm.expect(courseData[0]['lectureTitle']).to.equal(pm.environment.get('lectureTitle'));",
+							"    pm.expect(courseData[0]['attended']).to.be.true;",
+							"})"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:{{port}}/students/{{studentId}}/attendance",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "{{port}}",
+					"path": [
+						"students",
+						"{{studentId}}",
+						"attendance"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Delete lecture",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test('it should delete successfully',()=>{",
+							"    pm.response.to.have.status(204)",
+							"})"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:{{port}}/lectures/{{lectureId}}",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "{{port}}",
+					"path": [
+						"lectures",
+						"{{lectureId}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get all events for student after deletion",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test('it should return successfully',()=>{",
+							"    pm.response.to.have.status(200)",
+							"})",
+							"",
+							"pm.test('it should return valid fields',()=>{",
+							"    const resp = pm.response.json()",
+							"    pm.expect(Array.isArray(resp)).to.be.true;",
+							"    pm.expect(resp.length).to.equal(0);",
+							"})"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:{{port}}/students/{{studentId}}/events",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "{{port}}",
+					"path": [
+						"students",
+						"{{studentId}}",
+						"events"
 					]
 				}
 			},

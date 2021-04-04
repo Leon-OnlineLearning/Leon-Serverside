@@ -17,4 +17,5 @@ export default interface StudentLogic {
     getStudentByEmail(email: string): Promise<Student | undefined>;
     updateStudent(studentId: string, newData: Student): Promise<Student>;
     getStudentById(studentId: string): Promise<Student | undefined>;
+    getStudentAttendance(studentId:string): Promise<any>;
 }

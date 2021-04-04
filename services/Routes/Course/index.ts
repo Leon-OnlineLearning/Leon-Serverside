@@ -69,7 +69,7 @@ router.post('/:courseId/lectures', onlyProfessors, async (req, res) => {
     simpleFinalMWDecorator(res, async () => {
         const logic: CoursesLogic = new CourseLogicImpl()
         await logic.addLectureToCourse(req.params.courseId, req.body.lectureId)
-    }, 201)
+    }, 200)
 })
 
 router.get('/:courseId/lectures', async (req,res) => {
