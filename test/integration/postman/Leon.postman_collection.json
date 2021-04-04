@@ -956,13 +956,34 @@
 				"method": "POST",
 				"header": [],
 				"body": {
-					"mode": "raw",
-					"raw": "{\n    \"title\": \"{{lectureTitle}}\",\n    \"year\": 2,\n    \"startTime\": \"{{lectureStartDate}}\",\n    \"endTime\": \"{{lectureEndDate}}\",\n    \"path\": \"http://localhost:{{port}}/lectures/2/lecture1.pdf\"\n}",
-					"options": {
-						"raw": {
-							"language": "json"
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "lectureFile",
+							"type": "file",
+							"src": "d.pdf"
+						},
+						{
+							"key": "title",
+							"value": "{{lectureTitle}}",
+							"type": "text"
+						},
+						{
+							"key": "year",
+							"value": "2",
+							"type": "text"
+						},
+						{
+							"key": "startTime",
+							"value": "{{lectureStartDate}}",
+							"type": "text"
+						},
+						{
+							"key": "endTime",
+							"value": "{{lectureEndDate}}",
+							"type": "text"
 						}
-					}
+					]
 				},
 				"url": {
 					"raw": "http://localhost:{{port}}/lectures",
@@ -973,6 +994,49 @@
 					"port": "{{port}}",
 					"path": [
 						"lectures"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Assing course to professor",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test('it should return successfully',()=>{",
+							"    pm.response.to.have.status(200);",
+							"})"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"courseId\": \"{{courseId}}\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:{{port}}/professors/{{professorId}}/courses",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "{{port}}",
+					"path": [
+						"professors",
+						"{{professorId}}",
+						"courses"
 					]
 				}
 			},
@@ -1575,6 +1639,46 @@
 			"response": []
 		},
 		{
+			"name": "Get students for lecture",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test('it should return successfully', ()=>{",
+							"    pm.response.to.have.status(200);",
+							"})",
+							"",
+							"pm.test('it should return valid students', ()=> {",
+							"    const resp = pm.response.json()",
+							"    pm.expect(Array.isArray(resp)).to.be.true;",
+							"    pm.expect(resp[0].id).to.equal(pm.environment.get('studentId'));",
+							"})"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:{{port}}/lectures/{{lectureId}}/students",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "{{port}}",
+					"path": [
+						"lectures",
+						"{{lectureId}}",
+						"students"
+					]
+				}
+			},
+			"response": []
+		},
+		{
 			"name": "Delete lecture",
 			"event": [
 				{
@@ -1618,7 +1722,7 @@
 							"    pm.response.to.have.status(200)",
 							"})",
 							"",
-							"pm.test('it should return valid fields',()=>{",
+							"pm.test('it should return an empty array',()=>{",
 							"    const resp = pm.response.json()",
 							"    pm.expect(Array.isArray(resp)).to.be.true;",
 							"    pm.expect(resp.length).to.equal(0);",
@@ -1642,6 +1746,41 @@
 						"students",
 						"{{studentId}}",
 						"events"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get students for lecture that doesn't exist",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test('it should fail', ()=>{",
+							"    pm.response.to.have.status(400);",
+							"})",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:{{port}}/lectures/{{lectureId}}/students",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "{{port}}",
+					"path": [
+						"lectures",
+						"{{lectureId}}",
+						"students"
 					]
 				}
 			},

@@ -39,6 +39,8 @@ export default class StudentLogicImpl implements StudentLogic {
                     .from(StudentLectureAttendance, "st_lec_at")
                     .where("st_lec_at.studentId = :studentId", { studentId })
                     .getQuery()).getMany()
+            console.log(attendedLectures);
+            
             let _res: Array<any> = []
             const attendedLecturesTitle = attendedLectures.map(al => al.title);
             for (let lec of courseLectures) {

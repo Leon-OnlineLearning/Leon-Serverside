@@ -62,4 +62,11 @@ router.delete('/:lectureId', async (req, res) => {
     }, 204)
 })
 
+router.get('/:lectureId/students', async (req,res)=> {
+    simpleFinalMWDecorator(res, async ()=> {
+        const logic: LecturesLogic = new LecturesLogicImpl()
+        return logic.getStudentsForLecture(req.params.lectureId);
+    })
+})
+
 export default router;
