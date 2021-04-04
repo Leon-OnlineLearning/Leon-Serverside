@@ -12,7 +12,16 @@ import UserInputError from "@services/utils/UserInputError"
 
 const router = Router()
 
-const uploader = multer({ dest: process.env['UPLOADED_LECTURES_PATH'] })
+const lecturesStorage = multer.diskStorage({
+    destination: (req, file, cb) => {
+        cb(null, process.env['UPLOADED_LECTURES_PATH'] || "lectures/")
+    },
+    filename: (req, file, cb) => {
+        cb(null, `${file.fieldname}` + '-' + Date.now() + ".pdf")
+    }
+})
+
+const uploader = multer({ storage: lecturesStorage })
 
 router.use(BlockedJWTMiddleware)
 router.use(passport.authenticate('access-token', { session: false }))
@@ -62,8 +71,8 @@ router.delete('/:lectureId', async (req, res) => {
     }, 204)
 })
 
-router.get('/:lectureId/students', async (req,res)=> {
-    simpleFinalMWDecorator(res, async ()=> {
+router.get('/:lectureId/students', async (req, res) => {
+    simpleFinalMWDecorator(res, async () => {
         const logic: LecturesLogic = new LecturesLogicImpl()
         return logic.getStudentsForLecture(req.params.lectureId);
     })
