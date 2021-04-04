@@ -29,6 +29,7 @@ export default class StudentLogicImpl implements StudentLogic {
         // for each course get the lectures
         const courses = await student.courses
         let res: any = {};
+        // TODO room for optimization
         for (let course of courses) {
             const qb = getRepository(Lecture).createQueryBuilder("lec")
             const courseLectures = await course.lectures

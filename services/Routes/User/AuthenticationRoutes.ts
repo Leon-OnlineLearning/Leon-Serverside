@@ -4,9 +4,19 @@ import { blockId, generateAccessToken, generateRefreshToken, isTokenValidAndExpi
 import { IdTokenClient, OAuth2Client } from "google-auth-library"
 import { googleInfoToUserInfoMapper } from "@services/Auth"
 import UserRepo from "@controller/DataAccess/user-repo";
-
+import rateLimiter from "express-rate-limit"
 
 const router = express.Router();
+
+const loginLimiter = rateLimiter({
+    windowMs: 30 * 1000,
+    max: 5
+})
+
+const refreshTokenLimiter = rateLimiter({
+    windowMs: 30 * 1000,
+    max: 2
+})
 
 const googleOAuth2Client = new OAuth2Client(process.env["GOOGLE_OAUTH2_CLIENT_ID"], process.env["GOOGLE_OAUTH2_CLIENT_SECRET"])
 
@@ -28,7 +38,7 @@ router.post('/signup', async (req, res) => {
     })(req, res)
 })
 
-router.post('/login', passport.authenticate('login', { session: false }), async (req, res) => {
+router.post('/login', loginLimiter, passport.authenticate('login', { session: false }), async (req, res) => {
     const user: any = req.user;
 
     await login(user, res)
@@ -41,7 +51,7 @@ async function login(user: any, res: any) {
     res.json({ success: true, token, refreshToken })
 }
 
-router.post('/refreshToken', passport.authenticate('refresh-token', { session: false }), async (req, res) => {
+router.post('/refreshToken', refreshTokenLimiter, passport.authenticate('refresh-token', { session: false }), async (req, res) => {
 
     // check if the old token is valid and expired
     let validAndExpired = await isTokenValidAndExpired(req.cookies['jwt'] || req.body["jwt"])
@@ -82,12 +92,12 @@ const verifyGoogleJwt = async (tokenId: string) => {
         }
     )
     const payload = ticket.getPayload()
-    
+
     return payload;
 
 }
 
-router.post('/google', async (req, res) => {
+router.post('/google', loginLimiter, async (req, res) => {
     const repo = new UserRepo()
     const payload = await verifyGoogleJwt(req.body.tokenId)
 

@@ -10,22 +10,16 @@ import passport from "passport";
 import { Strategy as LocalStrategy } from "passport-local";
 import { Strategy as JWTStrategy } from "passport-jwt";
 import { isTokenBlocked } from "@controller/Tokens";
-import { OAuth2Strategy as GoogleStrategy, Profile } from "passport-google-oauth"
+import { OAuth2Strategy as GoogleStrategy } from "passport-google-oauth"
 import getCorrectUser from "@controller/BusinessLogic/User/validate-user";
-import { getConnection, getCustomRepository, getRepository } from "typeorm";
+import { getRepository } from "typeorm";
 import UserRepo from "@controller/DataAccess/user-repo";
 import { hashPassword } from "@utils/passwords";
 import Student from "@models/Users/Student";
-import Professor from "@models/Users/Professor";
-import Admin from "@models/Users/Admin";
-import UserPersistanceFactory from "@models/Users/UserFactory";
-import StudentRepo from "@controller/DataAccess/student-repo";
-import StudentLogicImpl from "@controller/BusinessLogic/User/Student/students-logic-impl";
-import StudentLogic from "@controller/BusinessLogic/User/Student/students-logic";
 import UserTypes from "@models/Users/UserTypes";
 import UserClassFactory from "@models/Users/UserClassMapper";
 import { NextFunction, Request, Response } from "express";
-import { UserPartialValidatorSchema, UserThirdPartySchema, UserValidationSchema } from "@models/Users/validators/schema/UserSchema";
+import { UserThirdPartySchema, UserValidationSchema } from "@models/Users/validators/schema/UserSchema";
 import UserInputError from "@services/utils/UserInputError";
 
 passport.use('login',
@@ -133,7 +127,7 @@ passport.use(
  */
 export async function googleInfoToUserInfoMapper(profile: any) {
     let _userObj: any = {}
-    
+
     _userObj.firstName = profile.given_name;
     _userObj.lastName = profile.given_name;
     _userObj.thirdPartyAccount = true;
@@ -153,7 +147,7 @@ export async function googleInfoToUserInfoMapper(profile: any) {
 
     const userObj = new Student()
     userObj.setValuesFromJSON(_userObj)
-    
+
     return userObj;
 }
 
