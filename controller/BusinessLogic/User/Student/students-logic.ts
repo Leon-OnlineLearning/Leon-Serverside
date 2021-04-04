@@ -4,6 +4,7 @@ import Lecture from "@models/Events/Lecture";
 import Student from "@models/Users/Student";
 
 export default interface StudentLogic {
+    getAllEvents(studentId: string): Promise<any>;
     createStudent(student: Student): Promise<Student>;
     attendLecture(studentId: string, lectureId: string): Promise<void>;
     attendExam(studentId: string, examId: string): Promise<void>;

@@ -9,7 +9,7 @@ export default class ExamParser implements BodyParserMiddleware {
     parserClosure(validatorSchema: Joi.ObjectSchema) {
         return async (req: Request, res: Response, next: NextFunction) => {
             const exam = new Exam()
-            exam.eventTime = new Date(req.body.eventTime)
+            exam.startTime = new Date(req.body.eventTime)
             exam.mark = req.body.mark
             exam.title = req.body.title
             const examReq = req as ExamRequest 

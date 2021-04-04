@@ -11,7 +11,7 @@ export default class StudentsExams {
     student!: Student
 
     @ManyToOne(()=>Exam, exam => exam.studentExam)
-    exam! : Exam
+    exam! : Promise<Exam>
 
     @Column()
     mark: number;

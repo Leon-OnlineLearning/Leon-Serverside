@@ -112,4 +112,11 @@ router.delete('/:studentId/courses', async (req, res) => {
     })
 })
 
+router.get('/:studentId/events', async (req, res)=>{
+    simpleFinalMWDecorator(res, async()=>{
+        const logic : StudentLogic = new StudentLogicImpl()
+        return logic.getAllEvents(req.params.studentId)
+    })
+})
+
 export default router;

@@ -8,7 +8,8 @@ export default class LectureParser implements BodyParserMiddleware {
     parserClosure(validatorSchema: Joi.ObjectSchema) {
         return async (req: Request, res: Response, next: NextFunction) => {
             const lecture = new Lecture()
-            lecture.eventTime = new Date(req.body.eventTime)
+            lecture.startTime = new Date(req.body.startTime)
+            lecture.endTime = new Date(req.body.endTime)
             lecture.path = req.body.path
             lecture.title = req.body.title
             lecture.year = req.body.year

@@ -8,7 +8,9 @@ export const EventValidatorSchema = Joi.object(
         year: Joi.number()
             .min(1)
             .required(),
-        eventTime: Joi.date()
+        startTime: Joi.date()
+            .required(),
+        endTime: Joi.date()
             .required()
     }
 )
@@ -19,7 +21,7 @@ export const EventPartialValidatorSchema = Joi.object(
             .min(5),
         year: Joi.number()
             .min(1),
-        eventTime: Joi.date()
-            .required()
+        startTime: Joi.date(),
+        endTime: Joi.date()
     }
 )

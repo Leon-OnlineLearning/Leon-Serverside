@@ -22,6 +22,27 @@ import UserInputError from "@services/utils/UserInputError";
 
 export default class StudentLogicImpl implements StudentLogic {
 
+    async getAllEvents(studentId: string) {
+        const student = await getRepository(Student).findOne(studentId)
+        if (!student) throw new UserInputError("Invalid student Id");
+        const lectures = await student.lectures;
+        const studentExams = student.studentExam
+        let exams = []
+        let res : any= []
+        if (studentExams) {
+            for (const studentExam of studentExams) {
+                exams.push(await studentExam.exam)
+            }
+            exams.forEach(ex => {
+                res.push({...ex, eventType: 'exam'})
+            })
+        }
+        lectures.forEach(lec => {
+            res.push({...lec, eventType: 'lecture'})
+        })
+        return res
+    }
+
     async cancelCourse(studentId: string, courseId: string): Promise<void> {
         const student = await getRepository(Student).findOne(studentId)
         if (!student) throw new UserInputError("Student is not found");
@@ -127,8 +148,8 @@ export default class StudentLogicImpl implements StudentLogic {
         const exam = await getRepository(Exam).findOne(examId)
         if (!exam) { throw new UserInputError("Exam is not found") }
         const studentExam = new StudentsExams();
-        studentExam.exam = exam;
-        studentExam.student = student
+        studentExam.exam = Promise.resolve(exam);
+        studentExam.student = student;
         await getRepository(StudentsExams).save(studentExam);
     }
 }

@@ -14,6 +14,9 @@ export default abstract class Event {
     year:number
 
     @Column()
-    eventTime: Date
+    startTime: Date
+
+    @Column()
+    endTime: Date
 
 }
