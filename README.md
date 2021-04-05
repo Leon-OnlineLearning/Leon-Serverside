@@ -21,6 +21,15 @@ UPLOADED_LECTURES_PATH=
 SERVER_BASE_DOMAIN=
 ```
 
+## Migraitons
+To run migration on you local environment use this command
+```bash
+ts-node -r tsconfig-paths/register ./node_modules/.bin/typeorm migration:run
+# For some reason i can't pass the -n in the scripts
+# to generate migraiotn use this command
+ts-node -r tsconfig-paths/register ./node_modules/.bin/typeorm migration:generate -n $MIGRATION_NAME
+```
+
 ## Testing
 **DON'T FORGET TO SET TESTING VARIABLE TO TRUE**
 ## Integration testing
