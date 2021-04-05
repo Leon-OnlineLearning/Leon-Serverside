@@ -31,7 +31,7 @@ app.use('/exams', examRouter)
 app.use('/lectures', lectureRouter)
 app.use('/departments', departmentRouter)
 
-app.use('/lectures', express.static('lectures'))
+app.use('/lecturesFiles', express.static('lectures'))
 
 const PORT = process.env.SERVER_PORT || 3333
 
