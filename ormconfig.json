@@ -1,0 +1,17 @@
+{
+    "type": "mysql",
+    "host": "localhost",
+    "port": 3306,
+    "username": "a",
+    "password": "a",
+    "database": "leon",
+    "entities": [
+        "models/**/*.ts"
+    ],
+    "migrations": [
+        "migration/*.ts"
+    ],
+    "cli": {
+        "migrationsDir": "migration"
+    }
+}

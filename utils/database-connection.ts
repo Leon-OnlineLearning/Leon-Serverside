@@ -11,21 +11,22 @@ const connectionInfo = {
 export const initializeDBMSConnection = async () => {
     let connection: Connection;
 
-    connection = await createConnection(
-        {
-            type: "mysql",
-            // logging: true,
-            // logger: "simple-console",
-            ...connectionInfo,
-            entities: [
-                __dirname + "/../models/**/*.ts"
-            ],
-            extra: { // config dependant on the database 
-                connectionLimit: process.env["CONNECTION_POOL_SIZE"]
-            }
-        }
-    )
-    await connection.synchronize(process.env.TESTING ? true : false);
+    // connection = await createConnection(
+    //     {
+    //         type: "mysql",
+    //         // logging: true,
+    //         // logger: "simple-console",
+    //         ...connectionInfo,
+    //         entities: [
+    //             __dirname + "/../models/**/*.ts"
+    //         ],
+    //         extra: { // config dependant on the database 
+    //             connectionLimit: process.env["CONNECTION_POOL_SIZE"]
+    //         }
+    //     }
+    // )
+    // await connection.synchronize(process.env.TESTING ? true : false);
+    connection = await createConnection()
 }
 
 export const destructDBMSConnection = async () => {
