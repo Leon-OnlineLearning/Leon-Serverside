@@ -159,12 +159,12 @@ export async function getPayloadFromJWTNoExpiration(token: string) {
 
 export async function getUserFromJWT(token: string) {
     try {
-        const payload: any = await getPayloadFromJWTNoExpiration(token)
-        const repo = getCustomRepository(UserRepo);
-        const user = await repo.findUserAndRoleById(payload["id"])
+        const payload: any = await getPayloadFromJWTNoExpiration(token);
+        const repo = new UserRepo();
+        const user = await repo.findUserAndRoleById(payload["id"]);
         return user
     } catch (e) {
-        throw new UserInputError("token not sent")
+        throw e
     }
 }
 
