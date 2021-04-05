@@ -10,7 +10,7 @@ const router = express.Router();
 
 const loginLimiter = rateLimiter({
     windowMs: 30 * 1000,
-    max: 5
+    max: 6
 })
 
 const refreshTokenLimiter = rateLimiter({
