@@ -63,16 +63,16 @@ export default class StudentLogicImpl implements StudentLogic {
         const courses = await student.courses
         let res: Array<Event> = [];
         for (const course of courses) {
-            const connection = getConnection()
-            
             const lecQb = getRepository(Lecture).createQueryBuilder("lec")
-            const lectures = await lecQb.where("lec.courseId = :courseId", { courseId: course.id })
+            let lectures = await lecQb.where("lec.courseId = :courseId", { courseId: course.id })
                 .andWhere("lec.startTime BETWEEN :start AND :end", { start: startingFrom, end: endingAt })
                 .getMany();
+            lectures = lectures.map(lect => { return { ...lect, eventType: "lecture" } })
             const examQb = getRepository(Exam).createQueryBuilder("ex");
-            const exams = await examQb.where("ex.courseId = :courseId", { courseId: course.id })
+            let exams = await examQb.where("ex.courseId = :courseId", { courseId: course.id })
                 .andWhere("ex.startTime BETWEEN :start AND :end", { start: startingFrom, end: endingAt })
                 .getMany();
+            exams = exams.map(ex => { return { ...ex, eventType: "exam" } })
             res = [...res, ...lectures, ...exams]
         }
         return res
