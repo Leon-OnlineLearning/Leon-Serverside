@@ -44,6 +44,8 @@ app.listen(PORT, async () => {
     await databaseStartup()
 })
 
-app.get("/sayHello", (req, res) => {
+app.get("/sayHello", (_, res) => {
     res.send("hello")
 })
+
+

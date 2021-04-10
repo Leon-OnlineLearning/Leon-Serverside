@@ -3,7 +3,7 @@ import Department from "@models/Department";
 import StudentsExams from "@models/JoinTables/StudentExam";
 import StudentLectureAttendance from "@models/JoinTables/StudentLectureAttended";
 import { Min } from "class-validator";
-import { ChildEntity, Column, Entity, JoinTable, ManyToMany, ManyToOne, OneToMany, OneToOne } from "typeorm";
+import { Column, Entity, JoinTable, ManyToMany, ManyToOne, OneToMany } from "typeorm";
 import User from "./User";
 
 @Entity()

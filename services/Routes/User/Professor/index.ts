@@ -6,7 +6,6 @@ import ProfessorLogicImpl from "@controller/BusinessLogic/User/Professor/profess
 import ProfessorParser, { ProfessorRequest } from "../../BodyParserMiddleware/ProfessorParser"
 import Professor from "@models/Users/Professor"
 import BodyParserMiddleware from "../../BodyParserMiddleware/BodyParserMiddleware"
-import { TableForeignKey } from "typeorm"
 import paginationParameters from "@services/Routes/utils/pagination"
 import simpleFinalMWDecorator from "@services/utils/RequestDecorator"
 
