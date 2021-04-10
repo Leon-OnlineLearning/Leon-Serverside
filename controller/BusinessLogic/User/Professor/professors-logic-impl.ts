@@ -12,17 +12,18 @@ import StudentLogic from "../Student/students-logic";
 import StudentLogicImpl from "../Student/students-logic-impl";
 import ProfessorLogic from "./professors-logic"
 import UserInputError from "@services/utils/UserInputError"
+import { hashPassword } from "@utils/passwords";
 
 export default class ProfessorLogicIml implements ProfessorLogic {
 
     async getLectures(professorId: string): Promise<Lecture[]> {
-        const professor = await getRepository(Professor).findOne(professorId, {relations: ['lectures']})
+        const professor = await getRepository(Professor).findOne(professorId, { relations: ['lectures'] })
         if (!professor) throw new UserInputError("Invalid professor Id");
         return professor.lectures
     }
 
     async assignLectureToProfessor(professorId: string, lectureId: string): Promise<void> {
-        const professor = await getRepository(Professor).findOne(professorId, {relations: ['lectures']})
+        const professor = await getRepository(Professor).findOne(professorId, { relations: ['lectures'] })
         if (!professor) throw new UserInputError("Invalid professor Id");
         const lecture = await getRepository(Lecture).findOne(lectureId)
         if (!lecture) throw new UserInputError("Invalid lecture id");
@@ -70,7 +71,7 @@ export default class ProfessorLogicIml implements ProfessorLogic {
         const adminLogic: AdminLogic = new AdminLogicImpl()
         const admin = await adminLogic.getAdminByEmail(professor.email)
         if (admin) throw new AccountWithSimilarEmailExist()
-
+        professor.password = await hashPassword(professor.password)
         return await getRepository(Professor).save(professor)
     }
     async deleteProfessorById(professorId: string): Promise<void> {

@@ -1,5 +1,6 @@
 import Admin from "@models/Users/Admin";
 import { AccountWithSimilarEmailExist } from "@models/Users/User";
+import { hashPassword } from "@utils/passwords";
 import { getRepository } from "typeorm";
 import ProfessorLogic from "../Professor/professors-logic";
 import ProfessorLogicIml from "../Professor/professors-logic-impl";
@@ -19,9 +20,9 @@ export default class AdminLogicImpl implements AdminLogic {
         const student = await studentLogic.getStudentByEmail(admin.email)
         if (student) throw new AccountWithSimilarEmailExist()
         const professorLogic : ProfessorLogic = new ProfessorLogicIml() 
-        const professor = professorLogic.getProfessorByEmail(admin.email)
+        const professor = await professorLogic.getProfessorByEmail(admin.email)
         if (professor) throw new AccountWithSimilarEmailExist()
-
+        admin.password = await hashPassword(admin.password)
         return getRepository(Admin).save(admin);
     }
     async deleteAdminById(adminId: string): Promise<void> {
