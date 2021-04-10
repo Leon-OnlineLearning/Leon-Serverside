@@ -32,7 +32,8 @@ router.post('/signup', async (req, res) => {
         if (user) {
             const token = await generateAccessToken(user)
             const refreshToken = await generateRefreshToken(user)
-            res.cookie('jwt', token, { httpOnly: true })
+            res.cookie('jwt', token, { httpOnly: true, path: '/' })
+            // res.cookie('jwt', token, { path: '/' })
             res.status(201).json({ success: true, token, refreshToken, email: user["email"], firstName: user["firstName"], lastName: user["lastName"] })
         }
     })(req, res)
@@ -47,7 +48,7 @@ router.post('/login', loginLimiter, passport.authenticate('login', { session: fa
 async function login(user: any, res: any) {
     const token = await generateAccessToken(user)
     const refreshToken = await generateRefreshToken(user)
-    res.cookie('jwt', token, { httpOnly: true })
+    res.cookie('jwt', token, { httpOnly: true, path: "/" })
     res.json({ success: true, token, refreshToken })
 }
 
@@ -61,7 +62,7 @@ router.post('/refreshToken', refreshTokenLimiter, passport.authenticate('refresh
     if (validAndExpired) {
         const user = await getUserFromJWT(req.cookies['jwt'] || req.body['jwt'])
         const token = await generateAccessToken(user, true)
-        res.cookie('jwt', token, { httpOnly: true })
+        res.cookie('jwt', token, { httpOnly: true, path: "/" })
         res.send({ success: true, token, message: "new token generated" })
     } else {
         res.status(400).send('Invalid old token state')
