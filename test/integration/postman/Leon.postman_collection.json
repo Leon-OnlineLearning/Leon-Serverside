@@ -1814,7 +1814,8 @@
 							"    pm.expect(resp[1].id).to.equal(",
 							"        pm.environment.get('examId')",
 							"    );",
-							"    ",
+							"    pm.expect(resp[0].eventType).to.equal('lecture');",
+							"    pm.expect(resp[1].eventType).to.equal('exam');",
 							"})"
 						],
 						"type": "text/javascript"
