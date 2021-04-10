@@ -25,8 +25,8 @@ export const initializeDBMSConnection = async () => {
     //         }
     //     }
     // )
-    // await connection.synchronize(process.env.TESTING ? true : false);
     connection = await createConnection()
+    await connection.synchronize(process.env.TESTING ? true : false);
 }
 
 export const destructDBMSConnection = async () => {

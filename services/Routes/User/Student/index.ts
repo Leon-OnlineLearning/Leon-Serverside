@@ -40,7 +40,7 @@ router.post('/', onlyAdmins, parser.completeParser, async (req, res) => {
         const _student = await logic.createStudent(studentData)
         const student = new Student()
         student.setValuesFromJSON(_student)
-        
+
         return student.summary()
     }, 201)
 })
@@ -112,15 +112,26 @@ router.delete('/:studentId/courses', async (req, res) => {
     })
 })
 
-router.get('/:studentId/events', async (req, res)=>{
-    simpleFinalMWDecorator(res, async()=>{
-        const logic : StudentLogic = new StudentLogicImpl()
-        return logic.getAllEvents(req.params.studentId)
+router.get('/:studentId/events', async (req, res) => {
+    let startingFrom: string;
+    let endingAt: string;
+    console.log('query parameters',req.query);
+    if (typeof req.query.startingFrom === "string" && typeof req.query.endingAt === "string") {
+        startingFrom = req.query.startingFrom
+        endingAt = req.query.endingAt
+    }
+    else {
+        res.status(400).send({ success: false, message: "You should provide the start time and ending time" })
+        return
+    }
+    simpleFinalMWDecorator(res, async () => {
+        const logic: StudentLogic = new StudentLogicImpl()
+        return logic.getAllEvents(req.params.studentId, startingFrom, endingAt)
     })
 })
 
-router.get('/:studentId/attendance', async (req,res) => {
-    simpleFinalMWDecorator(res, async()=>{
+router.get('/:studentId/attendance', async (req, res) => {
+    simpleFinalMWDecorator(res, async () => {
         const logic: StudentLogic = new StudentLogicImpl()
         return await logic.getStudentAttendance(req.params.studentId);
     })

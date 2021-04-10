@@ -78,4 +78,22 @@ router.get('/:courseId/lectures', async (req,res) => {
         return await logic.getLecturesForCourse(req.params.courseId)
     })
 })
+
+router.post('/:courseId/exams', onlyProfessors, async (req, res) => {
+    simpleFinalMWDecorator(res, async () => {
+        const logic: CoursesLogic = new CourseLogicImpl()
+        console.log("cid, eid",req.params.courseId, req.body.examId);
+        
+        await logic.addExamToCourse(req.params.courseId, req.body.examId)
+    })
+})
+
+router.get('/:courseId/exams', async (req,res) => {
+    simpleFinalMWDecorator(res, async () => {
+        const logic : CoursesLogic = new CourseLogicImpl()
+        return await logic.getAllExamsByCourse(req.params.courseId)
+    })
+})
+
+
 export default router;

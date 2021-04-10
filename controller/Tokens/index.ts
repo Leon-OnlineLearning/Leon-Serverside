@@ -102,7 +102,7 @@ export async function generateAccessToken(user: any, refresh: boolean = false) {
     if (!refresh) await registerPayload(payload)
     return new Promise((resolve, reject) => {
         jwt.sign(payload, process.env.JWT_SECRET || 'leon',
-            { expiresIn: "1m" },
+            { expiresIn: "15m" },
             (err, token) => {
                 if (err) reject(err)
                 else resolve(token)

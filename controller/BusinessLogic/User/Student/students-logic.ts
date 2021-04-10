@@ -4,7 +4,14 @@ import Lecture from "@models/Events/Lecture";
 import Student from "@models/Users/Student";
 
 export default interface StudentLogic {
-    getAllEvents(studentId: string): Promise<any>;
+    /**
+     * Get all events from starting from to ending at
+     * @param studentId 
+     * @param startingFrom In ISO8601 format and UTC
+     * @param endingAt In ISO8601 format and UTC
+     * @return {Array<Event>} events
+     */
+    getAllEvents(studentId: string, startingFrom: string, endingAt: string): Promise<any>;
     createStudent(student: Student): Promise<Student>;
     attendLecture(studentId: string, lectureId: string): Promise<void>;
     attendExam(studentId: string, examId: string): Promise<void>;
@@ -17,5 +24,5 @@ export default interface StudentLogic {
     getStudentByEmail(email: string): Promise<Student | undefined>;
     updateStudent(studentId: string, newData: Student): Promise<Student>;
     getStudentById(studentId: string): Promise<Student | undefined>;
-    getStudentAttendance(studentId:string): Promise<any>;
+    getStudentAttendance(studentId: string): Promise<any>;
 }

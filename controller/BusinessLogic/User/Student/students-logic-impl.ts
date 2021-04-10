@@ -5,7 +5,7 @@ import Lecture from "@models/Events/Lecture";
 import StudentsExams from "@models/JoinTables/StudentExam";
 import Student from "@models/Users/Student";
 import { hashPassword } from "@utils/passwords";
-import { getRepository } from "typeorm";
+import { getConnection, getRepository } from "typeorm";
 import AdminLogic from "../Admin/admin-logic";
 import AdminLogicImpl from "../Admin/admin-logic-impl";
 import StudentLogic from "./students-logic";
@@ -14,6 +14,7 @@ import ProfessorLogic from "../Professor/professors-logic";
 import ProfessorLogicIml from "../Professor/professors-logic-impl";
 import UserInputError from "@services/utils/UserInputError";
 import StudentLectureAttendance from "@models/JoinTables/StudentLectureAttended";
+import Event from "@models/Events/Event";
 
 
 export default class StudentLogicImpl implements StudentLogic {
@@ -27,7 +28,10 @@ export default class StudentLogicImpl implements StudentLogic {
         // TODO room for optimization
         for (let course of courses) {
             const qb = getRepository(Lecture).createQueryBuilder("lec")
+            console.log(course.id);
             const courseLectures = await course.lectures
+            console.log("course lectures", courseLectures);
+
             const attendedLectures = await qb
                 .where("lec.courseId = :courseId", { courseId: course.id })
                 .andWhere("lec.id IN" + qb.subQuery()
@@ -36,42 +40,41 @@ export default class StudentLogicImpl implements StudentLogic {
                     .where("st_lec_at.studentId = :studentId", { studentId })
                     .getQuery()).getMany()
             console.log(attendedLectures);
-            
+
             let _res: Array<any> = []
             const attendedLecturesTitle = attendedLectures.map(al => al.title);
+            console.log(courseLectures);
+
             for (let lec of courseLectures) {
                 _res.push({
                     lectureTitle: lec.title,
                     attended: attendedLecturesTitle.indexOf(lec.title) !== -1
                 })
             }
-            res = {...res, [course.name]: _res};
+            res = { ...res, [course.name]: _res };
 
         }
         return res;
     }
 
-    async getAllEvents(studentId: string) {
+    async getAllEvents(studentId: string, startingFrom: string, endingAt: string) {
         const student = await getRepository(Student).findOne(studentId)
-        if (!student) throw new UserInputError("Invalid student Id");
-        let lectures : Array<Lecture> = [];
-        for (const sla of await student.studentLectureAttendance) {
-            lectures.push(await sla.lecture)
+        if (!student) throw new UserInputError("Invalid student id")
+        const courses = await student.courses
+        let res: Array<Event> = [];
+        for (const course of courses) {
+            const connection = getConnection()
+            
+            const lecQb = getRepository(Lecture).createQueryBuilder("lec")
+            const lectures = await lecQb.where("lec.courseId = :courseId", { courseId: course.id })
+                .andWhere("lec.startTime BETWEEN :start AND :end", { start: startingFrom, end: endingAt })
+                .getMany();
+            const examQb = getRepository(Exam).createQueryBuilder("ex");
+            const exams = await examQb.where("ex.courseId = :courseId", { courseId: course.id })
+                .andWhere("ex.startTime BETWEEN :start AND :end", { start: startingFrom, end: endingAt })
+                .getMany();
+            res = [...res, ...lectures, ...exams]
         }
-        const studentExams = student.studentExam
-        let exams = []
-        let res: any = []
-        if (studentExams) {
-            for (const studentExam of studentExams) {
-                exams.push(await studentExam.exam)
-            }
-            exams.forEach(ex => {
-                res.push({ ...ex, eventType: 'exam' })
-            })
-        }
-        lectures.forEach(lec => {
-            res.push({ ...lec, eventType: 'lecture' })
-        })
         return res
     }
 
@@ -125,7 +128,7 @@ export default class StudentLogicImpl implements StudentLogic {
     async getAllLectures(studentId: string): Promise<Lecture[]> {
         const student = await getRepository(Student).findOne(studentId);
         if (student) {
-            let lectures :Array<Lecture> = [];
+            let lectures: Array<Lecture> = [];
             for (const sla of await student.studentLectureAttendance) {
                 lectures.push(await sla.lecture);
             }

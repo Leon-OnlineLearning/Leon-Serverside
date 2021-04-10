@@ -1,9 +1,27 @@
 import Course from "@models/Course";
+import Exam from "@models/Events/Exam";
 import Lecture from "@models/Events/Lecture";
 import UserInputError from "@services/utils/UserInputError";
 import { getRepository } from "typeorm";
 import CoursesLogic from "./courses-logic"
 export default class CourseLogicImpl implements CoursesLogic {
+
+    async getAllExamsByCourse(courseId: string) {
+        const course = await getRepository(Course).findOne(courseId);
+        if (!course) throw new UserInputError("Invalid course id");
+        return await course.exams 
+    }
+
+    async addExamToCourse(courseId: string, examId: any) {
+        const courseRepo = getRepository(Course);
+        const course = await courseRepo.findOne(courseId);
+        if (!course) throw new UserInputError("Invalid course id");
+        const exam = await getRepository(Exam).findOne(examId);
+        if(!exam) throw new UserInputError("Invalid exam id");
+        (await course.exams).push(exam);
+        courseRepo.save(course);
+    }
+
     async getLecturesForCourse(courseId: string) {
         const course = await getRepository(Course).findOne(courseId, { relations: ['lectures'] })
         if (!course) { throw new UserInputError("invalid course id"); }

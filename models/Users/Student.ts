@@ -1,7 +1,5 @@
 import Course from "@models/Course";
 import Department from "@models/Department";
-import Exam from "@models/Events/Exam";
-import Lecture from "@models/Events/Lecture";
 import StudentsExams from "@models/JoinTables/StudentExam";
 import StudentLectureAttendance from "@models/JoinTables/StudentLectureAttended";
 import { Min } from "class-validator";
@@ -39,7 +37,7 @@ export default class Student extends User {
     @JoinTable()
     courses: Promise<Course[]>;
 
-    @Column()
+    @Column({ default: 0 })
     @Min(1)
     year: number;
 
