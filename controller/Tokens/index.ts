@@ -74,6 +74,7 @@ export async function registerPayload(payload: any) {
  * @param token 
  */
 export async function isTokenBlocked(token: string) {
+  console.log("token is" ,token)
     try {
         const payload: any = await getPayloadFromJWTNoExpiration(token)
 

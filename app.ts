@@ -20,6 +20,7 @@ app.use(cors({
     credentials: true,
     exposedHeaders: ["set-cookie"]
 }))
+
 app.use(express.json())
 app.use(cookieParser())
 app.use(passport.initialize())

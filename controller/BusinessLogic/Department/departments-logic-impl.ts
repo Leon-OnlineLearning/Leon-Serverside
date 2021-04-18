@@ -74,6 +74,7 @@ export default class DepartmentsLogicImpl implements DepartmentsLogic {
 
     async updateDepartment(departmentId: string, newData: Department): Promise<Department> {
         const { id, ...newDepData } = newData
+        console.log("dep id",departmentId)
         return await getRepository(Department).save(
             {
                 id: departmentId,
