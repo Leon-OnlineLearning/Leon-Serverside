@@ -95,5 +95,11 @@ router.get('/:courseId/exams', async (req,res) => {
     })
 })
 
+router.get("/", async (_, res) => {
+  simpleFinalMWDecorator(res, async () => {
+    const logic: CoursesLogic = new CourseLogicImpl();
+    return await logic.getAllCourses();
+  });
+});
 
 export default router;

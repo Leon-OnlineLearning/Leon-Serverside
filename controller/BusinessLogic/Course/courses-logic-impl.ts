@@ -6,6 +6,10 @@ import { getRepository } from "typeorm";
 import CoursesLogic from "./courses-logic"
 export default class CourseLogicImpl implements CoursesLogic {
 
+    async getAllCourses() : Promise<Course[]>{
+      return getRepository(Course).find();
+    }
+
     async getAllExamsByCourse(courseId: string) {
         const course = await getRepository(Course).findOne(courseId);
         if (!course) throw new UserInputError("Invalid course id");

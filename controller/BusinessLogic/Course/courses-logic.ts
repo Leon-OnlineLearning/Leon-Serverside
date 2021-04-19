@@ -5,6 +5,7 @@ import { type } from "os";
 
 
 export default interface CoursesLogic {
+    getAllCourses(): Promise<Course[]>;
     getAllExamsByCourse(courseId: string): Promise<Exam[]>;
     addExamToCourse(courseId: string, examId: any): Promise<void>;
     getLecturesForCourse(courseId: string): any;
