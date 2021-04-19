@@ -70,7 +70,9 @@ router.post('/refreshToken', refreshTokenLimiter, passport.authenticate('refresh
 })
 
 router.post('/logout', async (req, res) => {
+    console.log(req.cookies)
     const token = req.cookies['jwt'] || req.body['token']
+
     try {
         const user: any = await getPayloadFromJWTNoExpiration(token)
         await blockId(user["id"])
