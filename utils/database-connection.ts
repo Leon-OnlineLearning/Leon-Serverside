@@ -3,14 +3,6 @@ import AdminLogicImpl from "@controller/BusinessLogic/User/Admin/admin-logic-imp
 import Admin from "@models/Users/Admin";
 import { Connection, createConnection, getConnection } from "typeorm"
 
-const connectionInfo = {
-    host: process.env.HOST || 'localhost',
-    port: parseInt(process.env.DATABASE_PORT || "") || 3306,
-    username: process.env.DB_USERNAME || 'leon',
-    password: process.env.DB_PASSWORD || 'leon',
-    database: process.env.DATABASE_NAME || 'leon',
-}
-
 export const initializeDBMSConnection = async () => {
     let connection: Connection;
     connection = await createConnection()
