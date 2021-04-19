@@ -13,5 +13,4 @@ const sendVideo = (socket: Socket, file: any, usrId: string, callback: any) => {
   });
 };
 
-// testing
 export default sendVideo;
