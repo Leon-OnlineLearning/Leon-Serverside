@@ -5,6 +5,7 @@ import ExamParser, { ExamRequest } from "@services/Routes/BodyParserMiddleware/E
 import ExamsLogic from "@controller/BusinessLogic/Event/Exam/exam-logic"
 import ExamsLogicImpl from "@controller/BusinessLogic/Event/Exam/exam-logic-impl"
 import simpleFinalMWDecorator from "@services/utils/RequestDecorator"
+import multer from "multer"
 
 const router = Router()
 
@@ -12,6 +13,26 @@ router.use(BlockedJWTMiddleware)
 router.use(passport.authenticate('access-token', { session: false }))
 
 const parser: BodyParserMiddleware = new ExamParser()
+
+var storage = multer.memoryStorage();
+var upload = multer({ storage: storage });
+
+/**
+ * save exam recording
+ * 
+ * req body must contain
+ * - usedId 
+ * - examId
+ * - chunckIndex : number of current chunk
+ * - chuck : actual recorded chunk in webm format
+ // TODO add parser to validate the exam info fields
+ */
+router.put('/record', upload.single('chuck'), async (req, res) => {
+    simpleFinalMWDecorator(res, async () => {
+        const logic: ExamsLogic = new ExamsLogicImpl()
+        await logic.saveRecording(req.file.buffer, req.body.examId, req.body.userId);
+    })
+})
 
 router.get('/:examId', async (req, res) => {
     simpleFinalMWDecorator(res, async () => {
