@@ -1,5 +1,7 @@
 import { Socket } from "socket.io-client/build/socket";
 import axios from "axios";
+import fs from "fs";
+const fsPromises = fs.promises;
 const FormData = require("form-data");
 /**
  * @deprecated
@@ -27,7 +29,7 @@ export interface ExamFileInfo {
   examId: string;
   chunkIndex: number;
   lastChunk: boolean;
-  chunk: any;
+  chunk: Buffer;
   chunkStartTime: Date;
   chunkEndTime: Date;
 }
@@ -58,15 +60,25 @@ export const sendFileHttpMethods = async (
   resultCallback: ResultCallback
 ) => {
   if (fileInfo.chunkIndex % 2 == 0) {
+    const fileName = `/tmp/${fileInfo.examId}-${userId}-${fileInfo.chunkIndex}.webm`;
+    await fsPromises.writeFile(fileName, fileInfo.chunk);
     const fd = new FormData();
-    fd.append("chunk", fileInfo.chunk);
-    const res = await axios({
-      method: "post",
-      headers: fd.getHeaders(),
-      data: fd,
-      url: `${receiverBaseUrl}/exams/${userId}`,
-    }).then((resp) => resp.data);
-    resultCallback(res, fileInfo.chunkStartTime, fileInfo.chunkEndTime);
+    fd.append("chunk", fs.createReadStream(fileName));
+    try {
+      const res = await axios({
+        method: "post",
+        headers: fd.getHeaders(),
+        data: fd,
+        url: `${receiverBaseUrl}/exams/${userId}`,
+      }).then((resp) => resp.data);
+      resultCallback(res, fileInfo.chunkStartTime, fileInfo.chunkEndTime);
+    } catch (e) {
+      console.error(e);
+    } finally {
+      fs.unlink(fileName, (err) => {
+        if (err) console.log(err);
+      });
+    }
   }
   await storageCallback(fileInfo.chunk, fileInfo.examId, userId);
 };

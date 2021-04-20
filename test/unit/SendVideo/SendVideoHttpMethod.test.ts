@@ -57,7 +57,7 @@ describe("Sending video with http POST method", () => {
       userId,
       "http://localhost:6789",
       {
-        chunk: fs.createReadStream(__dirname + "/videoTst.webm"),
+        chunk: fs.readFileSync(__dirname + "/videoTst.webm"),
         chunkEndTime: endTime,
         chunkStartTime: startTime,
         chunkIndex: 1,
@@ -72,7 +72,7 @@ describe("Sending video with http POST method", () => {
       userId,
       "http://localhost:6789",
       {
-        chunk: fs.createReadStream(__dirname + "/videoTst.webm"),
+        chunk: fs.readFileSync(__dirname + "/videoTst.webm"),
         chunkEndTime: endTime,
         chunkStartTime: startTime,
         chunkIndex: 2,
