@@ -6,6 +6,7 @@ import ExamsLogic from "@controller/BusinessLogic/Event/Exam/exam-logic"
 import ExamsLogicImpl from "@controller/BusinessLogic/Event/Exam/exam-logic-impl"
 import simpleFinalMWDecorator from "@services/utils/RequestDecorator"
 import multer from "multer"
+import { onlyStudents } from "@services/Routes/User/AuthorizationMiddleware"
 
 const router = Router()
 
@@ -27,7 +28,7 @@ var upload = multer({ storage: storage });
  * - chuck : actual recorded chunk in webm format
  // TODO add parser to validate the exam info fields
  */
-router.put('/record', upload.single('chuck'), async (req, res) => {
+router.put('/record',onlyStudents, upload.single('chuck'), async (req, res) => {
     simpleFinalMWDecorator(res, async () => {
         const logic: ExamsLogic = new ExamsLogicImpl()
         await logic.saveRecording(req.file.buffer, req.body.examId, req.body.userId);
