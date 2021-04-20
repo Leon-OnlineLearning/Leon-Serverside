@@ -1,8 +1,10 @@
 import { Socket } from "socket.io-client/build/socket";
+import axios from "axios";
+const FormData = require("form-data");
 /**
- * @deprecated 
- * In the new design HTTP request was used 
- * 
+ * @deprecated
+ * In the new design HTTP request was used
+ *
  * Sending video to a server socket
  * **NOTE:** this function expects an ack to happen to call the callback function
  * @param socket the client socket
@@ -10,10 +12,61 @@ import { Socket } from "socket.io-client/build/socket";
  * @param usrId the id for the user associated with that video
  * @param callback a function to be called after the client socket receive a ack status as ok
  */
-const sendVideoWebSocket = (socket: Socket, file: any, usrId: string, callback: any) => {
+export const sendFileWebSocket = (
+  socket: Socket,
+  file: any,
+  usrId: string,
+  callback: any
+) => {
   socket.emit("receive_video_file", { file, id: usrId }, (ack: any) => {
     if (ack.status === "ok") callback();
   });
 };
 
-export default sendVideoWebSocket;
+export interface ExamFileInfo {
+  examId: string;
+  chunkIndex: number;
+  lastChunk: boolean;
+  chunk: any;
+  chunkStartTime: Date;
+  chunkEndTime: Date;
+}
+
+export interface StorageCallback {
+  (chunk: any, examId: string, userId: string): Promise<any>;
+}
+
+export interface ResultCallback {
+  (result: string, start: Date, end: Date): Promise<any>;
+}
+
+/**
+ * @description
+ * send file with http post
+ * NOTE: sends only chunks with even indices to the next server
+ * @param userId
+ * @param receiverBaseUrl
+ * @param fileInfo
+ * @param storageCallback
+ * @param resultCallback
+ */
+export const sendFileHttpMethods = async (
+  userId: string,
+  receiverBaseUrl: string,
+  fileInfo: ExamFileInfo,
+  storageCallback: StorageCallback,
+  resultCallback: ResultCallback
+) => {
+  if (fileInfo.chunkIndex % 2 == 0) {
+    const fd = new FormData();
+    fd.append("chunk", fileInfo.chunk);
+    const res = await axios({
+      method: "post",
+      headers: fd.getHeaders(),
+      data: fd,
+      url: `${receiverBaseUrl}/exams/${userId}`,
+    }).then((resp) => resp.data);
+    resultCallback(res, fileInfo.chunkStartTime, fileInfo.chunkEndTime);
+  }
+  await storageCallback(fileInfo.chunk, fileInfo.examId, userId);
+};
