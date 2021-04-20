@@ -9,6 +9,7 @@ import BodyParserMiddleware from "../../BodyParserMiddleware/BodyParserMiddlewar
 import paginationParameters from "@services/Routes/utils/pagination"
 import simpleFinalMWDecorator from "@services/utils/RequestDecorator"
 import DepartmentsLogicImpl from "@controller/BusinessLogic/Department/departments-logic-impl"
+import UserInputError from "@services/utils/UserInputError"
 
 const router = Router()
 router.use(BlockedJWTMiddleware)
@@ -26,6 +27,34 @@ router.get('/', onlyAdmins, async (req, res) => {
         const [skip, take] = paginationParameters(req)
         const students = await logic.getAllStudents(skip, take)
         return students
+    })
+})
+
+router.get('/:studentId/embedding',onlyAdmins, async (req, res)=>{
+    simpleFinalMWDecorator(res, async () => {
+        const logic: StudentLogic = new StudentLogicImpl();
+        const embedding = await logic.getEmbedding(req.params.studentId);
+        return {embedding: embedding.vector};
+    })
+})
+
+router.post('/:studentId/embedding',onlyAdmins, async (req, res) => {
+    simpleFinalMWDecorator(res, async () => {
+        if (!req.body.embedding) {
+            throw new UserInputError("Embedding wasn't provided")
+        }
+        const logic: StudentLogic = new StudentLogicImpl();
+        return await logic.setEmbedding(req.params.studentId, req.body.embedding);
+    })
+})
+
+router.put('/:studentId/embedding',onlyAdmins, async (req, res) => {
+    simpleFinalMWDecorator(res, async () => {
+        if (!req.body.embedding) {
+            throw new UserInputError("Embedding wasn't provided")
+        }
+        const logic: StudentLogic = new StudentLogicImpl();
+        return await logic.setEmbedding(req.params.studentId, req.body.embedding);
     })
 })
 

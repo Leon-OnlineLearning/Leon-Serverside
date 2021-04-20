@@ -15,9 +15,25 @@ import ProfessorLogicIml from "../Professor/professors-logic-impl";
 import UserInputError from "@services/utils/UserInputError";
 import StudentLectureAttendance from "@models/JoinTables/StudentLectureAttended";
 import Event from "@models/Events/Event";
+import Embedding from "@models/Users/Embedding";
 
 
 export default class StudentLogicImpl implements StudentLogic {
+
+    async setEmbedding(studentId: string, vector: string): Promise<Student> {
+        const student = await getRepository(Student).findOne(studentId);
+        if (!student) throw new UserInputError("Invalid student id");
+        const embedding = new Embedding();
+        embedding.vector = vector;
+        student.embedding = Promise.resolve(embedding);
+        return await getRepository(Student).save(student)
+    }
+
+    async getEmbedding(studentId: string): Promise<Embedding> {
+        const student = await getRepository(Student).findOne(studentId, { relations: ["embedding"] })
+        if (!student) throw new UserInputError("Invalid student id")
+        return student.embedding;
+    }
 
     async getStudentAttendance(studentId: string): Promise<any> {
         const student = await getRepository(Student).findOne(studentId)

@@ -1,6 +1,7 @@
 import Course from "@models/Course";
 import Exam from "@models/Events/Exam";
 import Lecture from "@models/Events/Lecture";
+import Embedding from "@models/Users/Embedding";
 import Student from "@models/Users/Student";
 
 export default interface StudentLogic {
@@ -25,4 +26,6 @@ export default interface StudentLogic {
     updateStudent(studentId: string, newData: Student): Promise<Student>;
     getStudentById(studentId: string): Promise<Student | undefined>;
     getStudentAttendance(studentId: string): Promise<any>;
+    getEmbedding(studentId: string) : Promise<Embedding>;
+    setEmbedding(studentId: string, vector: string) : Promise<Student>;
 }
