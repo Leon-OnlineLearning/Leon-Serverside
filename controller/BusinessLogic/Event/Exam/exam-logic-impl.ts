@@ -2,7 +2,9 @@ import Exam from "@models/Events/Exam";
 import UserInputError from "@services/utils/UserInputError";
 import { getRepository } from "typeorm";
 import ExamsLogic from "./exam-logic";
-import { mkdir, appendFile } from 'fs/promises'
+import { promises } from 'fs'
+const mkdir = promises.mkdir
+const appendFile = promises.appendFile
 import { join } from 'path'
 
 let upload_folder = process.env['UPLOADED_RECORDING_PATH'] || 'recordings';
