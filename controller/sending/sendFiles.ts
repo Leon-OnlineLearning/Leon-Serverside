@@ -75,9 +75,11 @@ export const sendFileHttpMethods = async (
     } catch (e) {
       console.error(e);
     } finally {
-      fs.unlink(fileName, (err) => {
-        if (err) console.log(err);
-      });
+      try {
+        await fsPromises.unlink(fileName);
+      } catch(e) {
+        console.error(e)
+      }
     }
   }
   await storageCallback(fileInfo.chunk, fileInfo.examId, userId);
