@@ -3,7 +3,17 @@ import Department from "@models/Department";
 import StudentsExams from "@models/JoinTables/StudentExam";
 import StudentLectureAttendance from "@models/JoinTables/StudentLectureAttended";
 import { Min } from "class-validator";
-import { Column, Entity, JoinTable, ManyToMany, ManyToOne, OneToMany } from "typeorm";
+import {
+  Column,
+  Entity,
+  JoinColumn,
+  JoinTable,
+  ManyToMany,
+  ManyToOne,
+  OneToMany,
+  OneToOne,
+} from "typeorm";
+import Embedding from "./Embedding";
 import User from "./User";
 
 @Entity()
@@ -41,4 +51,7 @@ export default class Student extends User {
     @Min(1)
     year: number;
 
+    @OneToOne(()=> Embedding)
+    @JoinColumn()
+    embedding: Promise<Embedding>
 }
