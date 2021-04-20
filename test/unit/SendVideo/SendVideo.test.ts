@@ -1,4 +1,4 @@
-import sendVideo from "@controller/sending/sendFiles";
+import sendVideoWebsocket from "@controller/sending/sendFiles";
 import fs from "fs";
 import { createServer } from "http";
 import { AddressInfo } from "net";
@@ -45,7 +45,7 @@ describe("Video over websocket testing", () => {
       });
     });
 
-    sendVideo(clientSocket, prepareFile(fileName), id, done);
+    sendVideoWebsocket(clientSocket, prepareFile(fileName), id, done);
 
   });
 });
