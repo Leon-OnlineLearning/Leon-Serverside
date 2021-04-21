@@ -28,6 +28,6 @@ export default class Report {
   @Column()
   endingAt: Date;
 
-  @Column()
-  result: boolean;
+  @Column({ length: 1 })
+  result: string;
 }

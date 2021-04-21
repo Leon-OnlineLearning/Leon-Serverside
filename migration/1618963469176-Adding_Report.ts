@@ -5,7 +5,7 @@ export class AddingReport1618963469176 implements MigrationInterface {
 
   public async up(queryRunner: QueryRunner): Promise<void> {
     await queryRunner.query(
-      "CREATE TABLE `report` (`id` varchar(36) NOT NULL, `startingFrom` datetime NOT NULL, `endingAt` datetime NOT NULL, `result` tinyint NOT NULL, `studentId` varchar(36) NULL, `examId` varchar(36) NULL, PRIMARY KEY (`id`)) ENGINE=InnoDB"
+      "CREATE TABLE `report` (`id` varchar(36) NOT NULL, `startingFrom` datetime NOT NULL, `endingAt` datetime NOT NULL, `result` varchar(1) NOT NULL, `studentId` varchar(36) NULL, `examId` varchar(36) NULL, PRIMARY KEY (`id`)) ENGINE=InnoDB"
     );
     await queryRunner.query(
       "ALTER TABLE `report` ADD CONSTRAINT `FK_43eef8080ece60ccb041dd31809` FOREIGN KEY (`studentId`) REFERENCES `student`(`id`) ON DELETE NO ACTION ON UPDATE NO ACTION"

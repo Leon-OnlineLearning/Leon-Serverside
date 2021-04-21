@@ -1,5 +1,5 @@
 import {
-  ResultCallback,
+  ExamChunkResultCallback,
   sendFileHttpMethods,
   StorageCallback,
 } from "@controller/sending/sendFiles";
@@ -39,7 +39,9 @@ describe("Sending video with http POST method", () => {
     let endTime = new Date(startTime);
     endTime.setMinutes(endTime.getMinutes() + 5);
 
-    const resultCallback: ResultCallback = async (
+    const resultCallback: ExamChunkResultCallback = async (
+      usrId,
+      examId,
       result,
       startDate,
       endDate

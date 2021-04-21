@@ -38,8 +38,14 @@ export interface StorageCallback {
   (chunk: any, examId: string, userId: string): Promise<any>;
 }
 
-export interface ResultCallback {
-  (result: string, start: Date, end: Date): Promise<any>;
+export interface ExamChunkResultCallback {
+  (
+    studentId: string,
+    examId: string,
+    result: string,
+    start: Date,
+    end: Date
+  ): Promise<any>;
 }
 
 /**
@@ -57,7 +63,7 @@ export const sendFileHttpMethods = async (
   receiverBaseUrl: string,
   fileInfo: ExamFileInfo,
   storageCallback: StorageCallback,
-  resultCallback: ResultCallback
+  resultCallback: ExamChunkResultCallback
 ) => {
   if (fileInfo.chunkIndex % 2 == 0) {
     const fileName = `/tmp/${fileInfo.examId}-${userId}-${fileInfo.chunkIndex}.webm`;
@@ -71,14 +77,20 @@ export const sendFileHttpMethods = async (
         data: fd,
         url: `${receiverBaseUrl}/exams/${userId}`,
       }).then((resp) => resp.data);
-      resultCallback(res, fileInfo.chunkStartTime, fileInfo.chunkEndTime);
+      resultCallback(
+        userId,
+        fileInfo.examId,
+        res,
+        fileInfo.chunkStartTime,
+        fileInfo.chunkEndTime
+      );
     } catch (e) {
       console.error(e);
     } finally {
       try {
         await fsPromises.unlink(fileName);
-      } catch(e) {
-        console.error(e)
+      } catch (e) {
+        console.error(e);
       }
     }
   }
