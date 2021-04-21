@@ -10,6 +10,8 @@ import paginationParameters from "@services/Routes/utils/pagination"
 import simpleFinalMWDecorator from "@services/utils/RequestDecorator"
 import DepartmentsLogicImpl from "@controller/BusinessLogic/Department/departments-logic-impl"
 import UserInputError from "@services/utils/UserInputError"
+import multer from "multer"
+import { sendInitialVideo } from "@controller/sending/sendFiles"
 
 const router = Router()
 router.use(BlockedJWTMiddleware)
@@ -17,6 +19,25 @@ router.use(passport.authenticate('access-token', { session: false }))
 
 const parser: BodyParserMiddleware = new StudentParser()
 
+var storage = multer.memoryStorage();
+var upload = multer({ storage: storage });
+/**
+ * 
+ * req body must contain
+ * - usedId 
+ * - chuck : actual recorded chunk in webm format
+ * TODO add only students
+ */
+ router.put('/refrance', upload.single('chuck'), async (req, res) => {
+    simpleFinalMWDecorator(res, async () => {
+        const serverBaseUrl = `${process.env.ML_SO_IO_SERVER_BASE_D}:${process.env.ML_SO_IO_SERVER_PORT}`
+        sendInitialVideo(req.file.buffer, req.body.userId, serverBaseUrl, async (student_id, emmbedding) => {
+            const logic : StudentLogic= new StudentLogicImpl()
+            logic.setEmbedding(student_id, emmbedding)
+        })
+        // await logic.saveRecording(req.file.buffer, req.body.examId, req.body.userId);
+    })
+})
 /**
  * expected: naive pagination
  * /students?page=2&size=10
@@ -166,4 +187,6 @@ router.get('/:studentId/attendance', async (req, res) => {
     })
 })
 
+
+router.get('/:sudentId')
 export default router;
