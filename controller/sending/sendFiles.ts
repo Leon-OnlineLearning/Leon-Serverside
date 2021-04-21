@@ -50,7 +50,7 @@ export interface ExamChunkResultCallback {
 
 /**
  * @description
- * send file with http post
+ * send exam file
  * NOTE: sends only chunks with even indices to the next server
  * @param userId
  * @param receiverBaseUrl
@@ -86,6 +86,17 @@ export const sendExamFile = async (
   await storageCallback(fileInfo.chunk, fileInfo.examId, userId);
 };
 
+/**
+ * @description
+ * send file with http
+ * 
+ * @param fileName 
+ * @param buffer 
+ * @param fieldName 
+ * @param url 
+ * @param callback 
+ * @param additionalFields 
+ */
 export async function sendFileHttpMethod(
   fileName: string,
   buffer: Buffer,
