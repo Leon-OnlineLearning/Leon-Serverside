@@ -2,6 +2,7 @@ import Course from "@models/Course";
 import Department from "@models/Department";
 import StudentsExams from "@models/JoinTables/StudentExam";
 import StudentLectureAttendance from "@models/JoinTables/StudentLectureAttended";
+import Report from "@models/Report";
 import { Min } from "class-validator";
 import {
   Column,
@@ -54,4 +55,7 @@ export default class Student extends User {
     @OneToOne(()=> Embedding)
     @JoinColumn()
     embedding: Promise<Embedding>
+
+    @OneToMany(()=>Report, report => report.student)
+    reports: Promise<Report[]>
 }

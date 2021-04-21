@@ -4,6 +4,7 @@ import Course from "@models/Course";
 import StudentsExams from "@models/JoinTables/StudentExam";
 import Department from "@models/Department";
 import Professor from "@models/Users/Professor";
+import Report from "@models/Report";
 
 @Entity()
 export default class Exam extends Event{
@@ -21,4 +22,7 @@ export default class Exam extends Event{
 
     @ManyToOne(()=>Professor, p=>p.exams)
     professor! : Professor
+
+    @OneToMany(()=>Report, report=>report.exam)
+    reports: Promise<Report>;
 }
