@@ -20,13 +20,14 @@ import Embedding from "@models/Users/Embedding";
 
 export default class StudentLogicImpl implements StudentLogic {
 
-    async setEmbedding(studentId: string, vector: string): Promise<Student> {
+    async setEmbedding(studentId: string, vector: string): Promise<void> {
         const student = await getRepository(Student).findOne(studentId);
         if (!student) throw new UserInputError("Invalid student id");
         const embedding = new Embedding();
         embedding.vector = vector;
+        embedding.student = Promise.resolve(student);
         student.embedding = Promise.resolve(embedding);
-        return await getRepository(Student).save(student)
+        await getRepository(Student).save(student)
     }
 
     async getEmbedding(studentId: string): Promise<Embedding> {

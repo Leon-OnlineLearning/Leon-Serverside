@@ -86,16 +86,34 @@ export const sendExamFile = async (
   await storageCallback(fileInfo.chunk, fileInfo.examId, userId);
 };
 
+export async function sendInitialVideo(
+  video: Buffer,
+  studentId: string,
+  serverBaseUrl: string,
+  resultCallback: (userId: string, embedding: string) => Promise<void>
+) {
+  const fileName = `video-${studentId}-${Date.now()}.webm`;
+  await sendFileHttpMethod(
+    fileName,
+    video,
+    "student_video",
+    `${serverBaseUrl}/users`,
+    async (res) => {
+      await resultCallback(studentId, res);
+    }
+  );
+}
+
 /**
  * @description
  * send file with http
- * 
- * @param fileName 
- * @param buffer 
- * @param fieldName 
- * @param url 
- * @param callback 
- * @param additionalFields 
+ *
+ * @param fileName
+ * @param buffer
+ * @param fieldName
+ * @param url
+ * @param callback
+ * @param additionalFields
  */
 export async function sendFileHttpMethod(
   fileName: string,

@@ -52,7 +52,7 @@ export default class Student extends User {
     @Min(1)
     year: number;
 
-    @OneToOne(()=> Embedding)
+    @OneToOne(()=> Embedding, {cascade:true})
     @JoinColumn()
     embedding: Promise<Embedding>
 
