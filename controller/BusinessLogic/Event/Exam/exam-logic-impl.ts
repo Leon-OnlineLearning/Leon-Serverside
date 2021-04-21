@@ -2,7 +2,12 @@ import Exam from "@models/Events/Exam";
 import UserInputError from "@services/utils/UserInputError";
 import { getRepository } from "typeorm";
 import ExamsLogic from "./exam-logic";
+import { promises } from 'fs'
+const mkdir = promises.mkdir
+const appendFile = promises.appendFile
+import { join } from 'path'
 
+let upload_folder = process.env['UPLOADED_RECORDING_PATH'] || 'recordings';
 export default class ExamsLogicImpl implements ExamsLogic {
     async getExamById(examId: string): Promise<Exam> {
         const res = await getRepository(Exam).findOne(examId)
@@ -33,5 +38,13 @@ export default class ExamsLogicImpl implements ExamsLogic {
 
     async createExam(exam: Exam): Promise<Exam> {
         return await getRepository(Exam).save(exam)
+    }
+    async saveRecording(chunk: Buffer, examId: string, userId: string): Promise<void> {
+        let video_dir = join(upload_folder, examId)
+
+        await mkdir(video_dir, { recursive: true })
+
+        // TODO make sure the chunk order is right
+        await appendFile(join(video_dir, `${userId}.webm`), chunk)
     }
 }
