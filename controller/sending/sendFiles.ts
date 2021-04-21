@@ -58,7 +58,7 @@ export interface ExamChunkResultCallback {
  * @param storageCallback
  * @param resultCallback
  */
-export const sendFileHttpMethods = async (
+export const sendExamFile = async (
   userId: string,
   receiverBaseUrl: string,
   fileInfo: ExamFileInfo,
@@ -67,32 +67,54 @@ export const sendFileHttpMethods = async (
 ) => {
   if (fileInfo.chunkIndex % 2 == 0) {
     const fileName = `/tmp/${fileInfo.examId}-${userId}-${fileInfo.chunkIndex}.webm`;
-    await fsPromises.writeFile(fileName, fileInfo.chunk);
-    const fd = new FormData();
-    fd.append("chunk", fs.createReadStream(fileName));
-    try {
-      const res = await axios({
-        method: "post",
-        headers: fd.getHeaders(),
-        data: fd,
-        url: `${receiverBaseUrl}/exams/${userId}`,
-      }).then((resp) => resp.data);
-      resultCallback(
-        userId,
-        fileInfo.examId,
-        res,
-        fileInfo.chunkStartTime,
-        fileInfo.chunkEndTime
-      );
-    } catch (e) {
-      console.error(e);
-    } finally {
-      try {
-        await fsPromises.unlink(fileName);
-      } catch (e) {
-        console.error(e);
+    await sendFileHttpMethod(
+      fileName,
+      fileInfo.chunk,
+      "chunk",
+      `${receiverBaseUrl}/exams/${userId}`,
+      async (res) => {
+        await resultCallback(
+          userId,
+          fileInfo.examId,
+          res,
+          fileInfo.chunkStartTime,
+          fileInfo.chunkEndTime
+        );
       }
-    }
+    );
   }
   await storageCallback(fileInfo.chunk, fileInfo.examId, userId);
 };
+
+export async function sendFileHttpMethod(
+  fileName: string,
+  buffer: Buffer,
+  fieldName: string,
+  url: string,
+  callback: (res: any) => Promise<void>,
+  additionalFields?: any
+) {
+  await fsPromises.writeFile(fileName, buffer);
+  const fd = new FormData();
+  fd.append(fieldName, fs.createReadStream(fileName));
+  for (const key in additionalFields) {
+    fd.append(key, additionalFields[key]);
+  }
+  try {
+    const res = await axios({
+      method: "post",
+      headers: fd.getHeaders(),
+      data: fd,
+      url: url,
+    }).then((resp) => resp.data);
+    await callback(res);
+  } catch (e) {
+    console.error(e);
+  } finally {
+    try {
+      await fsPromises.unlink(fileName);
+    } catch (e) {
+      console.error(e);
+    }
+  }
+}

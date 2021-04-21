@@ -1,6 +1,6 @@
 import {
   ExamChunkResultCallback,
-  sendFileHttpMethods,
+  sendExamFile,
   StorageCallback,
 } from "@controller/sending/sendFiles";
 import express from "express";
@@ -55,7 +55,7 @@ describe("Sending video with http POST method", () => {
       expect(chunk).toBeTruthy();
     };
 
-    sendFileHttpMethods(
+    sendExamFile(
       userId,
       "http://localhost:6789",
       {
@@ -70,7 +70,7 @@ describe("Sending video with http POST method", () => {
       resultCallback
     );
 
-    sendFileHttpMethods(
+    sendExamFile(
       userId,
       "http://localhost:6789",
       {
