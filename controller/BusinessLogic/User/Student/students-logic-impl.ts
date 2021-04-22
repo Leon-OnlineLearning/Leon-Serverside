@@ -23,9 +23,10 @@ export default class StudentLogicImpl implements StudentLogic {
     async setEmbedding(studentId: string, vector: number[]): Promise<void> {
         const student = await getRepository(Student).findOne(studentId);
         if (!student) throw new UserInputError("Invalid student id");
-        const embedding = new Embedding();
+        const embedding = new Embedding()
+        const studentnEmbedding = await student.embedding
+        if (studentnEmbedding) embedding.id = studentnEmbedding.id
         embedding.vector = vector;
-        embedding.student = Promise.resolve(student);
         student.embedding = Promise.resolve(embedding);
         await getRepository(Student).save(student)
     }

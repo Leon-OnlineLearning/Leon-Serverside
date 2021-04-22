@@ -15,6 +15,4 @@ export default class Embedding {
   @PrimaryGeneratedColumn("uuid")
   id: string;
 
-  @OneToOne(() => Student)
-  student: Promise<Student>;
 }
