@@ -179,7 +179,6 @@ export const BlockedJWTMiddleware = async (req: Request, res: Response, next: Ne
     if (req && (req.cookies || req.body["jwt"]))
       token = req.cookies["jwt"] || req.body["token"];
 
-    console.log(req.cookies);
     try {
         if (await isTokenBlocked(token))
             res.status(401).send("Token Blocked!")
