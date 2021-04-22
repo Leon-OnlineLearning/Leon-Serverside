@@ -30,8 +30,10 @@ ts-node -r tsconfig-paths/register ./node_modules/.bin/typeorm migration:generat
 ```
 
 ## Testing
-**DON'T FORGET TO SET TESTING VARIABLE TO TRUE**
-## Integration testing
+## Jest tests
+### How to?
+- run `npm test`
+## Postman tess
 ### How to?
 - Install postman
 - Set an environment with `port` variable to the server port in your config
