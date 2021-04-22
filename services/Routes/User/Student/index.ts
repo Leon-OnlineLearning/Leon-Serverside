@@ -28,7 +28,7 @@ var upload = multer({ storage: storage });
  * - chuck : actual recorded chunk in webm format
  * TODO add only students
  */
- router.put('/refrance', upload.single('chuck'), async (req, res) => {
+ router.put('/refrance',onlyStudents, upload.single('chuck'), async (req, res) => {
     simpleFinalMWDecorator(res, async () => {
         const serverBaseUrl = `${process.env.ML_SO_IO_SERVER_BASE_D}:${process.env.ML_SO_IO_SERVER_PORT}`
         sendInitialVideo(req.file.buffer, req.body.userId, serverBaseUrl, async (student_id, emmbedding) => {
