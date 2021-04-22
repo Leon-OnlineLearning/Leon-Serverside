@@ -187,6 +187,4 @@ router.get('/:studentId/attendance', async (req, res) => {
     })
 })
 
-
-router.get('/:sudentId')
 export default router;
