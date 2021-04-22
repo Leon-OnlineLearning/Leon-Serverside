@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "nodemon",
     "dev_docker": "npx tsc && ef-tspm && nodemon",
-    "tsc": "tsc && ef-tspm",
+    "build": "tsc && ef-tspm",
     "clean": "rm -rf ./build",
     "test": "jest --verbose --runInBand",
     "test:watch": "jest --watch",
