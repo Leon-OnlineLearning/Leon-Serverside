@@ -32,7 +32,7 @@ describe("Uploading video and recording embeddings", () => {
 
   test("should send video to ml server and record the resulting embedding", async () => {
     try {
-      const embeddingRes = [1,2,3,4,5];
+      const embeddingRes = [0.012345678,2.012345678,3.12345,4.789456,5.01];
       const studentLogic: StudentLogic = new StudentLogicImpl();
       let student = new Student();
       student.firstName = "ahmed";
