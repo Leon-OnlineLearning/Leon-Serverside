@@ -33,8 +33,10 @@ var upload = multer({ storage: storage });
         const serverBaseUrl = `${process.env.ML_SO_IO_SERVER_BASE_D}:${process.env.ML_SO_IO_SERVER_PORT}`
         sendInitialVideo(req.file.buffer, req.body.userId, serverBaseUrl, async (student_id, emmbedding) => {
             const logic : StudentLogic= new StudentLogicImpl()
+            // FIXME this will throw error and crash server as embeding is vector
             logic.setEmbedding(student_id, emmbedding)
         })
+        // NOTE don't think we need to save refrance
         // await logic.saveRecording(req.file.buffer, req.body.examId, req.body.userId);
     })
 })
