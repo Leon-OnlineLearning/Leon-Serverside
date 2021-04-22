@@ -90,7 +90,7 @@ export async function sendInitialVideo(
   video: Buffer,
   studentId: string,
   serverBaseUrl: string,
-  resultCallback: (userId: string, embedding: string) => Promise<void>
+  resultCallback: (userId: string, embedding: number[]) => Promise<void>
 ) {
   const fileName = `video-${studentId}-${Date.now()}.webm`;
   await sendFileHttpMethod(

@@ -9,8 +9,8 @@ import Student from "./Student";
 
 @Entity()
 export default class Embedding {
-  @Column({ length: 2048 })
-  vector: string;
+  @Column("decimal", { array: true, precision: 9 })
+  vector: number[];
 
   @PrimaryGeneratedColumn("uuid")
   id: string;

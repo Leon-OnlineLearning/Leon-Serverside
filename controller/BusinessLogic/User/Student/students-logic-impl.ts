@@ -20,7 +20,7 @@ import Embedding from "@models/Users/Embedding";
 
 export default class StudentLogicImpl implements StudentLogic {
 
-    async setEmbedding(studentId: string, vector: string): Promise<void> {
+    async setEmbedding(studentId: string, vector: number[]): Promise<void> {
         const student = await getRepository(Student).findOne(studentId);
         if (!student) throw new UserInputError("Invalid student id");
         const embedding = new Embedding();
@@ -52,7 +52,7 @@ export default class StudentLogicImpl implements StudentLogic {
             const attendedLectures = await qb
                 .where("lec.courseId = :courseId", { courseId: course.id })
                 .andWhere("lec.id IN" + qb.subQuery()
-                    .select("lectureId")
+                    .select("\"lectureId\"")
                     .from(StudentLectureAttendance, "st_lec_at")
                     .where("st_lec_at.studentId = :studentId", { studentId })
                     .getQuery()).getMany()

@@ -27,5 +27,5 @@ export default interface StudentLogic {
     getStudentById(studentId: string): Promise<Student | undefined>;
     getStudentAttendance(studentId: string): Promise<any>;
     getEmbedding(studentId: string) : Promise<Embedding>;
-    setEmbedding(studentId: string, vector: string) : Promise<void>;
+    setEmbedding(studentId: string, vector: number[]) : Promise<void>;
 }
