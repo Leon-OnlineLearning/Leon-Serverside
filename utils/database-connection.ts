@@ -1,6 +1,9 @@
 import AdminLogic from "@controller/BusinessLogic/User/Admin/admin-logic";
 import AdminLogicImpl from "@controller/BusinessLogic/User/Admin/admin-logic-impl";
+import StudentLogic from "@controller/BusinessLogic/User/Student/students-logic";
+import StudentLogicImpl from "@controller/BusinessLogic/User/Student/students-logic-impl";
 import Admin from "@models/Users/Admin";
+import Student from "@models/Users/Student";
 import { Connection, createConnection, getConnection, getRepository } from "typeorm";
 
 export const initializeDBMSConnection = async () => {
@@ -21,6 +24,21 @@ export const initializeDBMSConnection = async () => {
     baseAdmin.lastName = "base admin ln";
     baseAdmin.thirdPartyAccount = false;
     await adminLogic.createAdmin(baseAdmin);
+  }
+  
+  if (
+    typeof process.env.BASE_STUDENT_EMAIL === "string" &&
+    typeof process.env.BASE_STUDENT_PASSWORD === "string"
+  ){
+    const studentlogic: StudentLogic = new StudentLogicImpl()
+    const baseStudent = new Student();
+    baseStudent.email = process.env.BASE_STUDENT_EMAIL;
+    baseStudent.password = process.env.BASE_STUDENT_PASSWORD;
+    baseStudent.firstName = "base Student fn";
+    baseStudent.lastName = "base Student ln";
+    baseStudent.thirdPartyAccount = false;
+  
+    await studentlogic.createStudent(baseStudent)
   }
   
 };
