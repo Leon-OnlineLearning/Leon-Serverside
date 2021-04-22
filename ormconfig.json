@@ -1,0 +1,17 @@
+{
+    "type": "postgres",
+    "host": "localhost",
+    "port": 5432,
+    "username": "a",
+    "password": "a",
+    "database": "leon",
+    "entities": [
+        "models/**/*.ts"
+    ],
+    "migrations": [
+        "migration/*.ts"
+    ],
+    "cli": {
+        "migrationsDir": "migration"
+    }
+}
