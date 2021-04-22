@@ -130,13 +130,14 @@ export async function sendFileHttpMethod(
     fd.append(key, additionalFields[key]);
   }
   try {
-    const res = await axios({
+    let res = await axios({
       method: "post",
       headers: fd.getHeaders(),
       data: fd,
       url: url,
-    }).then((resp) => resp.data);
-    await callback(res);
+    });
+    // FIXME this will not throw error if server is closed
+    await callback(res.data);
   } catch (e) {
     console.error(e);
   } finally {
