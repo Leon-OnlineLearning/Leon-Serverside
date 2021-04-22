@@ -142,7 +142,7 @@ export async function sendFileHttpMethod(
     console.error(e);
   } finally {
     try {
-      await fsPromises.unlink(fileName);
+      await fsPromises.unlink(`./${fileName}`);
     } catch (e) {
       console.error(e);
     }
