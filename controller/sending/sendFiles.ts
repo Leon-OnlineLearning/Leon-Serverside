@@ -66,7 +66,7 @@ export const sendExamFile = async (
   resultCallback: ExamChunkResultCallback
 ) => {
   if (fileInfo.chunkIndex % 2 == 0) {
-    const fileName = `/tmp/${fileInfo.examId}-${userId}-${fileInfo.chunkIndex}.webm`;
+    const fileName = `${fileInfo.examId}-${userId}-${fileInfo.chunkIndex}.webm`;
     await sendFileHttpMethod(
       fileName,
       fileInfo.chunk,
@@ -123,6 +123,7 @@ export async function sendFileHttpMethod(
   callback: (res: any) => Promise<void>,
   additionalFields?: any
 ) {
+  fileName = `/tmp/${fileName}`
   await fsPromises.writeFile(fileName, buffer);
   const fd = new FormData();
   fd.append(fieldName, fs.createReadStream(fileName));
@@ -142,7 +143,7 @@ export async function sendFileHttpMethod(
     console.error(e);
   } finally {
     try {
-      await fsPromises.unlink(`./${fileName}`);
+      await fsPromises.unlink(`${fileName}`);
     } catch (e) {
       console.error(e);
     }

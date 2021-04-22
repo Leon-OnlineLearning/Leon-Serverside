@@ -32,7 +32,7 @@ describe("Uploading video and recording embeddings", () => {
 
   test("should send video to ml server and record the resulting embedding", async () => {
     try {
-      const embeddingRes = [0.012345678,2.012345678,3.12345,4.789456,5.01];
+      const embeddingRes = {embedding: [0.012345678,2.012345678,3.12345,4.789456,5.01]};
       const studentLogic: StudentLogic = new StudentLogicImpl();
       let student = new Student();
       student.firstName = "ahmed";
@@ -53,7 +53,7 @@ describe("Uploading video and recording embeddings", () => {
         studentLogic.setEmbedding
       );
       const embedding = await studentLogic.getEmbedding(student.id);
-      expect(embedding.vector).toEqual(embeddingRes);
+      expect(embedding.vector).toEqual(embeddingRes.embedding);
     } catch (e) {
       console.log(e);
       expect(0).toEqual(1);
