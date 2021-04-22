@@ -99,7 +99,7 @@ export async function sendInitialVideo(
     "student_video",
     `${serverBaseUrl}/users`,
     async (res) => {
-      await resultCallback(studentId, res);
+      await resultCallback(studentId, res.embedding);
     }
   );
 }
