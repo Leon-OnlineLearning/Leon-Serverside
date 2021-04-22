@@ -20,7 +20,6 @@ export const initializeDBMSConnection = async () => {
     baseAdmin.firstName = "base admin fn";
     baseAdmin.lastName = "base admin ln";
     baseAdmin.thirdPartyAccount = false;
-    baseAdmin.id = "123456789"
     await adminLogic.createAdmin(baseAdmin);
   }
   
