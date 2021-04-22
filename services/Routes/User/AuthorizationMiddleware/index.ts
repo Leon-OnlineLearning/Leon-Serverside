@@ -29,6 +29,8 @@ export function onlyStudents(req: Request, res: Response, next: NextFunction) {
     const requestUser: any = req.user;
     if (!isCorrectRole(requestUser, UserTypes.STUDENT)) {
         res.send(401).json({ success: false, message: "Access denied" })
+    } else {
+        next()
     }
 }
 
