@@ -62,12 +62,15 @@ describe("Creating reports", () => {
       await logic.addToReport(student.id, exam.id, startTime1, interval);
       // add report to exam starting at interval * 1
       await logic.addToReport(student.id, exam.id, startTime2, interval);
+      // add report to exam at random far interval
+      await logic.addToReport(student.id, exam.id, 40, interval);
       // get report and check if the intervals where merged
       const finalReport = await logic.getReport(student.id, exam.id);
-      console.log(finalReport);
-      
+
       expect(finalReport[0].startingFrom).toEqual(0);
       expect(finalReport[0].endingAt).toEqual(20);
+      expect(finalReport[1]).toBeTruthy();
+      expect(finalReport[1].startingFrom).toEqual(40);
     } catch (e) {
       console.error(e);
       expect(false).toBeTruthy;
