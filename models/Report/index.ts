@@ -19,15 +19,12 @@ export default class Report {
   @ManyToOne(() => Student, (student) => student.reports, { cascade: true })
   student: Student;
 
-  @ManyToOne(() => Exam, (exam) => exam.reports, { cascade: true })
+  @Column({comment:"time in seconds from begging"})
+  startingFrom: number;
+
+  @Column({comment:"time in seconds from begging"})
+  endingAt: number;
+
+  @ManyToOne(() => Exam, (e) => e.reports, { cascade: true })
   exam: Exam;
-
-  @Column()
-  startingFrom: Date;
-
-  @Column()
-  endingAt: Date;
-
-  @Column({ length: 1 })
-  result: string;
 }

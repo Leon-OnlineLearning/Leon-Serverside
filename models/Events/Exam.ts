@@ -1,4 +1,4 @@
-import { ChildEntity, Column, Entity, ManyToMany, ManyToOne, OneToMany } from "typeorm";
+import { ChildEntity, Column, Entity, JoinColumn, JoinTable, ManyToMany, ManyToOne, OneToMany } from "typeorm";
 import Event  from "@models/Events/Event"
 import Course from "@models/Course";
 import StudentsExams from "@models/JoinTables/StudentExam";
@@ -23,6 +23,7 @@ export default class Exam extends Event{
     @ManyToOne(()=>Professor, p=>p.exams)
     professor! : Professor
 
-    @OneToMany(()=>Report, report=>report.exam)
+    @OneToMany(()=>Report, r => r.exam)
+    @JoinColumn()
     reports: Promise<Report>;
 }
