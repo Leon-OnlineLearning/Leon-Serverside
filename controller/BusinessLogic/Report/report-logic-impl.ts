@@ -10,7 +10,7 @@ export class ReportLogicImpl implements ReportLogic {
     studentId: string,
     examId: string,
     startTime: number,
-    endTime: number
+    interval : number
   ): Promise<Report> {
     const student = await getRepository(Student).findOne(studentId);
     if (!student) throw new UserInputError("Invalid user id");
@@ -19,7 +19,7 @@ export class ReportLogicImpl implements ReportLogic {
     if (!exam) throw new UserInputError("Invalid exam id");
 
     const prevReport = await getRepository(Report).findOne({
-      startingFrom: startTime - 10,
+      startingFrom: startTime - interval,
       student: student,
       exam: exam,
     });
@@ -27,14 +27,15 @@ export class ReportLogicImpl implements ReportLogic {
     let report;
     if (prevReport) {
       report = prevReport;
-      report.endingAt = endTime;
     } else {
       report = new Report();
       report.startingFrom = startTime;
-      report.endingAt = endTime;
       report.student = student;
       report.exam = exam;
     }
+
+    // it will always be assigned to the new ending interval
+    report.endingAt = startTime + interval;
 
     return await getRepository(Report).save(report);
   }

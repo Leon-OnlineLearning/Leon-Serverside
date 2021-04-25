@@ -5,7 +5,7 @@ export default interface ReportLogic {
     studentId: string,
     examId: string,
     startTime: number,
-    endTime: number
+    interval: number
   ): Promise<Report>;
   getReport(
     studentId: string,
