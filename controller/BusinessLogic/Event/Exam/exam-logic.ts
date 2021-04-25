@@ -6,5 +6,5 @@ export default interface ExamsLogic {
     updateExam(examId: string, newData: Exam) : Promise<Exam>;
     deleteExamById(examId: string) : Promise<void>;
     getExamsByYear(year: number): Promise<Exam[]>;
-    saveRecording(chunk: Buffer, examId: string, userId: string) : Promise<void>;
+    saveRecording(chunk: Buffer, examId: string, userId: string,chunkIndex : number) : Promise<String>;
 }

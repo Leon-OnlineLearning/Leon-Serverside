@@ -5,6 +5,7 @@ import ExamsLogic from "./exam-logic";
 import { promises } from 'fs'
 const mkdir = promises.mkdir
 const appendFile = promises.appendFile
+const writeFile = promises.writeFile
 import { join } from 'path'
 
 let upload_folder = process.env['UPLOADED_RECORDING_PATH'] || 'recordings';
@@ -39,12 +40,27 @@ export default class ExamsLogicImpl implements ExamsLogic {
     async createExam(exam: Exam): Promise<Exam> {
         return await getRepository(Exam).save(exam)
     }
-    async saveRecording(chunk: Buffer, examId: string, userId: string): Promise<void> {
+    /**
+     * 
+     * @param chunk media chunk send by user 
+     * @param examId 
+     * @param userId 
+     * @returns String filePath where chunk is saved
+     */
+    async saveRecording(chunk: Buffer, examId: string, userId: string, chunckIndex:number): Promise<String> {
         let video_dir = join(upload_folder, examId)
 
         await mkdir(video_dir, { recursive: true })
 
         // TODO make sure the chunk order is right
-        await appendFile(join(video_dir, `${userId}.webm`), chunk)
+        const filePath = join(video_dir, `${userId}.webm`)
+        if (chunckIndex == 0){
+        await writeFile(join(video_dir, `${userId}.webm`), chunk)
+        }
+        else{
+
+            await appendFile(join(video_dir, `${userId}.webm`), chunk)
+        }
+        return filePath
     }
 }
