@@ -7,6 +7,14 @@ import ExamsLogicImpl from "@controller/BusinessLogic/Event/Exam/exam-logic-impl
 import simpleFinalMWDecorator from "@services/utils/RequestDecorator"
 import multer from "multer"
 import { onlyStudents } from "@services/Routes/User/AuthorizationMiddleware"
+import { ExamChunkResultCallback, ExamFileInfo, sendExamFile, sendInitialVideo } from "@controller/sending/sendFiles"
+import { randomInt } from "crypto"
+import StudentLogicImpl from "@controller/BusinessLogic/User/Student/students-logic-impl"
+import StudentLogic from "@controller/BusinessLogic/User/Student/students-logic"
+import Embedding from "@models/Users/Embedding"
+
+const ffmpegPath = require('@ffmpeg-installer/ffmpeg').path
+const ffmpeg = require('fluent-ffmpeg')
 
 const router = Router()
 
@@ -28,10 +36,86 @@ var upload = multer({ storage: storage });
  * - chuck : actual recorded chunk in webm format
  // TODO add parser to validate the exam info fields
  */
-router.put('/record',onlyStudents, upload.single('chuck'), async (req, res) => {
+router.put('/record', onlyStudents, upload.single('chuck'), async (req, res) => {
     simpleFinalMWDecorator(res, async () => {
         const logic: ExamsLogic = new ExamsLogicImpl()
-        await logic.saveRecording(req.file.buffer, req.body.examId, req.body.userId);
+
+        // TODO we may only save when there is problem
+
+        // TODO 
+        // * send to ML 
+        const fileInfo: ExamFileInfo = {
+            examId: req.body.examId,
+            chunkIndex: req.body.chunckIndex,
+            lastChunk: req.body.lastChunk,
+            chunk: req.file.buffer,
+            chunkStartTime: req.body.chunkStartTime,
+            chunkEndTime: req.body.chunkEndTime
+        }
+
+        // save recived chunk
+        const filePath = await logic.saveRecording(fileInfo.chunk as Buffer, fileInfo.examId, req.body.userId, fileInfo.chunkIndex)
+
+        // get playaple buffer of last chunk
+        ffmpeg.setFfmpegPath(ffmpegPath)
+
+        const randNum = Date.now() + req.body.userId
+        const chunkPath = `/tmp/chunk_${randNum}.webm`
+
+
+        const send_file =async () => {
+            const result_callback: ExamChunkResultCallback = async (
+                userId: string,
+                examId: string,
+                res: string,
+                chunkStartTime: Date,
+                chunkEndTime: Date) => {
+                const matching = res
+                console.log("matched  ----------------"+matching)
+
+                if (!matching) {
+                    // TODO save database
+                    console.log("will save")
+                    console.log(chunkStartTime)
+                    console.log(res)
+                }
+            }
+
+            // send the file and delete it
+            const serverBaseUrl = `${process.env.ML_SO_IO_SERVER_BASE_D}:${process.env.ML_SO_IO_SERVER_PORT}`
+
+            const studentLogic: StudentLogic = new StudentLogicImpl()
+
+            const embedding: Embedding = await studentLogic.getEmbedding(req.body.userId)
+
+
+            sendExamFile(req.body.userId,
+                serverBaseUrl,
+                fileInfo,
+                chunkPath,
+                embedding,
+                result_callback,
+            )
+            // * save time stamp if not match
+        }
+
+        ffmpeg(filePath)
+            .setStartTime(fileInfo.chunkStartTime)
+            .setDuration(10)
+            .output(chunkPath)
+            .on('end',async function (err: any) {
+                if (!err) {
+                    console.log('conversion Done')
+                    await send_file()
+                }
+            })
+            .on('error', function (err: any) {
+                console.log('error: ', err)
+            }).run()
+
+
+
+
     })
 })
 
