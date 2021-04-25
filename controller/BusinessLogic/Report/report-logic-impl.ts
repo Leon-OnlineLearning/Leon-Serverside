@@ -9,40 +9,53 @@ export class ReportLogicImpl implements ReportLogic {
   async addToReport(
     studentId: string,
     examId: string,
-    result: string,
-    startingFrom: Date,
-    endingAt: Date
-  ): Promise<Report | void> {
+    startTime: number,
+    endTime: number
+  ): Promise<Report> {
     const student = await getRepository(Student).findOne(studentId);
     if (!student) throw new UserInputError("Invalid user id");
 
     const exam = await getRepository(Exam).findOne(examId);
     if (!exam) throw new UserInputError("Invalid exam id");
 
-    const report = new Report();
-    report.student = student;
-    report.exam = exam;
-    report.startingFrom = startingFrom;
-    report.endingAt = endingAt;
-    report.result = result;
+    const prevReport = await getRepository(Report).findOne({
+      startingFrom: startTime - 10,
+      student: student,
+      exam: exam,
+    });
 
-    try {
-      await getRepository(Report).save(report);
-    } catch (e) {
-      console.error(e);
+    let report;
+    if (prevReport) {
+      report = prevReport;
+      report.endingAt = endTime;
+    } else {
+      report = new Report();
+      report.startingFrom = startTime;
+      report.endingAt = endTime;
+      report.student = student;
+      report.exam = exam;
     }
+
+    return await getRepository(Report).save(report);
   }
 
-  async getReport(studentId: string, examId: string): Promise<Report[] | undefined> {
+  async getReport(
+    studentId: string,
+    examId: string
+  ): Promise<{ startingFrom: number; endingAt: number }[]> {
     try {
-      return await getRepository(Report).find({
-        where: {
-          exam: examId,
-          student: studentId,
-        },
+      return (
+        await getRepository(Report).find({
+          where: {
+            exam: examId,
+            student: studentId,
+          },
+        })
+      ).map((report) => {
+        return { startingFrom: report.startingFrom, endingAt: report.endingAt };
       });
     } catch (e) {
-      console.error(e);
+      throw e;
     }
   }
 }
