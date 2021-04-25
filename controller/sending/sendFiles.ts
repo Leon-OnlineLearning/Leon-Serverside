@@ -1,6 +1,9 @@
 import { Socket } from "socket.io-client/build/socket";
 import axios from "axios";
 import fs from "fs";
+import StudentLogic from "@controller/BusinessLogic/User/Student/students-logic";
+import StudentLogicImpl from "@controller/BusinessLogic/User/Student/students-logic-impl";
+import Embedding from "@models/Users/Embedding";
 const fsPromises = fs.promises;
 const FormData = require("form-data");
 /**
@@ -66,7 +69,12 @@ export const sendExamFile = async (
   resultCallback: ExamChunkResultCallback
 ) => {
   if (fileInfo.chunkIndex % 2 == 0) {
+    const logic: StudentLogic = new StudentLogicImpl()
+
+    const embedding: Embedding = await logic.getEmbedding(userId)
+
     const fileName = `${fileInfo.examId}-${userId}-${fileInfo.chunkIndex}.webm`;
+
     await sendFileHttpMethod(
       fileName,
       fileInfo.chunk,
@@ -78,9 +86,10 @@ export const sendExamFile = async (
           fileInfo.examId,
           res,
           fileInfo.chunkStartTime,
-          fileInfo.chunkEndTime
+          fileInfo.chunkEndTime,
         );
-      }
+      },
+      embedding.vector
     );
   }
   await storageCallback(fileInfo.chunk, fileInfo.examId, userId);
