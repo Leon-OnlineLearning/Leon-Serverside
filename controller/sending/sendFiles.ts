@@ -1,35 +1,18 @@
 import { Socket } from "socket.io-client/build/socket";
 import axios from "axios";
 import fs from "fs";
+import StudentLogic from "@controller/BusinessLogic/User/Student/students-logic";
+import StudentLogicImpl from "@controller/BusinessLogic/User/Student/students-logic-impl";
+import Embedding from "@models/Users/Embedding";
 const fsPromises = fs.promises;
 const FormData = require("form-data");
-/**
- * @deprecated
- * In the new design HTTP request was used
- *
- * Sending video to a server socket
- * **NOTE:** this function expects an ack to happen to call the callback function
- * @param socket the client socket
- * @param file the file to be sent
- * @param usrId the id for the user associated with that video
- * @param callback a function to be called after the client socket receive a ack status as ok
- */
-export const sendFileWebSocket = (
-  socket: Socket,
-  file: any,
-  usrId: string,
-  callback: any
-) => {
-  socket.emit("receive_video_file", { file, id: usrId }, (ack: any) => {
-    if (ack.status === "ok") callback();
-  });
-};
+
 
 export interface ExamFileInfo {
   examId: string;
   chunkIndex: number;
   lastChunk: boolean;
-  chunk: Buffer;
+  chunk?: Buffer;
   chunkStartTime: Date;
   chunkEndTime: Date;
 }
@@ -50,26 +33,28 @@ export interface ExamChunkResultCallback {
 
 /**
  * @description
- * send exam file
+ * send exam file and delete it
  * NOTE: sends only chunks with even indices to the next server
  * @param userId
  * @param receiverBaseUrl
  * @param fileInfo
- * @param storageCallback
+ * @param filePath
  * @param resultCallback
  */
 export const sendExamFile = async (
   userId: string,
   receiverBaseUrl: string,
   fileInfo: ExamFileInfo,
-  storageCallback: StorageCallback,
+  filePath: string,
+  embedding: Embedding,
   resultCallback: ExamChunkResultCallback
 ) => {
   if (fileInfo.chunkIndex % 2 == 0) {
-    const fileName = `${fileInfo.examId}-${userId}-${fileInfo.chunkIndex}.webm`;
+    
+    // const fileName = `${fileInfo.examId}-${userId}-${fileInfo.chunkIndex}.webm`;
+
     await sendFileHttpMethod(
-      fileName,
-      fileInfo.chunk,
+      filePath,
       "chunk",
       `${receiverBaseUrl}/exams/${userId}`,
       async (res) => {
@@ -78,12 +63,13 @@ export const sendExamFile = async (
           fileInfo.examId,
           res,
           fileInfo.chunkStartTime,
-          fileInfo.chunkEndTime
+          fileInfo.chunkEndTime,
         );
-      }
+      },
+      undefined,
+      embedding.vector
     );
   }
-  await storageCallback(fileInfo.chunk, fileInfo.examId, userId);
 };
 
 export async function sendInitialVideo(
@@ -95,12 +81,12 @@ export async function sendInitialVideo(
   const fileName = `video-${studentId}-${Date.now()}.webm`;
   await sendFileHttpMethod(
     fileName,
-    video,
     "student_video",
     `${serverBaseUrl}/users`,
     async (res) => {
       await resultCallback(studentId, res.embedding);
-    }
+    },
+    video,
   );
 }
 
@@ -117,16 +103,22 @@ export async function sendInitialVideo(
  */
 export async function sendFileHttpMethod(
   fileName: string,
-  buffer: Buffer,
   fieldName: string,
   url: string,
   callback: (res: any) => Promise<void>,
-  additionalFields?: any
+  buffer? : Buffer,
+  additionalFields?: any,
 ) {
-  fileName = `/tmp/${fileName}`
-  await fsPromises.writeFile(fileName, buffer);
+  if (buffer){
+    fileName = `/tmp/${fileName}`
+    await fsPromises.writeFile(fileName, buffer);
+  }
   const fd = new FormData();
   fd.append(fieldName, fs.createReadStream(fileName));
+  
+  // DELETEME
+  console.log(fs.readFileSync(fileName))
+  
   for (const key in additionalFields) {
     fd.append(key, additionalFields[key]);
   }
