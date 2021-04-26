@@ -1,5 +1,5 @@
 # Leon-Serverside Dev
-![testing status](http://github.com/Leon-OnlineLearning/Leon-Serverside/actions/workflows/testing.yml/badge.svg)
+![testing status](http://github.com/Leon-OnlineLearning/Leon-Serverside/actions/workflows/testing.yml/badge.svg) ![linter](https://img.shields.io/badge/Linter-prettier-blue)
 ## .env Example
 ```
 SERVER_PORT=
