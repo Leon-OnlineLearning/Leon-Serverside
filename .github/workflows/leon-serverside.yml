@@ -1,0 +1,31 @@
+name: Leon-ServerSide CI
+
+on: [push, pull_request]
+
+jobs:
+  set-up:
+    runs-on: ubuntu-latest
+    container: node:15.14.0-alpine3.10
+
+    services:
+      postgresdb:
+        image: postgres:13-alpine
+        env:
+          POSTGRES_DB: leon
+          POSTGRES_PASSWORD: a
+          POSTGRES_USER: a
+        ports:
+          - 5432:5432
+        # set health checks to wait until postgres has started
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+    steps:
+      - uses: actions/checkout@v2
+      - name: Run migrations
+        run: |
+          bash ./run_migrations
+      - name: Test
+        run: npm run test
