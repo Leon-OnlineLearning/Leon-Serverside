@@ -36,9 +36,8 @@ describe("Sending video with http POST method", () => {
       expect(req.params["user_id"]).toEqual(userId);
       res.json(1);
     });
-    const startTime = new Date();
-    let endTime = new Date(startTime);
-    endTime.setMinutes(endTime.getMinutes() + 5);
+    const startTime = 0;
+    const endTime = 10;
 
     const resultCallback: ExamChunkResultCallback = async (
       usrId,
