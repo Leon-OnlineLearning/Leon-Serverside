@@ -5,20 +5,20 @@ import { comparePasswords } from "@utils/passwords";
 import { getCustomRepository } from "typeorm";
 
 const getCorrectUser = async (email: string, password: string) => {
-    const repo = new UserRepo()
+    const repo = new UserRepo();
     let user: any;
-    user = await repo.findUserAndRoleByEmail(email)
+    user = await repo.findUserAndRoleByEmail(email);
     if (user.length == 0) {
-        throw new NonExistingUser("Invalid Email!")
+        throw new NonExistingUser("Invalid Email!");
     }
 
-    let correctPassword = await comparePasswords(password, user.password)
+    let correctPassword = await comparePasswords(password, user.password);
 
     if (!correctPassword) {
-        return false
+        return false;
     } else {
-        return user
+        return user;
     }
-}
+};
 
 export default getCorrectUser;

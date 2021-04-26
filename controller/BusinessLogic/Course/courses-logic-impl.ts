@@ -3,17 +3,16 @@ import Exam from "@models/Events/Exam";
 import Lecture from "@models/Events/Lecture";
 import UserInputError from "@services/utils/UserInputError";
 import { getRepository } from "typeorm";
-import CoursesLogic from "./courses-logic"
+import CoursesLogic from "./courses-logic";
 export default class CourseLogicImpl implements CoursesLogic {
-
-    async getAllCourses() : Promise<Course[]>{
-      return getRepository(Course).find();
+    async getAllCourses(): Promise<Course[]> {
+        return getRepository(Course).find();
     }
 
     async getAllExamsByCourse(courseId: string) {
         const course = await getRepository(Course).findOne(courseId);
         if (!course) throw new UserInputError("Invalid course id");
-        return await course.exams 
+        return await course.exams;
     }
 
     async addExamToCourse(courseId: string, examId: any) {
@@ -21,15 +20,19 @@ export default class CourseLogicImpl implements CoursesLogic {
         const course = await courseRepo.findOne(courseId);
         if (!course) throw new UserInputError("Invalid course id");
         const exam = await getRepository(Exam).findOne(examId);
-        if(!exam) throw new UserInputError("Invalid exam id");
+        if (!exam) throw new UserInputError("Invalid exam id");
         (await course.exams).push(exam);
         courseRepo.save(course);
     }
 
     async getLecturesForCourse(courseId: string) {
-        const course = await getRepository(Course).findOne(courseId, { relations: ['lectures'] })
-        if (!course) { throw new UserInputError("invalid course id"); }
-        return course.lectures
+        const course = await getRepository(Course).findOne(courseId, {
+            relations: ["lectures"],
+        });
+        if (!course) {
+            throw new UserInputError("invalid course id");
+        }
+        return course.lectures;
     }
 
     async addLectureToCourse(courseId: string, lectureId: any) {
@@ -41,14 +44,22 @@ export default class CourseLogicImpl implements CoursesLogic {
         getRepository(Course).save(course);
     }
 
-    async getLecturesStatistics(courseId: string): Promise<{ lectureTitle: string, count: number }[]> {
+    async getLecturesStatistics(
+        courseId: string
+    ): Promise<{ lectureTitle: string; count: number }[]> {
         const course = await getRepository(Course).findOne(courseId);
-        if (!course) { throw new UserInputError("Invalid course id"); }
-        const lectures: Lecture[] = await course.lectures
-        if (!lectures) { throw new UserInputError("no lectures to be shown") }
-        let res: any = {}
+        if (!course) {
+            throw new UserInputError("Invalid course id");
+        }
+        const lectures: Lecture[] = await course.lectures;
+        if (!lectures) {
+            throw new UserInputError("no lectures to be shown");
+        }
+        let res: any = {};
         for (let lecture of lectures) {
-            let students = (await lecture.studentLectureAttendance).map(sla => sla.student);
+            let students = (await lecture.studentLectureAttendance).map(
+                (sla) => sla.student
+            );
             res[lecture.title] = students.length;
         }
         return res;
@@ -60,32 +71,26 @@ export default class CourseLogicImpl implements CoursesLogic {
 
     async deleteCourseById(courseId: string): Promise<void> {
         await getRepository(Course).delete(courseId);
-        return
+        return;
     }
     async updateCourse(courseId: string, newData: Course): Promise<Course> {
         const { id, ...newDataWithoutId } = newData; // Hack for upsert and update by id yet return the new object
         return await getRepository(Course).save({
             id: courseId,
-            ...newDataWithoutId
-        })
+            ...newDataWithoutId,
+        });
     }
     async getCoursesById(courseId: string): Promise<Course> {
         const course = await getRepository(Course).findOne(courseId);
-        if (course)
-            return course;
-        else
-            throw new UserInputError("Invalid course id");
-
+        if (course) return course;
+        else throw new UserInputError("Invalid course id");
     }
 
     async getCoursesByYear(year: number): Promise<Course[]> {
-        return await getRepository(Course).find(
-            {
-                where: {
-                    year: year
-                }
-            }
-        )
+        return await getRepository(Course).find({
+            where: {
+                year: year,
+            },
+        });
     }
-
 }

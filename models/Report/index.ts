@@ -1,11 +1,11 @@
 import Exam from "@models/Events/Exam";
 import Student from "@models/Users/Student";
 import {
-  Column,
-  Entity,
-  ManyToMany,
-  ManyToOne,
-  PrimaryGeneratedColumn,
+    Column,
+    Entity,
+    ManyToMany,
+    ManyToOne,
+    PrimaryGeneratedColumn,
 } from "typeorm";
 
 /**
@@ -13,18 +13,18 @@ import {
  */
 @Entity()
 export default class Report {
-  @PrimaryGeneratedColumn("uuid")
-  id: string;
+    @PrimaryGeneratedColumn("uuid")
+    id: string;
 
-  @ManyToOne(() => Student, (student) => student.reports, { cascade: true })
-  student: Student;
+    @ManyToOne(() => Student, (student) => student.reports, { cascade: true })
+    student: Student;
 
-  @Column({comment:"time in seconds from begging"})
-  startingFrom: number;
+    @Column({ comment: "time in seconds from begging" })
+    startingFrom: number;
 
-  @Column({comment:"time in seconds from begging"})
-  endingAt: number;
+    @Column({ comment: "time in seconds from begging" })
+    endingAt: number;
 
-  @ManyToOne(() => Exam, (e) => e.reports, { cascade: true })
-  exam: Exam;
+    @ManyToOne(() => Exam, (e) => e.reports, { cascade: true })
+    exam: Exam;
 }

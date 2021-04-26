@@ -7,9 +7,11 @@ export default class StudentLectureAttendance {
     @PrimaryGeneratedColumn("uuid")
     id: string;
 
-    @ManyToOne(() => Student, student => student.studentLectureAttendance)
+    @ManyToOne(() => Student, (student) => student.studentLectureAttendance)
     student!: Promise<Student>;
 
-    @ManyToOne(() => Lecture, lec => lec.studentLectureAttendance, { onDelete: "CASCADE" })
+    @ManyToOne(() => Lecture, (lec) => lec.studentLectureAttendance, {
+        onDelete: "CASCADE",
+    })
     lecture!: Promise<Lecture>;
 }

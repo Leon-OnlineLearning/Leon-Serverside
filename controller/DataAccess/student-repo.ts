@@ -5,5 +5,4 @@ import UserPersistanceFactory from "@models/Users/UserFactory";
 import { EntityRepository, getConnection, Repository } from "typeorm";
 
 @EntityRepository(Student)
-export default class StudentRepo extends Repository<Student>{
-}
+export default class StudentRepo extends Repository<Student> {}

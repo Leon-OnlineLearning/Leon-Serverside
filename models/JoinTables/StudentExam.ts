@@ -7,11 +7,11 @@ export default class StudentsExams {
     @PrimaryGeneratedColumn("uuid")
     id: string;
 
-    @ManyToOne(()=>Student, student => student.studentExam )
-    student!: Student
+    @ManyToOne(() => Student, (student) => student.studentExam)
+    student!: Student;
 
-    @ManyToOne(()=>Exam, exam => exam.studentExam)
-    exam! : Promise<Exam>
+    @ManyToOne(() => Exam, (exam) => exam.studentExam)
+    exam!: Promise<Exam>;
 
     @Column()
     mark: number;

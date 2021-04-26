@@ -1,5 +1,5 @@
 /**
- * Middlewares for authorization 
+ * Middlewares for authorization
  */
 
 import UserTypes from "@models/Users/UserTypes";
@@ -9,33 +9,37 @@ import UserPrivileges from "./UserPrivilege";
 export function onlyAdmins(req: Request, res: Response, next: NextFunction) {
     const requestUser: any = req.user;
     if (!isCorrectRole(requestUser, UserTypes.ADMIN)) {
-        res.status(401).json({ success: false, message: "Access denied" })
+        res.status(401).json({ success: false, message: "Access denied" });
     } else {
-        next()
+        next();
     }
 }
 
-export function onlyProfessors(req: Request, res: Response, next: NextFunction) {
+export function onlyProfessors(
+    req: Request,
+    res: Response,
+    next: NextFunction
+) {
     const requestUser: any = req.user;
-    
+
     if (!isCorrectRole(requestUser, UserTypes.PROFESSOR)) {
-        res.status(401).json({ success: false, message: "Access denied" })
+        res.status(401).json({ success: false, message: "Access denied" });
     } else {
-        next()
+        next();
     }
 }
 
 export function onlyStudents(req: Request, res: Response, next: NextFunction) {
     const requestUser: any = req.user;
     if (!isCorrectRole(requestUser, UserTypes.STUDENT)) {
-        res.send(401).json({ success: false, message: "Access denied" })
+        res.send(401).json({ success: false, message: "Access denied" });
     } else {
-        next()
+        next();
     }
 }
 
 function isCorrectRole(user: any, role: UserTypes) {
     const comparableString: string = (<string>user.role).toLowerCase();
-    // now if the privilege is admin he can access professors 
-    return UserPrivileges[role].find((r: UserTypes) => r === comparableString)
+    // now if the privilege is admin he can access professors
+    return UserPrivileges[role].find((r: UserTypes) => r === comparableString);
 }

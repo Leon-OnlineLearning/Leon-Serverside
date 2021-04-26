@@ -1,3 +1,3 @@
 export default interface EventLogic {
-    deleteEventById(id: string) : Promise <void>;
+    deleteEventById(id: string): Promise<void>;
 }

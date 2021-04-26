@@ -1,6 +1,13 @@
 import Department from "@models/Department";
 import { Min } from "class-validator";
-import { Column, Entity, ManyToMany, ManyToOne, PrimaryGeneratedColumn, TableInheritance } from "typeorm";
+import {
+    Column,
+    Entity,
+    ManyToMany,
+    ManyToOne,
+    PrimaryGeneratedColumn,
+    TableInheritance,
+} from "typeorm";
 
 export default abstract class Event {
     @PrimaryGeneratedColumn("uuid")
@@ -8,15 +15,14 @@ export default abstract class Event {
 
     @Column()
     @Min(3)
-    title:string
+    title: string;
 
     @Column()
-    year:number
+    year: number;
 
     @Column()
-    startTime: Date
+    startTime: Date;
 
     @Column()
-    endTime: Date
-
+    endTime: Date;
 }

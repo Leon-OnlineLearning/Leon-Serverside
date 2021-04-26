@@ -7,12 +7,16 @@ import Student from "@models/Users/Student";
 export default interface StudentLogic {
     /**
      * Get all events from starting from to ending at
-     * @param studentId 
+     * @param studentId
      * @param startingFrom In ISO8601 format and UTC
      * @param endingAt In ISO8601 format and UTC
      * @return {Array<Event>} events
      */
-    getAllEvents(studentId: string, startingFrom: string, endingAt: string): Promise<any>;
+    getAllEvents(
+        studentId: string,
+        startingFrom: string,
+        endingAt: string
+    ): Promise<any>;
     createStudent(student: Student): Promise<Student>;
     attendLecture(studentId: string, lectureId: string): Promise<void>;
     attendExam(studentId: string, examId: string): Promise<void>;
@@ -26,6 +30,6 @@ export default interface StudentLogic {
     updateStudent(studentId: string, newData: Student): Promise<Student>;
     getStudentById(studentId: string): Promise<Student | undefined>;
     getStudentAttendance(studentId: string): Promise<any>;
-    getEmbedding(studentId: string) : Promise<Embedding>;
-    setEmbedding(studentId: string, vector: number[]) : Promise<void>;
+    getEmbedding(studentId: string): Promise<Embedding>;
+    setEmbedding(studentId: string, vector: number[]): Promise<void>;
 }

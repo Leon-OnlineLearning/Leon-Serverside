@@ -1,7 +1,7 @@
 enum UserTypes {
     STUDENT = "student",
     PROFESSOR = "professor",
-    ADMIN = "admin"
+    ADMIN = "admin",
 }
 
 export default UserTypes;

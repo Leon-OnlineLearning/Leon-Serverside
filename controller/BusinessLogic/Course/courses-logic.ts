@@ -3,7 +3,6 @@ import Exam from "@models/Events/Exam";
 import Lecture from "@models/Events/Lecture";
 import { type } from "os";
 
-
 export default interface CoursesLogic {
     getAllCourses(): Promise<Course[]>;
     getAllExamsByCourse(courseId: string): Promise<Exam[]>;
@@ -15,5 +14,7 @@ export default interface CoursesLogic {
     updateCourse(courseId: string, newData: Course): Promise<Course>;
     getCoursesById(courseId: string): Promise<Course>;
     getCoursesByYear(year: number): Promise<Course[]>;
-    getLecturesStatistics(courseId: string): Promise<{ lectureTitle: string, count: number }[]>;
+    getLecturesStatistics(
+        courseId: string
+    ): Promise<{ lectureTitle: string; count: number }[]>;
 }
