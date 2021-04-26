@@ -125,12 +125,18 @@ router.put('/record', onlyStudents, upload.single('chuck'), async (req, res) => 
     })
 })
 
-
-
-
+router.get('/report', async (req,res)=>{
+    
+    
+    simpleFinalMWDecorator(res,async () => {
+        const logic : ReportLogic = new ReportLogicImpl()
+        const report = logic.getReport(req.body.studentId , req.body.examId)
+    
+        return report
+        
     })
-})
 
+}) 
 router.get('/:examId', async (req, res) => {
     simpleFinalMWDecorator(res, async () => {
         const logic: ExamsLogic = new ExamsLogicImpl()
