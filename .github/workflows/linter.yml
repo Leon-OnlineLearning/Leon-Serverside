@@ -3,7 +3,7 @@ on:
   [push, pull_request]
 
 jobs:
-  eslint: 
+  linter: 
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v1
@@ -15,6 +15,5 @@ jobs:
     - name: lint
       uses: wearerequired/lint-action@v1
       with:
-        eslint: true
         prettier: true
       
