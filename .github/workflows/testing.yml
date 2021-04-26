@@ -25,7 +25,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: Get dependencies
-        run: npm install
+        run: npm ci
       - name: Run migrations
         run: |
           sh ./run_migrations.sh
