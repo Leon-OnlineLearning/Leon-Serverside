@@ -5,6 +5,7 @@
   "main": "app.js",
   "scripts": {
     "dev": "nodemon",
+    "dev:debug": "node --inspect-brk -r ts-node/register -r tsconfig-paths/register app.ts",
     "dev_docker": "npx tsc && ef-tspm && nodemon",
     "build": "tsc && ef-tspm",
     "clean": "rm -rf ./build",
