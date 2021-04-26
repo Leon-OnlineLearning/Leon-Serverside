@@ -13,8 +13,8 @@ export interface ExamFileInfo {
   chunkIndex: number;
   lastChunk: boolean;
   chunk?: Buffer;
-  chunkStartTime: Date;
-  chunkEndTime: Date;
+  chunkStartTime: number;
+  chunkEndTime: number;
 }
 
 export interface StorageCallback {
@@ -26,8 +26,8 @@ export interface ExamChunkResultCallback {
     studentId: string,
     examId: string,
     result: string,
-    start: Date,
-    end: Date
+    start: number,
+    end: number
   ): Promise<any>;
 }
 
@@ -135,7 +135,8 @@ export async function sendFileHttpMethod(
     console.error(e);
   } finally {
     try {
-      await fsPromises.unlink(`${fileName}`);
+      if (buffer)
+        await fsPromises.unlink(`${fileName}`);
     } catch (e) {
       console.error(e);
     }

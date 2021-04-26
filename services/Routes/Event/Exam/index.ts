@@ -12,6 +12,8 @@ import { randomInt } from "crypto"
 import StudentLogicImpl from "@controller/BusinessLogic/User/Student/students-logic-impl"
 import StudentLogic from "@controller/BusinessLogic/User/Student/students-logic"
 import Embedding from "@models/Users/Embedding"
+import ReportLogic from "@controller/BusinessLogic/Report/report-logic"
+import { ReportLogicImpl } from "@controller/BusinessLogic/Report/report-logic-impl"
 
 const ffmpegPath = require('@ffmpeg-installer/ffmpeg').path
 const ffmpeg = require('fluent-ffmpeg')
@@ -68,14 +70,16 @@ router.put('/record', onlyStudents, upload.single('chuck'), async (req, res) => 
                 userId: string,
                 examId: string,
                 res: string,
-                chunkStartTime: Date,
-                chunkEndTime: Date) => {
+                chunkStartTime: number,
+                chunkEndTime: number) => {
                 const matching = res
-                console.log("matched  ----------------"+matching)
+                console.log(matching)
 
                 if (!matching) {
                     // TODO save database
                     console.log("will save")
+                    const reportlogic : ReportLogic =new ReportLogicImpl()
+                    reportlogic.addToReport(userId, examId, chunkStartTime,chunkEndTime-chunkStartTime)
                     console.log(chunkStartTime)
                     console.log(res)
                 }
@@ -114,6 +118,12 @@ router.put('/record', onlyStudents, upload.single('chuck'), async (req, res) => 
             .on('error', function (err: any) {
                 console.log('error: ', err)
             }).run()
+
+            // TODO delete the file
+
+
+    })
+})
 
 
 
