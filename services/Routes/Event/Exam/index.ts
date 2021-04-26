@@ -60,7 +60,7 @@ router.put('/record', onlyStudents, upload.single('chuck'), async (req, res) => 
         ffmpeg.setFfmpegPath(ffmpegPath)
 
         const randNum = Date.now() + req.body.userId
-        const chunkPath = `/tmp/chunk_${randNum}.webm`
+        const chunkPath = `/tmp/chunk_${randNum}.mkv`
 
 
         const send_file =async () => {
