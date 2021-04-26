@@ -1,4 +1,4 @@
-name: Leon-ServerSide CI
+name: Testing status
 
 on: [push, pull_request]
 

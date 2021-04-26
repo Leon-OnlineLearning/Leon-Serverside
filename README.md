@@ -1,5 +1,5 @@
 # Leon-Serverside Dev
-![CI status](http://github.com/Leon-OnlineLearning/Leon-Serverside/actions/workflows/leon-serverside.yml/badge.svg)
+![testing status](http://github.com/Leon-OnlineLearning/Leon-Serverside/actions/workflows/testing.yml/badge.svg)
 ## .env Example
 ```
 SERVER_PORT=
