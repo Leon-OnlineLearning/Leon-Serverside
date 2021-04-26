@@ -26,6 +26,6 @@ jobs:
       - uses: actions/checkout@v2
       - name: Run migrations
         run: |
-          bash ./run_migrations
+          sh ./run_migrations
       - name: Test
         run: npm run test
