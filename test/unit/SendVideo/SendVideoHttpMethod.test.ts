@@ -7,6 +7,7 @@ import express from "express";
 import { Server } from "http";
 import multer from "multer";
 import fs from "fs";
+import Embedding from "@models/Users/Embedding";
 
 describe("Sending video with http POST method", () => {
   let app: express.Application, server: Server, uploader: multer.Multer;
@@ -66,7 +67,8 @@ describe("Sending video with http POST method", () => {
         examId,
         lastChunk: false,
       },
-      storageCallback,
+      __dirname + "/videoTst.webm",
+      new Embedding(),
       resultCallback
     );
 
@@ -81,7 +83,8 @@ describe("Sending video with http POST method", () => {
         examId,
         lastChunk: false,
       },
-      storageCallback,
+      __dirname + "/videoTst.webm",
+      new Embedding(),
       resultCallback
     );
   });
