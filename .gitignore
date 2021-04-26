@@ -8,3 +8,4 @@ localhost.pem
 localhost-key.pem
 lectures/
 recordings/
+test/unit/SendVideo/videoTstC.webm
