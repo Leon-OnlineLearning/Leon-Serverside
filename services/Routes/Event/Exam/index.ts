@@ -103,6 +103,8 @@ router.put('/record', onlyStudents, upload.single('chuck'), async (req, res) => 
             .setStartTime(fileInfo.chunkStartTime)
             .setDuration(10)
             .output(chunkPath)
+            .videoCodec("copy")
+            .audioCodec("copy")
             .on('end',async function (err: any) {
                 if (!err) {
                     console.log('conversion Done')
