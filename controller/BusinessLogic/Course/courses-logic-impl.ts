@@ -67,7 +67,7 @@ export default class CourseLogicImpl implements CoursesLogic {
     }
 
     async createCourse(course: Course): Promise<Course> {
-        const department = getRepository(Department).findOne(course.department)
+        const department = getRepository(Department).findOne(course.department);
         return await getRepository(Course).save(course);
     }
 
