@@ -36,7 +36,7 @@ ts-node -r tsconfig-paths/register ./node_modules/.bin/typeorm migration:generat
 ## Postman tess
 ### How to?
 - Install postman
-- Set an environment with `port` variable to the server port in your config
+- Set an environment with `baseUrl` variable to the server url
 - Import collection @ `test/integration/postman/Leon.postman_collection.json`
 - Run the collection in order
 - Set back and watch the results 😁
