@@ -15,6 +15,7 @@ import DepartmentsLogicImpl from "@controller/BusinessLogic/Department/departmen
 import UserInputError from "@services/utils/UserInputError";
 import multer from "multer";
 import { sendInitialVideo } from "@controller/sending/sendFiles";
+import studentWithNoEmbedding from "./StudentWithNoEmbedding";
 
 const router = Router();
 router.use(BlockedJWTMiddleware);
@@ -169,7 +170,7 @@ router.get("/:studentId/lectures", async (req, res) => {
     });
 });
 
-router.post("/:studentId/exams", async (req, res) => {
+router.post("/:studentId/exams", studentWithNoEmbedding, async (req, res) => {
     simpleFinalMWDecorator(
         res,
         async () => {
