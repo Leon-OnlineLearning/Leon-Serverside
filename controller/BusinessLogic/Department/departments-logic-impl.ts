@@ -3,7 +3,7 @@ import Department from "@models/Department";
 import Professor from "@models/Users/Professor";
 import Student from "@models/Users/Student";
 import UserInputError from "@services/utils/UserInputError";
-import { createQueryBuilder, getRepository } from "typeorm";
+import { createQueryBuilder, getConnection, getRepository } from "typeorm";
 import DepartmentsLogic from "./departments-logic";
 
 export default class DepartmentsLogicImpl implements DepartmentsLogic {
@@ -14,8 +14,18 @@ export default class DepartmentsLogicImpl implements DepartmentsLogic {
         if (!department) throw new UserInputError("Invalid Department Id");
         const course = await getRepository(Course).findOne(courseId);
         if (!course) throw new UserInputError("Invalid Course Id");
-        (await department.courses).push(course);
-        getRepository(Department).save(department);
+        // (await department.courses).push(course);
+        // getRepository(Department).save(department);
+        try {
+            await getConnection()
+                .createQueryBuilder()
+                .update(Course)
+                .set({ department })
+                .where("id = :id", { id: courseId })
+                .execute();
+        } catch (e) {
+            throw e;
+        }
     }
 
     async addProfessorToDepartment(
@@ -51,12 +61,12 @@ export default class DepartmentsLogicImpl implements DepartmentsLogic {
     }
 
     async getAllCourse(departmentId: string): Promise<Course[]> {
-        const res = await getRepository(Department)
-            .createQueryBuilder("department")
-            .leftJoinAndSelect("department.courses", "course")
-            .where("department.id = :id", { id: departmentId })
-            .getOne();
-        if (res) return res.courses;
+        const res = await getRepository(Course)
+            .createQueryBuilder("c")
+            .where("c.departmentId = :depId", { depId: departmentId })
+            .getMany();
+
+        if (res) return res;
         else throw new UserInputError("Invalid department id");
     }
 

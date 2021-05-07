@@ -23,7 +23,7 @@ export default class Student extends User {
         const userSummary = await super.summary();
         return {
             ...userSummary,
-            departmentId: this.department.id,
+            departmentId: (await this.department).id,
             year: this.year,
         };
     }
@@ -47,10 +47,6 @@ export default class Student extends User {
 
     @ManyToOne(() => Department, (department) => department.students)
     department!: Department;
-
-    @ManyToMany(() => Course, (c) => c.students)
-    @JoinTable()
-    courses: Promise<Course[]>;
 
     @Column({ default: 0 })
     @Min(1)

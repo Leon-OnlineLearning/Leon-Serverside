@@ -188,35 +188,6 @@ router.get("/:studentId/courses", async (req, res) => {
     });
 });
 
-router.post("/:studentId/courses", async (req, res) => {
-    if (req.body.course) {
-        res.send(400).send({
-            success: false,
-            message: "Request body doesn't include 'Course Id'",
-        });
-    }
-    simpleFinalMWDecorator(
-        res,
-        async () => {
-            const logic: StudentLogic = new StudentLogicImpl();
-            await logic.addCourse(req.params.studentId, req.body.course);
-        },
-        201
-    );
-});
-
-router.delete("/:studentId/courses", async (req, res) => {
-    if (req.body.courseId)
-        res.status(400).send({
-            success: false,
-            message: "Request body doesn't include 'Course Id'",
-        });
-    simpleFinalMWDecorator(res, async () => {
-        const logic: StudentLogic = new StudentLogicImpl();
-        await logic.cancelCourse(req.params.studentId, req.body.courseId);
-    });
-});
-
 router.get("/:studentId/events", async (req, res) => {
     let startingFrom: string;
     let endingAt: string;

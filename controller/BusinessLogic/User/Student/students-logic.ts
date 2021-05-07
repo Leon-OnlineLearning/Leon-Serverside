@@ -21,8 +21,6 @@ export default interface StudentLogic {
     attendLecture(studentId: string, lectureId: string): Promise<void>;
     attendExam(studentId: string, examId: string): Promise<void>;
     getAllCourses(studentId: string): Promise<Course[]>;
-    addCourse(studentId: string, courseId: string): Promise<void>;
-    cancelCourse(studentId: string, courseId: string): Promise<void>;
     // DISCUSS: is this really needed while you got the courses which in turn has lectures in it
     getAllLectures(studentId: string): Promise<Lecture[]>;
     getAllStudents(skip?: number, take?: number): Promise<Student[]>;

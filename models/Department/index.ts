@@ -25,10 +25,7 @@ export default class Department {
     @Min(3)
     name: string;
 
-    @ManyToMany(() => Course, (crs) => crs.departments)
-    @JoinTable({
-        name: "DEPARTMENT_COURSES",
-    })
+    @ManyToOne(() => Course, (crs) => crs.department)
     courses: Promise<Course[]>;
 
     @OneToMany(() => Professor, (prof) => prof.department)

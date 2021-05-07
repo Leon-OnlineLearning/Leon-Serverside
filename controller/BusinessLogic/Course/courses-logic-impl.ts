@@ -1,4 +1,5 @@
 import Course from "@models/Course";
+import Department from "@models/Department";
 import Exam from "@models/Events/Exam";
 import Lecture from "@models/Events/Lecture";
 import UserInputError from "@services/utils/UserInputError";
@@ -66,6 +67,7 @@ export default class CourseLogicImpl implements CoursesLogic {
     }
 
     async createCourse(course: Course): Promise<Course> {
+        const department = getRepository(Department).findOne(course.department)
         return await getRepository(Course).save(course);
     }
 

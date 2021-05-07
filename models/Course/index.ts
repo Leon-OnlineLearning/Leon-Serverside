@@ -33,8 +33,8 @@ export default class Course {
     professors: Professor[];
 
     @ManyToOne(() => Department, (dep) => dep.courses)
-    departments: Department[];
+    department: Department;
 
-    @ManyToMany(() => Student, (s) => s.courses)
-    students: Promise<Student[]>;
+    @Column()
+    year: number;
 }

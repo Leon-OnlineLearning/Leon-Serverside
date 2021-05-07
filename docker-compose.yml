@@ -5,7 +5,7 @@ services:
     image: 'postgres:13-alpine'
     
     ports:
-      - 5432
+        - 5432:5432
 
     environment:
   #     # these are development credintials should use more secure

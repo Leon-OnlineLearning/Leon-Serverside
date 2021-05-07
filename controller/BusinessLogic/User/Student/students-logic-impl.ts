@@ -38,12 +38,9 @@ export default class StudentLogicImpl implements StudentLogic {
     }
 
     async getStudentAttendance(studentId: string): Promise<any> {
-        const student = await getRepository(Student).findOne(studentId);
-        if (!student) {
-            throw new UserInputError("Invalid student id");
-        }
         // for each course get the lectures
-        const courses = await student.courses;
+        const courses = await this.getAllCourses(studentId);
+
         let res: any = {};
         // TODO room for optimization
         for (let course of courses) {
@@ -90,9 +87,8 @@ export default class StudentLogicImpl implements StudentLogic {
         startingFrom: string,
         endingAt: string
     ) {
-        const student = await getRepository(Student).findOne(studentId);
-        if (!student) throw new UserInputError("Invalid student id");
-        const courses = await student.courses;
+        const courses = await this.getAllCourses(studentId);
+
         let res: Array<Event> = [];
         for (const course of courses) {
             const lecQb = getRepository(Lecture).createQueryBuilder("lec");
@@ -120,29 +116,6 @@ export default class StudentLogicImpl implements StudentLogic {
             res = [...res, ...lectures, ...exams];
         }
         return res;
-    }
-
-    async cancelCourse(studentId: string, courseId: string): Promise<void> {
-        const student = await getRepository(Student).findOne(studentId);
-        if (!student) throw new UserInputError("Student is not found");
-        const course = await getRepository(Course).findOne(courseId);
-        if (!course) throw new UserInputError("Course is not found");
-        const newCourses: Array<Course> = [];
-        for (let course of await student.courses) {
-            newCourses.push(course);
-        }
-        student.courses = Promise.resolve(newCourses);
-        getRepository(Student).save(student);
-    }
-
-    async addCourse(studentId: string, courseId: string): Promise<void> {
-        const student = await getRepository(Student).findOne(studentId);
-        if (!student) throw new UserInputError("Student is not found");
-        const course = await getRepository(Course).findOne(courseId);
-        if (!course) throw new UserInputError("Course is not found");
-
-        (await student.courses).push(course);
-        await getRepository(Student).save(student);
     }
 
     async updateStudent(studentId: string, newData: Student): Promise<Student> {
@@ -186,9 +159,19 @@ export default class StudentLogicImpl implements StudentLogic {
     }
 
     async getAllCourses(studentId: string): Promise<Course[]> {
-        const student = await getRepository(Student).findOne(studentId);
+        const student = await getRepository(Student).findOne(studentId, {
+            relations: ["department"],
+        });
         if (student) {
-            const courses = await student.courses;
+            const coursesQB = getRepository(Course).createQueryBuilder("c");
+            const courses = await coursesQB
+                .where("c.departmentId = :depId", {
+                    depId: student.department.id,
+                })
+                .andWhere("c.year = :studentYear", {
+                    studentYear: student.year,
+                })
+                .getMany();
 
             return courses;
         } else {
@@ -212,12 +195,16 @@ export default class StudentLogicImpl implements StudentLogic {
         if (professor) throw new AccountWithSimilarEmailExist();
 
         const repo = getRepository(Student);
+        console.log("department: ", await student.department);
+
         student.password = await hashPassword(student.password);
         return await repo.save(student);
     }
 
     async attendLecture(studentId: string, lectureId: string): Promise<void> {
-        const student = await getRepository(Student).findOne(studentId);
+        const student = await getRepository(Student).findOne(studentId, {
+            relations: ["department"],
+        });
         if (!student) {
             throw new UserInputError("Student is not found");
         }
@@ -225,7 +212,11 @@ export default class StudentLogicImpl implements StudentLogic {
         if (!lecture) {
             throw new UserInputError("Lecture is not found");
         }
-        const studentCourses = await student.courses;
+
+        const studentCourses = await this.getAllCourses(student.id);
+
+        console.log("courses: ", studentCourses);
+
         const lectureCourse = await lecture.course;
         if (!studentCourses.length)
             throw new UserInputError(
