@@ -8,6 +8,8 @@ import { Request, Response, NextFunction } from "express";
 import UserParser from "./UserParser";
 import BodyParserMiddleware from "./BodyParserMiddleware";
 import Joi from "joi";
+import { getRepository } from "typeorm";
+import Course from "@models/Course";
 export default class ProfessorParser implements BodyParserMiddleware {
     parserClosure(validationSchema: Joi.ObjectSchema) {
         return async (req: Request, res: Response, next: NextFunction) => {
@@ -16,6 +18,9 @@ export default class ProfessorParser implements BodyParserMiddleware {
                     validationSchema,
                     req
                 )) as Professor;
+                // we can simply do this because professor - course relation is marked as cascade
+                const courses = await getRepository(Course).findByIds(req.body.courses);
+                professor.courses = courses;
                 const professorReq = req as ProfessorRequest;
                 professorReq.account = professor;
                 next();
