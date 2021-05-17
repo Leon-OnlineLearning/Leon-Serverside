@@ -24,6 +24,7 @@ import {
     UserValidationSchema,
 } from "@models/Users/validators/schema/UserSchema";
 import UserInputError from "@services/utils/UserInputError";
+import { ExpressionStatement } from "typescript";
 
 passport.use(
     "login",
@@ -112,6 +113,19 @@ passport.use(
         }
     )
 );
+
+export const accessTokenValidationMiddleware = (req: Request, res: Response, next: NextFunction) => {
+    passport.authenticate("access-token", (_, user, err) => {
+        console.log("user",user, "info", err);
+        if (err) {
+            return res.status(401).send({ success: false, message: "Invalid or expired Token" })
+        } else {
+            req.user = user;
+            return next()
+        }
+        console.log(user);
+    })(req, res, next)
+}
 
 passport.use(
     "refresh-token",

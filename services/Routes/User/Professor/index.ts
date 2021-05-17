@@ -1,5 +1,5 @@
 import { Router } from "express";
-import passport, { BlockedJWTMiddleware } from "@services/Auth";
+import passport, { accessTokenValidationMiddleware, BlockedJWTMiddleware } from "@services/Auth";
 import { onlyAdmins, onlyProfessors } from "../AuthorizationMiddleware";
 import ProfessorLogic from "@controller/BusinessLogic/User/Professor/professors-logic";
 import ProfessorLogicImpl from "@controller/BusinessLogic/User/Professor/professors-logic-impl";
@@ -13,7 +13,8 @@ import simpleFinalMWDecorator from "@services/utils/RequestDecorator";
 
 const router = Router();
 router.use(BlockedJWTMiddleware);
-router.use(passport.authenticate("access-token", { session: false }));
+// router.use(passport.authenticate("access-token", { session: false }));
+router.use(accessTokenValidationMiddleware);
 
 const parser: BodyParserMiddleware = new ProfessorParser();
 

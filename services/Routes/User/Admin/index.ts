@@ -1,5 +1,5 @@
 import { Router } from "express";
-import passport, { BlockedJWTMiddleware } from "@services/Auth";
+import passport, { accessTokenValidationMiddleware, BlockedJWTMiddleware } from "@services/Auth";
 import { onlyAdmins } from "../AuthorizationMiddleware";
 import Admin from "@models/Users/Admin";
 import AdminLogic from "@controller/BusinessLogic/User/Admin/admin-logic";
@@ -15,7 +15,8 @@ import simpleFinalMWDecorator from "@services/utils/RequestDecorator";
 const router = Router();
 
 router.use(BlockedJWTMiddleware);
-router.use(passport.authenticate("access-token", { session: false }));
+// router.use(passport.authenticate("access-token", { session: false }));
+router.use(accessTokenValidationMiddleware);
 
 const parser: BodyParserMiddleware = new AdminParser();
 

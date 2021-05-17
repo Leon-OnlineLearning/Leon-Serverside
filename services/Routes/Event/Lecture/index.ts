@@ -1,4 +1,4 @@
-import passport, { BlockedJWTMiddleware } from "@services/Auth";
+import passport, { accessTokenValidationMiddleware, BlockedJWTMiddleware } from "@services/Auth";
 import { Router } from "express";
 import BodyParserMiddleware from "@services/Routes/BodyParserMiddleware/BodyParserMiddleware";
 import LectureParser, {
@@ -26,7 +26,8 @@ const lecturesStorage = multer.diskStorage({
 const uploader = multer({ storage: lecturesStorage });
 
 router.use(BlockedJWTMiddleware);
-router.use(passport.authenticate("access-token", { session: false }));
+// router.use(passport.authenticate("access-token", { session: false }));
+router.use(accessTokenValidationMiddleware);
 
 const parser: BodyParserMiddleware = new LectureParser();
 

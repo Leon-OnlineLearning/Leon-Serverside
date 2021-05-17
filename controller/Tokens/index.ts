@@ -106,7 +106,7 @@ export async function generateAccessToken(user: any, refresh: boolean = false) {
         jwt.sign(
             payload,
             process.env.JWT_SECRET || "leon",
-            { expiresIn: "15m" },
+            { expiresIn: "15m" }, 
             (err, token) => {
                 if (err) reject(err);
                 else resolve(token);
