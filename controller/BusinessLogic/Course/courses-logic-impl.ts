@@ -8,12 +8,12 @@ import CoursesLogic from "./courses-logic";
 export default class CourseLogicImpl implements CoursesLogic {
     async getAllCourses(): Promise<Course[]> {
         return getRepository(Course)
-        .createQueryBuilder("course")
-        .select("course.id", "id")
-        .addSelect("course.name", "name")
-        .addSelect("course.departmentId", "department")
-        .addSelect("course.year", "year")
-        .getRawMany()
+            .createQueryBuilder("course")
+            .select("course.id", "id")
+            .addSelect("course.name", "name")
+            .addSelect("course.departmentId", "department")
+            .addSelect("course.year", "year")
+            .getRawMany();
     }
 
     async getAllExamsByCourse(courseId: string) {
