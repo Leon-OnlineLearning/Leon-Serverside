@@ -5,7 +5,7 @@ import Exam from "@models/Events/Exam";
 import Lecture from "@models/Events/Lecture";
 import Professor from "@models/Users/Professor";
 import { AccountWithSimilarEmailExist } from "@models/Users/User";
-import { createQueryBuilder, getRepository } from "typeorm";
+import { createQueryBuilder, getRepository, QueryFailedError } from "typeorm";
 import AdminLogic from "../Admin/admin-logic";
 import AdminLogicImpl from "../Admin/admin-logic-impl";
 import StudentLogic from "../Student/students-logic";
@@ -81,7 +81,18 @@ export default class ProfessorLogicIml implements ProfessorLogic {
         const admin = await adminLogic.getAdminByEmail(professor.email);
         if (admin) throw new AccountWithSimilarEmailExist();
         professor.password = await hashPassword(professor.password);
-        return await getRepository(Professor).save(professor);
+        try {
+            console.log(professor);
+            const res = await getRepository(Professor).save(professor);
+            return res
+        } catch(e) {
+            if (e instanceof QueryFailedError) {
+                throw new UserInputError(e.message);
+            }
+            else {
+                throw e;
+            }
+        }
     }
     async deleteProfessorById(professorId: string): Promise<void> {
         await getRepository(Professor).delete(professorId);
