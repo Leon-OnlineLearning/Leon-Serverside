@@ -29,7 +29,7 @@ export default class Professor extends User {
         };
     }
     @ManyToMany(() => Course, { cascade: true })
-    @JoinTable()
+    @JoinTable({name: "professors_courses"})
     courses: Course[];
 
     @ManyToOne(() => Department, (dep) => dep.professors)
