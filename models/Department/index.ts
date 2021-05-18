@@ -25,7 +25,7 @@ export default class Department {
     @Min(3)
     name: string;
 
-    @ManyToOne(() => Course, (crs) => crs.department)
+    @ManyToOne(() => Course, (crs) => crs.department, { onDelete: "CASCADE" })
     courses: Promise<Course[]>;
 
     @OneToMany(() => Professor, (prof) => prof.department)

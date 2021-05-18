@@ -5,7 +5,7 @@ export class UseEmbeddingSacle1619054738013 implements MigrationInterface {
 
     public async up(queryRunner: QueryRunner): Promise<void> {
         await queryRunner.query(
-            `ALTER TABLE "embedding" ALTER COLUMN "vector" TYPE numeric(11,10) array`
+            `ALTER TABLE "embedding" ALTER COLUMN "vector" TYPE numeric(21,20) array`
         );
         await queryRunner.query(
             `COMMENT ON COLUMN "embedding"."vector" IS NULL`
