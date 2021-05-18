@@ -32,7 +32,12 @@ export default class Course {
     @ManyToMany(() => Professor, (prof) => prof.courses)
     professors: Professor[];
 
-    @ManyToOne(() => Department, (dep) => dep.courses)
+    // TODO IMPORTANT (This is a strange typrorm behavior) for "sync" this add onDelete on
+    // foreign key on the departments table (the intended behavior) however as you can see
+    // I add it inside course entity THIS IS NOT CORRECT!
+    // NOTE: using it in migration result the expected behavior, be careful
+    // it must be a typrorm bug 😥
+    @ManyToOne(() => Department, (dep) => dep.courses, { onDelete: "CASCADE" })
     department: Department;
 
     @Column()
