@@ -9,7 +9,7 @@ import CoursesLogic from "@controller/BusinessLogic/Course/courses-logic";
 import CourseLogicImpl from "@controller/BusinessLogic/Course/courses-logic-impl";
 import { onlyAdmins, onlyProfessors } from "../User/AuthorizationMiddleware";
 import simpleFinalMWDecorator from "@services/utils/RequestDecorator";
-import { accessTokenValidationMiddleware } from "@services/Auth"
+import { accessTokenValidationMiddleware } from "@services/Auth";
 
 const router = Router();
 

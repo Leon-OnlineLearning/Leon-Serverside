@@ -1,4 +1,7 @@
-import passport, { accessTokenValidationMiddleware, BlockedJWTMiddleware } from "@services/Auth";
+import passport, {
+    accessTokenValidationMiddleware,
+    BlockedJWTMiddleware,
+} from "@services/Auth";
 import { Router } from "express";
 import BodyParserMiddleware from "@services/Routes/BodyParserMiddleware/BodyParserMiddleware";
 import LectureParser, {

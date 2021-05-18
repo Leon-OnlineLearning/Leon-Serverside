@@ -114,17 +114,23 @@ passport.use(
     )
 );
 
-export const accessTokenValidationMiddleware = (req: Request, res: Response, next: NextFunction) => {
+export const accessTokenValidationMiddleware = (
+    req: Request,
+    res: Response,
+    next: NextFunction
+) => {
     passport.authenticate("access-token", (_, user, err) => {
         if (err) {
-            return res.status(401).send({ success: false, message: "Invalid or expired Token" })
+            return res
+                .status(401)
+                .send({ success: false, message: "Invalid or expired Token" });
         } else {
             req.user = user;
-            return next()
+            return next();
         }
         console.log(user);
-    })(req, res, next)
-}
+    })(req, res, next);
+};
 
 passport.use(
     "refresh-token",

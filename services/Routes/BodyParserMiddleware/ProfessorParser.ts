@@ -19,7 +19,9 @@ export default class ProfessorParser implements BodyParserMiddleware {
                     req
                 )) as Professor;
                 // we can simply do this because professor - course relation is marked as cascade
-                const courses = await getRepository(Course).findByIds(req.body.courses);
+                const courses = await getRepository(Course).findByIds(
+                    req.body.courses
+                );
                 professor.courses = courses;
                 const professorReq = req as ProfessorRequest;
                 professorReq.account = professor;

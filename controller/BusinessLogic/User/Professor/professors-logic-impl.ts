@@ -84,12 +84,11 @@ export default class ProfessorLogicIml implements ProfessorLogic {
         try {
             console.log(professor);
             const res = await getRepository(Professor).save(professor);
-            return res
-        } catch(e) {
+            return res;
+        } catch (e) {
             if (e instanceof QueryFailedError) {
                 throw new UserInputError(e.message);
-            }
-            else {
+            } else {
                 throw e;
             }
         }

@@ -2,7 +2,10 @@
  * Secure routes = routes that require access token to be accessed
  */
 import { Router } from "express";
-import passport, { accessTokenValidationMiddleware, BlockedJWTMiddleware } from "@services/Auth";
+import passport, {
+    accessTokenValidationMiddleware,
+    BlockedJWTMiddleware,
+} from "@services/Auth";
 
 const router = Router();
 

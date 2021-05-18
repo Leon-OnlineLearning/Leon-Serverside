@@ -1,5 +1,8 @@
 import { Request, Router } from "express";
-import passport, { accessTokenValidationMiddleware, BlockedJWTMiddleware } from "@services/Auth";
+import passport, {
+    accessTokenValidationMiddleware,
+    BlockedJWTMiddleware,
+} from "@services/Auth";
 import { onlyAdmins, onlyStudents } from "../AuthorizationMiddleware";
 import StudentLogic from "@controller/BusinessLogic/User/Student/students-logic";
 import StudentLogicImpl from "@controller/BusinessLogic/User/Student/students-logic-impl";

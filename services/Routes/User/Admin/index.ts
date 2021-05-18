@@ -1,5 +1,8 @@
 import { Router } from "express";
-import passport, { accessTokenValidationMiddleware, BlockedJWTMiddleware } from "@services/Auth";
+import passport, {
+    accessTokenValidationMiddleware,
+    BlockedJWTMiddleware,
+} from "@services/Auth";
 import { onlyAdmins } from "../AuthorizationMiddleware";
 import Admin from "@models/Users/Admin";
 import AdminLogic from "@controller/BusinessLogic/User/Admin/admin-logic";
