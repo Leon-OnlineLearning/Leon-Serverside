@@ -7,7 +7,7 @@
     "dev": "prettier --write . && nodemon",
     "dev:debug": "prettier --write . && node --inspect-brk -r ts-node/register -r tsconfig-paths/register app.ts",
     "dev_docker": "nodemon",
-    "lint" : "prettier --write .",
+    "lint": "prettier --write .",
     "build": "tsc && ef-tspm",
     "clean": "rm -rf ./build",
     "test": "jest --verbose --runInBand",

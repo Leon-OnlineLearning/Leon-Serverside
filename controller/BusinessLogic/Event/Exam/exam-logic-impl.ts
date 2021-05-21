@@ -37,17 +37,17 @@ export default class ExamsLogicImpl implements ExamsLogic {
     }
 
     async getExamByStudentId(studentId: string): Promise<Exam[]> {
-        const studnetLogic = new StudentLogicImpl()
-        const courses = await studnetLogic.getAllCourses(studentId)
+        const studnetLogic = new StudentLogicImpl();
+        const courses = await studnetLogic.getAllCourses(studentId);
         let exams: Array<Exam> = [];
-        
+
         for (const course of courses) {
             const examQb = getRepository(Exam).createQueryBuilder("ex");
             exams = await examQb
                 .where("ex.courseId = :courseId", { courseId: course.id })
                 .getMany();
-        }   
-        return exams;        
+        }
+        return exams;
     }
     async createExam(exam: Exam): Promise<Exam> {
         return await getRepository(Exam).save(exam);

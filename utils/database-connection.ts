@@ -15,14 +15,12 @@ import populateDB from "./populateDB";
 export const initializeDBMSConnection = async () => {
     let connection: Connection;
     connection = await createConnection();
-    if (parseInt(process.env.SYNC_DB ?? "0")){
+    if (parseInt(process.env.SYNC_DB ?? "0")) {
         await connection.synchronize(true);
-        if (parseInt(process.env.populateDB ?? "0"))
-        {
+        if (parseInt(process.env.populateDB ?? "0")) {
             populateDB();
         }
     }
-
 };
 
 export const destructDBMSConnection = async () => {
