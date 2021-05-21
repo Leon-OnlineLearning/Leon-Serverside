@@ -160,6 +160,21 @@ router.get("/report", async (req, res) => {
         return report;
     });
 });
+
+router.get("/student/:studentId" , async (req, res) =>{
+    // res.send("hi")
+    // return "hi"
+    const studentId = req.params.studentId;
+    console.log("found me")
+    simpleFinalMWDecorator(res, async () => {
+        const examLogic: ExamsLogic = new ExamsLogicImpl();
+        const exams = await examLogic.getExamByStudentId(studentId);
+        return exams;
+    });
+})
+
+
+
 router.get("/:examId", async (req, res) => {
     simpleFinalMWDecorator(res, async () => {
         const logic: ExamsLogic = new ExamsLogicImpl();

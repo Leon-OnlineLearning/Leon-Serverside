@@ -14,6 +14,7 @@ import StudentsExams from "@models/JoinTables/StudentExam";
 import Department from "@models/Department";
 import Professor from "@models/Users/Professor";
 import Report from "@models/Report";
+import ExamQuestion from "./ExamQuestions";
 
 @Entity()
 export default class Exam extends Event {
@@ -31,6 +32,12 @@ export default class Exam extends Event {
 
     @ManyToOne(() => Professor, (p) => p.exams)
     professor!: Professor;
+
+    @OneToMany(() => ExamQuestion, (q) => q.exam, {
+        onDelete: "CASCADE",
+        cascade: ["insert"]
+    })
+    questions: ExamQuestion[];
 
     @OneToMany(() => Report, (r) => r.exam)
     @JoinColumn()
