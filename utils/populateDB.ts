@@ -22,7 +22,7 @@ import User from "@models/Users/User";
 
 function _createUser(baseUser: User, name: string, password = "1234") {
     baseUser.email = `${name}@test.com`;
-    baseUser.password = "1234";
+    baseUser.password = password;
     baseUser.firstName = `base ${name} fn`;
     baseUser.lastName = `base ${name} ln`;
     baseUser.thirdPartyAccount = false;
