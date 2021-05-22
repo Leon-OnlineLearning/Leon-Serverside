@@ -21,7 +21,7 @@ export default class ExamQuestion {
     @PrimaryGeneratedColumn("uuid")
     id?: string;
 
-    @ManyToOne(() => Exam, (exam) => exam.questions)
+    @ManyToOne(() => Exam, (exam) => exam.questions, { onDelete: "CASCADE" })
     @JoinColumn()
     exam!: Promise<Exam>;
 

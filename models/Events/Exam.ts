@@ -34,7 +34,6 @@ export default class Exam extends Event {
     professor!: Professor;
 
     @OneToMany(() => ExamQuestion, (q) => q.exam, {
-        onDelete: "CASCADE",
         cascade: ["insert"],
     })
     questions: ExamQuestion[];
