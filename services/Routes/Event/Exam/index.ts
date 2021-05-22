@@ -161,7 +161,7 @@ router.get("/report", async (req, res) => {
     });
 });
 
-router.get("/student/:studentId", async (req, res) => {
+router.get("/student/:studentId",onlyStudents, async (req, res) => {
     // res.send("hi")
     // return "hi"
     const studentId = req.params.studentId;
