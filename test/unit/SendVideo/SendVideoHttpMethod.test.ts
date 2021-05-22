@@ -34,7 +34,7 @@ describe("Sending video with http POST method", () => {
             numberCalled++;
             expect(req.file).toBeTruthy();
             expect(req.params["user_id"]).toEqual(userId);
-            res.json(1);
+            res.json({ matched: 1 });
         });
         const startTime = 0;
         const endTime = 10;
