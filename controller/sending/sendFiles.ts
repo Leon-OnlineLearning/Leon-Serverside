@@ -59,7 +59,7 @@ export const sendExamFile = async (
                 await resultCallback(
                     userId,
                     fileInfo.examId,
-                    res,
+                    res.matched,
                     fileInfo.chunkStartTime,
                     fileInfo.chunkEndTime
                 );
