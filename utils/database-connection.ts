@@ -24,20 +24,6 @@ export const initializeDBMSConnection = async () => {
             populateDB();
         }
     }
-    if (
-        typeof process.env.BASE_PROFESSOR_EMAIL === "string" &&
-        typeof process.env.BASE_PROFESSOR_PASSWORD === "string"
-    ) {
-        const professorLogic: ProfessorLogic = new ProfessorLogicIml();
-        const professor = new Professor();
-        professor.email = process.env.BASE_PROFESSOR_EMAIL;
-        professor.password = process.env.BASE_PROFESSOR_PASSWORD;
-        professor.firstName = "base professor fn";
-        professor.lastName = "base professor ln";
-        professor.thirdPartyAccount = false;
-
-        await professorLogic.createProfessor(professor);
-    }
 };
 
 export const destructDBMSConnection = async () => {
