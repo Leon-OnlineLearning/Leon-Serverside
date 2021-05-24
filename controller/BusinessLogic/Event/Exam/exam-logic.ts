@@ -1,4 +1,5 @@
 import Exam from "@models/Events/Exam";
+// import ExamQuestion from "@models/Events/ExamQuestions";
 
 export default interface ExamsLogic {
     createExam(exam: Exam): Promise<Exam>;
@@ -6,10 +7,14 @@ export default interface ExamsLogic {
     updateExam(examId: string, newData: Exam): Promise<Exam>;
     deleteExamById(examId: string): Promise<void>;
     getExamsByYear(year: number): Promise<Exam[]>;
+    getExamByStudentId(studentId: string): Promise<Exam[]>;
     saveRecording(
         chunk: Buffer,
         examId: string,
         userId: string,
         chunkIndex: number
     ): Promise<String>;
+    // addQuestion(question: ExamQuestion): Promise<ExamQuestion>;
+    // removeQuestion(questionId: string): Promise<void>;
+    // updateQuestion(questionId:string, newData: ExamQuestion): Promise<ExamQuestion>;
 }

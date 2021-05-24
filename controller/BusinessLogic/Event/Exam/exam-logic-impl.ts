@@ -7,6 +7,7 @@ const mkdir = promises.mkdir;
 const appendFile = promises.appendFile;
 const writeFile = promises.writeFile;
 import { join } from "path";
+import StudentLogicImpl from "@controller/BusinessLogic/User/Student/students-logic-impl";
 
 let upload_folder = process.env["UPLOADED_RECORDING_PATH"] || "recordings";
 export default class ExamsLogicImpl implements ExamsLogic {
@@ -35,6 +36,19 @@ export default class ExamsLogicImpl implements ExamsLogic {
             .getMany();
     }
 
+    async getExamByStudentId(studentId: string): Promise<Exam[]> {
+        const studnetLogic = new StudentLogicImpl();
+        const courses = await studnetLogic.getAllCourses(studentId);
+        let exams: Array<Exam> = [];
+
+        for (const course of courses) {
+            const examQb = getRepository(Exam).createQueryBuilder("ex");
+            exams = await examQb
+                .where("ex.courseId = :courseId", { courseId: course.id })
+                .getMany();
+        }
+        return exams;
+    }
     async createExam(exam: Exam): Promise<Exam> {
         return await getRepository(Exam).save(exam);
     }
