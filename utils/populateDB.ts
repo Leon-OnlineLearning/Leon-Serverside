@@ -30,20 +30,22 @@ export default async function populateDB() {
     // create admin account
     let sample_admin = _createUser(new Admin(), "admin");
     const created_admin = await new AdminLogicImpl().createAdmin(sample_admin);
-    console.debug(`created admin  ${created_admin.id}`)
+    console.debug(`created admin  ${created_admin.id}`);
 
     // create pofessor account
     // prerequests department , course
     let sample_department = new Department();
     sample_department.name = "the dummy department";
-    sample_department = await new DepartmentsLogicImpl().createDepartment(sample_department);
-    console.debug(`created department ${sample_department.id}`)
+    sample_department = await new DepartmentsLogicImpl().createDepartment(
+        sample_department
+    );
+    console.debug(`created department ${sample_department.id}`);
 
     let sample_course = new Course();
     sample_course.name = "dummy course";
     sample_course.year = 2021;
     sample_course = await new CourseLogicImpl().createCourse(sample_course);
-    console.debug(`created course ${sample_course.id}`)
+    console.debug(`created course ${sample_course.id}`);
 
     const professorlogic: ProfessorLogic = new ProfessorLogicIml();
     let sample_professor = _createUser(
@@ -51,8 +53,7 @@ export default async function populateDB() {
         "professor"
     ) as Professor;
     sample_professor = await professorlogic.createProfessor(sample_professor);
-    console.debug(`created professor ${sample_professor.id}`)
-
+    console.debug(`created professor ${sample_professor.id}`);
 
     new DepartmentsLogicImpl().addProfessorToDepartment(
         sample_department.id,
@@ -62,15 +63,14 @@ export default async function populateDB() {
         sample_department.id,
         sample_course.id
     );
-    console.debug(`professor attached to course and department`)
-    
+    console.debug(`professor attached to course and department`);
+
     // create student at same depatment
     let sample_student = _createUser(new Student(), "student") as Student;
     sample_student.year = 2021;
     sample_student.department = sample_department;
     sample_student = await new StudentLogicImpl().createStudent(sample_student);
-    console.debug(`created student ${sample_student.id}`)
-
+    console.debug(`created student ${sample_student.id}`);
 
     // create exam
     const baseExam = new Exam();
@@ -87,7 +87,6 @@ export default async function populateDB() {
     const sample_question = test_exam.questions as ExamQuestion[];
     baseExam.questions = sample_question;
 
-
-    const created_exam = await new ExamsLogicImpl().createExam(baseExam)
-    console.debug(`created exam ${created_exam.id}`)
+    const created_exam = await new ExamsLogicImpl().createExam(baseExam);
+    console.debug(`created exam ${created_exam.id}`);
 }
