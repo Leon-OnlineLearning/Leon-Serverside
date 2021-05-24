@@ -195,7 +195,6 @@ export default class StudentLogicImpl implements StudentLogic {
         if (professor) throw new AccountWithSimilarEmailExist();
 
         const repo = getRepository(Student);
-        console.log("department: ", await student.department);
 
         student.password = await hashPassword(student.password);
         return await repo.save(student);

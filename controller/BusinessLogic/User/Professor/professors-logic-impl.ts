@@ -82,7 +82,6 @@ export default class ProfessorLogicIml implements ProfessorLogic {
         if (admin) throw new AccountWithSimilarEmailExist();
         professor.password = await hashPassword(professor.password);
         try {
-            console.log(professor);
             const res = await getRepository(Professor).save(professor);
             return res;
         } catch (e) {
