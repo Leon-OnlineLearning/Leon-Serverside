@@ -12,7 +12,9 @@ import StudentLogicImpl from "@controller/BusinessLogic/User/Student/students-lo
 let upload_folder = process.env["UPLOADED_RECORDING_PATH"] || "recordings";
 export default class ExamsLogicImpl implements ExamsLogic {
     async getExamById(examId: string): Promise<Exam> {
-        const res = await getRepository(Exam).findOne(examId);
+        const res = await getRepository(Exam).findOne(examId, {
+            relations: ["questions"]
+        });
         if (res) return res;
         else throw new UserInputError("Invalid exam id");
     }
