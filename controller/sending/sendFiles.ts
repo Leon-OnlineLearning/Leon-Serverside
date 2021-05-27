@@ -48,9 +48,6 @@ export const sendExamFile = async (
     embedding: Embedding,
     resultCallback: ExamChunkResultCallback
 ) => {
-    if (!embedding?.vector) {
-        throw new Error("no embedding for student");
-    }
     if (fileInfo.chunkIndex % 2 == 0) {
         // const fileName = `${fileInfo.examId}-${userId}-${fileInfo.chunkIndex}.webm`;
 

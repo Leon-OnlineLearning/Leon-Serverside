@@ -78,6 +78,12 @@ router.put(
                 fileInfo.chunkIndex
             );
 
+            const embedding: Embedding = await new StudentLogicImpl().getEmbedding(
+                req.body.userId
+            );
+            if (!embedding?.vector) {
+                throw new Error("no embedding for student");
+            }
             // get playaple buffer of last chunk
             ffmpeg.setFfmpegPath(ffmpegPath);
 
