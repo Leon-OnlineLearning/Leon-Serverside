@@ -1,6 +1,7 @@
 import Department from "@models/Department";
 import Exam from "@models/Events/Exam";
 import Lecture from "@models/Events/Lecture";
+import TextClassificationModel from "@models/TextClassificationModel";
 import Professor from "@models/Users/Professor";
 import Student from "@models/Users/Student";
 import {
@@ -32,14 +33,17 @@ export default class Course {
     @ManyToMany(() => Professor, (prof) => prof.courses)
     professors: Professor[];
 
-    // TODO IMPORTANT (This is a strange typrorm behavior) for "sync" this add onDelete on
+    // TODO IMPORTANT (This is a strange typeorm behavior) for "sync" this add onDelete on
     // foreign key on the departments table (the intended behavior) however as you can see
     // I add it inside course entity THIS IS NOT CORRECT!
     // NOTE: using it in migration result the expected behavior, be careful
-    // it must be a typrorm bug 😥
+    // it must be a typeorm bug 😥
     @ManyToOne(() => Department, (dep) => dep.courses, { onDelete: "CASCADE" })
     department: Department;
 
     @Column()
     year: number;
+
+    @OneToMany(() => TextClassificationModel, (tcm) => tcm.course)
+    textClassificationModels: Promise<TextClassificationModel[]>;
 }
