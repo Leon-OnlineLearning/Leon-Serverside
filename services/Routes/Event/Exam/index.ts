@@ -162,12 +162,12 @@ router.get("/report", async (req, res) => {
 });
 
 router.get("/student/:studentId", onlyStudents, async (req, res) => {
-    // res.send("hi")
-    // return "hi"
     const studentId = req.params.studentId;
+    console.debug(`get exams for user ${studentId}`);
     simpleFinalMWDecorator(res, async () => {
         const examLogic: ExamsLogic = new ExamsLogicImpl();
         const exams = await examLogic.getExamByStudentId(studentId);
+        console.debug(`availabe exams ${exams.length}`);
         return exams;
     });
 });
