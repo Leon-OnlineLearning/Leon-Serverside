@@ -5,4 +5,5 @@ export default interface ModelLogic {
         model: TextClassificationModel,
         courseId: string
     ): Promise<TextClassificationModel>;
+    getModelById(modeId: string): Promise<TextClassificationModel>;
 }

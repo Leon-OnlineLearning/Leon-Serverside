@@ -1,11 +1,13 @@
 import TextClassificationFile from "@models/TextClassification/TextClassificationFile";
 
 export default interface TextClassificationFilesLogic {
-    createRelateFile(
-        file: TextClassificationFile
-    ): Promise<TextClassificationFile>;
-
-    createNonRelatedFile(
-        file: TextClassificationFile
-    ): Promise<TextClassificationFile>;
+    createFile(file: TextClassificationFile): Promise<TextClassificationFile>;
+    linkFileToModel(
+        fileId: string,
+        modelId: string,
+        related: boolean,
+        className: string
+    ): Promise<void>;
+    getFileById(fileId: string): Promise<TextClassificationFile>;
+    getFilesByName(fileName: string) : Promise<TextClassificationFile[]>;
 }
