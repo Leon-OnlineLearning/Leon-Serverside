@@ -1,7 +1,7 @@
 import Department from "@models/Department";
 import Exam from "@models/Events/Exam";
 import Lecture from "@models/Events/Lecture";
-import TextClassificationModel from "@models/TextClassificationModel";
+import TextClassificationModel from "@models/TextClassification/TextClassificationModel";
 import Professor from "@models/Users/Professor";
 import Student from "@models/Users/Student";
 import {

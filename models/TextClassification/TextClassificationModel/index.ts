@@ -1,11 +1,14 @@
 import Course from "@models/Course";
 import {
     Column,
+    CreateDateColumn,
     Entity,
     ManyToOne,
     OneToMany,
     PrimaryGeneratedColumn,
 } from "typeorm";
+
+import TextClassificationModelFile from "@models/TextClassification/TextClassificationModelFile";
 
 @Entity()
 export default class TextClassificationModel {
@@ -37,11 +40,17 @@ export default class TextClassificationModel {
     predictionModelPath: string;
 
     @Column({ nullable: true })
-    rasingModelPath: string;
+    modelPath: string;
 
     @Column({ nullable: true })
     dataLanguageModelPath: string;
 
     @Column({ nullable: true })
     dataClassificationModelPath: string;
+
+    @OneToMany(() => TextClassificationModelFile, (mf) => mf.model)
+    modelFile: TextClassificationModelFile;
+
+    @CreateDateColumn({ type: "timestamp" })
+    createdAt: Date;
 }
