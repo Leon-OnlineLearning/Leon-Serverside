@@ -9,6 +9,7 @@ import {
 } from "typeorm";
 
 import TextClassificationModelFile from "@models/TextClassification/TextClassificationModelFile";
+import { Max, Min } from "class-validator";
 
 @Entity()
 export default class TextClassificationModel {
@@ -30,11 +31,14 @@ export default class TextClassificationModel {
 
     @OneToMany(() => TextClassificationModel, (tcm) => tcm.superModule, {
         nullable: true,
+        cascade: true
     })
     subModules: TextClassificationModel[];
 
     @Column({ nullable: true })
-    accuracy: string;
+    @Min(0)
+    @Max(100)
+    accuracy: number;
 
     @Column({ nullable: true })
     predictionModelPath: string;

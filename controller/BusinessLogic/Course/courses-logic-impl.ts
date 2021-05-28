@@ -2,10 +2,20 @@ import Course from "@models/Course";
 import Department from "@models/Department";
 import Exam from "@models/Events/Exam";
 import Lecture from "@models/Events/Lecture";
+import TextClassificationModel from "@models/TextClassification/TextClassificationModel";
 import UserInputError from "@services/utils/UserInputError";
 import { getRepository } from "typeorm";
 import CoursesLogic from "./courses-logic";
 export default class CourseLogicImpl implements CoursesLogic {
+    async getAllTextClassificationModels(
+        courseId: string
+    ): Promise<TextClassificationModel[]> {
+        return await getRepository(TextClassificationModel)
+            .createQueryBuilder("tcm")
+            .where("tcm.courseId = :courseId", { courseId })
+            .getMany();
+    }
+
     async getAllCourses(): Promise<Course[]> {
         return getRepository(Course)
             .createQueryBuilder("course")

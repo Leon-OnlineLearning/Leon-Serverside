@@ -2,7 +2,7 @@ import TextClassificationFile from "@models/TextClassification/TextClassificatio
 
 export default interface TextClassificationFilesLogic {
     createRelateFile(
-        file: TextClassificationFile,
+        file: TextClassificationFile
     ): Promise<TextClassificationFile>;
 
     createNonRelatedFile(
