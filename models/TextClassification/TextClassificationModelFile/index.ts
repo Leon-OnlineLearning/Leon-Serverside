@@ -24,7 +24,7 @@ export default class TextClassificationModelFile {
         type: "enum",
         enum: FileType,
     })
-    fileRelation: boolean;
+    fileRelation: FileType;
 
     @Column()
     className: string;

@@ -1,5 +1,5 @@
 import TextClassificationFile from "@models/TextClassification/TextClassificationFile";
-import TextClassificationModelFile from "@models/TextClassification/TextClassificationModelFile";
+import TextClassificationModelFile, { FileType } from "@models/TextClassification/TextClassificationModelFile";
 import UserInputError from "@services/utils/UserInputError";
 import { getRepository, Like } from "typeorm";
 import TextClassificationFilesLogic from "./files-logic";
@@ -32,7 +32,7 @@ export default class FileLogicImpl implements TextClassificationFilesLogic {
     async linkFileToModel(
         fileId: string,
         modelId: string,
-        related: boolean,
+        fileRelation: FileType,
         className: string
     ): Promise<any> {
         // check if model is correct
@@ -46,6 +46,7 @@ export default class FileLogicImpl implements TextClassificationFilesLogic {
         _modelFile.file = file;
         _modelFile.model = model;
         _modelFile.className = className;
+        _modelFile.fileRelation = fileRelation;
         await getRepository(TextClassificationModelFile).save(_modelFile)
     }
 }

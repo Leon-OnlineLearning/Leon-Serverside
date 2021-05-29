@@ -4,6 +4,7 @@ import Exam from "@models/Events/Exam";
 import Lecture from "@models/Events/Lecture";
 import {
     ChildEntity,
+    Column,
     Entity,
     JoinTable,
     ManyToMany,
@@ -40,4 +41,7 @@ export default class Professor extends User {
 
     @OneToMany(() => Lecture, (l) => l.professor)
     lectures!: Lecture[];
+
+    @Column({ nullable: true, comment: "session id is the model id" })
+    sessionId: string;
 }

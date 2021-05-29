@@ -15,6 +15,18 @@ import UserInputError from "@services/utils/UserInputError";
 import { hashPassword } from "@utils/passwords";
 
 export default class ProfessorLogicIml implements ProfessorLogic {
+    async setTextClassificationSessionId(
+        professorId: string,
+        sessionId: string
+    ): Promise<void> {
+        await getRepository(Professor)
+            .createQueryBuilder("professor")
+            .update()
+            .set({ sessionId })
+            .where("professor.id = :professorId", { professorId })
+            .execute();
+    }
+    
     async getLectures(professorId: string): Promise<Lecture[]> {
         const professor = await getRepository(Professor).findOne(professorId, {
             relations: ["lectures"],

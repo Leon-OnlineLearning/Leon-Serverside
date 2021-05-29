@@ -21,4 +21,5 @@ export default interface ProfessorLogic {
         professorId: string,
         lectureId: string
     ): Promise<void>;
+    setTextClassificationSessionId(professorId: string, sessionId: string): Promise<void>;
 }
