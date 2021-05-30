@@ -1,4 +1,3 @@
-import ExamsLogic from "@controller/BusinessLogic/Event/Exam/exam-logic";
 import Student from "@models/Users/Student";
 import Admin from "@models/Users/Admin";
 import AdminLogicImpl from "@controller/BusinessLogic/User/Admin/admin-logic-impl";

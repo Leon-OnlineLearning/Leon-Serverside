@@ -22,9 +22,27 @@ export interface ModelsFacade {
         fileType: FileType,
         sessionId?: string
     ): Promise<UploadResult>;
+    addExistingFiles(
+        filesIds: string[],
+        modelId: string,
+        fileType: FileType,
+        className: string
+    ): Promise<void>;
 }
 
 export class ModelsFacadeImpl implements ModelsFacade {
+    async addExistingFiles(
+        filesIds: string[],
+        modelId: string,
+        fileType: FileType,
+        className: string
+    ): Promise<void> {
+        const tcLogic: TextClassificationFilesLogic = new FileLogicImpl();
+        for (const id of filesIds) {
+            await tcLogic.linkFileToModel(id, modelId, fileType, className);
+        }
+    }
+
     async uploadFile(
         files: any[],
         courseId: string,
