@@ -26,6 +26,6 @@ export default class TextClassificationModelFile {
     })
     fileRelation: FileType;
 
-    @Column()
+    @Column({ default: "testing" })
     className: string;
 }

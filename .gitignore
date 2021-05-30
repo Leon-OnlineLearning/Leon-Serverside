@@ -11,3 +11,5 @@ recordings/
 test/unit/SendVideo/videoTstC.webm
 env:Zone.Identifier
 textClassificationRelatedFiles/
+textClassificationNonRelatedFiles/
+textClassificationTestingFiles/

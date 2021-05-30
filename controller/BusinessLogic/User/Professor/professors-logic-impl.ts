@@ -14,7 +14,15 @@ import ProfessorLogic from "./professors-logic";
 import UserInputError from "@services/utils/UserInputError";
 import { hashPassword } from "@utils/passwords";
 
-export default class ProfessorLogicIml implements ProfessorLogic {
+export default class ProfessorLogicImpl implements ProfessorLogic {
+    async getTextClassificationSessionId(professorId: string): Promise<string | undefined> {
+        const professor = await getRepository(Professor).findOne(professorId)
+        if (!professor) {
+            throw new UserInputError("Invalid professor id")
+        }
+        return professor.sessionId;
+    }
+
     async setTextClassificationSessionId(
         professorId: string,
         sessionId: string

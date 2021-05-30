@@ -2,7 +2,7 @@ import TextClassificationFile from "@models/TextClassification/TextClassificatio
 import TextClassificationModel from "@models/TextClassification/TextClassificationModel";
 import { FileType } from "@models/TextClassification/TextClassificationModelFile";
 import ProfessorLogic from "../User/Professor/professors-logic";
-import ProfessorLogicIml from "../User/Professor/professors-logic-impl";
+import ProfessorLogicImpl from "../User/Professor/professors-logic-impl";
 import FileLogicImpl from "./file-logic-impl";
 import TextClassificationFilesLogic from "./files-logic";
 import ModelLogic from "./models-logic";
@@ -30,13 +30,17 @@ export class ModelsFacadeImpl implements ModelsFacade {
         courseId: string,
         className: string,
         professorId: string,
-        fileType: FileType,
-        sessionId?: string
+        fileType: FileType
     ): Promise<UploadResult> {
         const tcLogic: TextClassificationFilesLogic = new FileLogicImpl();
         const requestedFiles = files;
         const modelLogic: ModelLogic = new ModelLogicImpl();
-        let modelId = sessionId;
+        const professorLogic: ProfessorLogic = new ProfessorLogicImpl();
+
+        // store the session id (mode id) in the database
+        let modelId = await professorLogic.getTextClassificationSessionId(
+            professorId
+        );
 
         if (!modelId) {
             const _model = new TextClassificationModel();
@@ -44,6 +48,8 @@ export class ModelsFacadeImpl implements ModelsFacade {
             const model = await modelLogic.addModelInCourse(_model, courseId);
             modelId = model.id;
         }
+
+        console.log("requestedFiles ", requestedFiles);
 
         for (
             let fileIndex = 0;
@@ -55,7 +61,6 @@ export class ModelsFacadeImpl implements ModelsFacade {
             const _file = await tcLogic.createFile(textClassifierFile);
             tcLogic.linkFileToModel(_file.id, modelId, fileType, className);
         }
-        const professorLogic: ProfessorLogic = new ProfessorLogicIml();
         professorLogic.setTextClassificationSessionId(professorId, modelId);
         return {
             success: true,

@@ -7,7 +7,7 @@ import ExamsLogicImpl from "@controller/BusinessLogic/Event/Exam/exam-logic-impl
 import Exam from "@models/Events/Exam";
 import test_exam from "./db";
 import ProfessorLogic from "@controller/BusinessLogic/User/Professor/professors-logic";
-import ProfessorLogicIml from "@controller/BusinessLogic/User/Professor/professors-logic-impl";
+import ProfessorLogicImpl from "@controller/BusinessLogic/User/Professor/professors-logic-impl";
 import Professor from "@models/Users/Professor";
 import Course from "@models/Course";
 
@@ -47,7 +47,7 @@ export default async function populateDB() {
     sample_course = await new CourseLogicImpl().createCourse(sample_course);
     console.debug(`created course ${sample_course.id}`);
 
-    const professorlogic: ProfessorLogic = new ProfessorLogicIml();
+    const professorlogic: ProfessorLogic = new ProfessorLogicImpl();
     let sample_professor = _createUser(
         new Professor(),
         "professor"

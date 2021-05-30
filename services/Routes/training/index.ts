@@ -1,12 +1,4 @@
-import FileLogicImpl from "@controller/BusinessLogic/TextClassification/file-logic-impl";
-import TextClassificationFilesLogic from "@controller/BusinessLogic/TextClassification/files-logic";
 import { ModelsFacadeImpl } from "@controller/BusinessLogic/TextClassification/modelFacade";
-import ModelLogic from "@controller/BusinessLogic/TextClassification/models-logic";
-import ModelLogicImpl from "@controller/BusinessLogic/TextClassification/models-logic-impl";
-import ProfessorLogic from "@controller/BusinessLogic/User/Professor/professors-logic";
-import ProfessorLogicIml from "@controller/BusinessLogic/User/Professor/professors-logic-impl";
-import TextClassificationFile from "@models/TextClassification/TextClassificationFile";
-import TextClassificationModel from "@models/TextClassification/TextClassificationModel";
 import { FileType } from "@models/TextClassification/TextClassificationModelFile";
 import {
     accessTokenValidationMiddleware,
@@ -15,7 +7,6 @@ import {
 import simpleFinalMWDecorator from "@services/utils/RequestDecorator";
 import { Router } from "express";
 import multer from "multer";
-import { ExpressionStatement } from "typescript";
 import { onlyProfessors } from "../User/AuthorizationMiddleware";
 
 const router = Router();
@@ -26,10 +17,10 @@ const diskStorageBuilder = (
 ) => {
     return multer({
         storage: multer.diskStorage({
-            destination: (req, file, cb) => {
+            destination: (_, __, cb) => {
                 cb(null, distinction);
             },
-            filename: (req, file, cb) => {
+            filename: (_, file, cb) => {
                 cb(null, fileNameFactory(file));
             },
         }),
@@ -77,7 +68,6 @@ router.post(
                 req.body["className"],
                 req.body["professorId"],
                 FileType.RELATED,
-                req.body["sessionId"]
             );
         });
     }
@@ -97,7 +87,6 @@ router.post(
                 req.body["className"],
                 req.body["professorId"],
                 FileType.NON_RELATED,
-                req.body["sessionId"]
             );
         });
     }
@@ -105,19 +94,18 @@ router.post(
 
 // testing file uploading
 router.post(
-    "/testing",
+    "/testing/upload",
     onlyProfessors,
-    testFileStorageUploader.single("file"),
+    testFileStorageUploader.array("files"),
     (req, res) => {
         simpleFinalMWDecorator(res, async () => {
             const modelsFacade = new ModelsFacadeImpl();
             return modelsFacade.uploadFile(
-                [req.file as Express.Multer.File],
+                req.files as Express.Multer.File[],
                 req.body["courseId"],
                 req.body["className"],
                 req.body["professorId"],
                 FileType.TEST,
-                req.body["sessionId"]
             );
         });
     }

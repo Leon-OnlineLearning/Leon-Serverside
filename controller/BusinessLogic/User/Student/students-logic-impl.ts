@@ -11,7 +11,7 @@ import AdminLogicImpl from "../Admin/admin-logic-impl";
 import StudentLogic from "./students-logic";
 import { AccountWithSimilarEmailExist } from "@models/Users/User";
 import ProfessorLogic from "../Professor/professors-logic";
-import ProfessorLogicIml from "../Professor/professors-logic-impl";
+import ProfessorLogicImpl from "../Professor/professors-logic-impl";
 import UserInputError from "@services/utils/UserInputError";
 import StudentLectureAttendance from "@models/JoinTables/StudentLectureAttended";
 import Event from "@models/Events/Event";
@@ -188,7 +188,7 @@ export default class StudentLogicImpl implements StudentLogic {
         const adminLogic: AdminLogic = new AdminLogicImpl();
         const admin = await adminLogic.getAdminByEmail(student.email);
         if (admin) throw new AccountWithSimilarEmailExist();
-        const professorLogic: ProfessorLogic = new ProfessorLogicIml();
+        const professorLogic: ProfessorLogic = new ProfessorLogicImpl();
         const professor = await professorLogic.getProfessorByEmail(
             student.email
         );
