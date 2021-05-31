@@ -113,7 +113,7 @@ export class ModelsFacadeImpl implements ModelsFacade {
             fileIndex++
         ) {
             const textClassifierFile = new TextClassificationFile();
-            textClassifierFile.filePath = "/static/" + requestedFiles[fileIndex].path;
+            textClassifierFile.filePath = requestedFiles[fileIndex].path;
             const _file = await tcLogic.createFile(textClassifierFile);
             tcLogic.linkFileToModel(_file.id, modelId, fileType, className);
         }

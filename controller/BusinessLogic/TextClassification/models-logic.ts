@@ -6,4 +6,5 @@ export default interface ModelLogic {
         courseId: string
     ): Promise<TextClassificationModel>;
     getModelById(modeId: string): Promise<TextClassificationModel>;
+    getAllModels(): Promise<TextClassificationModel[]>;
 }

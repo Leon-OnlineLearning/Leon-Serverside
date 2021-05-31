@@ -7,6 +7,10 @@ import CourseLogicImpl from "../Course/courses-logic-impl";
 import ModelLogic from "./models-logic";
 
 export default class ModelLogicImpl implements ModelLogic {
+    getAllModels(): Promise<TextClassificationModel[]> {
+        return getRepository(TextClassificationModel).find();
+    }
+
     async getModelById(modeId: string): Promise<TextClassificationModel> {
         const model = await getRepository(TextClassificationModel).findOne(
             modeId
