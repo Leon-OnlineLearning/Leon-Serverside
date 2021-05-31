@@ -25,5 +25,10 @@ export default interface ProfessorLogic {
         professorId: string,
         sessionId: string
     ): Promise<void>;
-    getTextClassificationSessionId(professorId: string): Promise<string | undefined>;
+    getTextClassificationSessionId(
+        professorId: string
+    ): Promise<string | undefined>;
+  unsetSessionId(
+    professorId: string
+  ): Promise<void>;
 }

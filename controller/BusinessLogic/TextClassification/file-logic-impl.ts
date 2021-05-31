@@ -1,5 +1,7 @@
 import TextClassificationFile from "@models/TextClassification/TextClassificationFile";
-import TextClassificationModelFile, { FileType } from "@models/TextClassification/TextClassificationModelFile";
+import TextClassificationModelFile, {
+    FileType,
+} from "@models/TextClassification/TextClassificationModelFile";
 import UserInputError from "@services/utils/UserInputError";
 import { getRepository, Like } from "typeorm";
 import TextClassificationFilesLogic from "./files-logic";
@@ -9,8 +11,8 @@ import ModelLogicImpl from "./models-logic-impl";
 export default class FileLogicImpl implements TextClassificationFilesLogic {
     async getFilesByName(fileName: string): Promise<TextClassificationFile[]> {
         const files = await getRepository(TextClassificationFile).find({
-            filePath: Like(`%${fileName.toLowerCase()}%`)
-        })
+            filePath: Like(`%${fileName.replace(" ", "_").toLowerCase()}%`),
+        });
         return files;
     }
     async getFileById(fileId: string): Promise<TextClassificationFile> {
@@ -24,7 +26,7 @@ export default class FileLogicImpl implements TextClassificationFilesLogic {
     async createFile(
         file: TextClassificationFile
     ): Promise<TextClassificationFile> {
-        file.filePath = file.filePath.toLowerCase()
+        file.filePath = file.filePath.toLowerCase();
         const res = await getRepository(TextClassificationFile).save(file);
         return res;
     }
@@ -47,6 +49,6 @@ export default class FileLogicImpl implements TextClassificationFilesLogic {
         _modelFile.model = model;
         _modelFile.className = className;
         _modelFile.fileRelation = fileRelation;
-        await getRepository(TextClassificationModelFile).save(_modelFile)
+        await getRepository(TextClassificationModelFile).save(_modelFile);
     }
 }

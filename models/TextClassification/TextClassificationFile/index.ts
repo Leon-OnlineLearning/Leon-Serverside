@@ -7,7 +7,6 @@ import {
 } from "typeorm";
 import TextClassificationModelFile from "../TextClassificationModelFile";
 
-
 @Entity()
 export default class TextClassificationFile {
     @PrimaryGeneratedColumn("uuid")

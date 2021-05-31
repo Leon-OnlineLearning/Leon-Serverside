@@ -40,7 +40,7 @@ const relatedFileStorageUploader = diskStorageBuilder(
     process.env["UPLOADED_RELATED_TRAINING_PATH"] ||
         "textClassificationRelatedFiles/",
     (file: Express.Multer.File) => {
-        return `${file.originalname}` + "-" + "related" + Date.now() + ".pdf";
+        return `${file.originalname.replace(" ","_")}` + "-" + "related" + Date.now() + ".pdf";
     }
 );
 
@@ -179,5 +179,27 @@ router.post(
     "/nonrelated/existing",
     existingMiddlewareFactory(FileType.NON_RELATED)
 );
+
+router.post("/finish", async (req, res) => {
+    const professorLogic: ProfessorLogic = new ProfessorLogicImpl();
+    const sessionId = await professorLogic.getTextClassificationSessionId(
+        req.body["professorId"]
+    );
+    if (!sessionId) {
+        return res
+            .status(403)
+            .send({ success: false, message: "invalid session id" });
+    }
+    await professorLogic.unsetSessionId(req.body["professorId"]);
+    simpleFinalMWDecorator(res, async () => {
+        // delete the sesssion id
+        const modelsFacade: ModelsFacade = new ModelsFacadeImpl();
+        modelsFacade.sendModelFiles(
+            sessionId,
+            process.env["TEXT_CLASSIFICATION_BASE_URL"] ??
+                "/text_classification/train_files"
+        );
+    });
+});
 
 export default router;

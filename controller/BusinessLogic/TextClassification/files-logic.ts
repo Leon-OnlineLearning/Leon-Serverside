@@ -10,5 +10,5 @@ export default interface TextClassificationFilesLogic {
         className: string
     ): Promise<void>;
     getFileById(fileId: string): Promise<TextClassificationFile>;
-    getFilesByName(fileName: string) : Promise<TextClassificationFile[]>;
+    getFilesByName(fileName: string): Promise<TextClassificationFile[]>;
 }

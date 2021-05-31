@@ -5,7 +5,12 @@ import Exam from "@models/Events/Exam";
 import Lecture from "@models/Events/Lecture";
 import Professor from "@models/Users/Professor";
 import { AccountWithSimilarEmailExist } from "@models/Users/User";
-import { createQueryBuilder, getRepository, QueryFailedError } from "typeorm";
+import {
+    createQueryBuilder,
+    getConnection,
+    getRepository,
+    QueryFailedError,
+} from "typeorm";
 import AdminLogic from "../Admin/admin-logic";
 import AdminLogicImpl from "../Admin/admin-logic-impl";
 import StudentLogic from "../Student/students-logic";
@@ -15,10 +20,21 @@ import UserInputError from "@services/utils/UserInputError";
 import { hashPassword } from "@utils/passwords";
 
 export default class ProfessorLogicImpl implements ProfessorLogic {
-    async getTextClassificationSessionId(professorId: string): Promise<string | undefined> {
-        const professor = await getRepository(Professor).findOne(professorId)
+    async unsetSessionId(professorId: string): Promise<void> {
+        await getConnection()
+            .createQueryBuilder()
+            .update(Professor)
+            .set({ sessionId: undefined })
+            .where("id = :professorId", { professorId })
+            .execute();
+    }
+
+    async getTextClassificationSessionId(
+        professorId: string
+    ): Promise<string | undefined> {
+        const professor = await getRepository(Professor).findOne(professorId);
         if (!professor) {
-            throw new UserInputError("Invalid professor id")
+            throw new UserInputError("Invalid professor id");
         }
         return professor.sessionId;
     }
@@ -34,7 +50,7 @@ export default class ProfessorLogicImpl implements ProfessorLogic {
             .where("professor.id = :professorId", { professorId })
             .execute();
     }
-    
+
     async getLectures(professorId: string): Promise<Lecture[]> {
         const professor = await getRepository(Professor).findOne(professorId, {
             relations: ["lectures"],

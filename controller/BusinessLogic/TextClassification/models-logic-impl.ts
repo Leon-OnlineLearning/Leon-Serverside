@@ -8,8 +8,10 @@ import ModelLogic from "./models-logic";
 
 export default class ModelLogicImpl implements ModelLogic {
     async getModelById(modeId: string): Promise<TextClassificationModel> {
-        const model = await getRepository(TextClassificationModel).findOne(modeId)
-        if (!model) throw new UserInputError("invalid model id")
+        const model = await getRepository(TextClassificationModel).findOne(
+            modeId
+        );
+        if (!model) throw new UserInputError("invalid model id");
         return model;
     }
     async addModelInCourse(

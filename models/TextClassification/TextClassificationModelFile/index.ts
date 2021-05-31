@@ -1,4 +1,4 @@
-import { Column, Entity, ManyToOne } from "typeorm";
+import { Column, Entity, JoinColumn, ManyToOne } from "typeorm";
 import TextClassificationFile from "../TextClassificationFile";
 import TextClassificationModel from "../TextClassificationModel";
 
@@ -13,16 +13,23 @@ export default class TextClassificationModelFile {
     @ManyToOne(() => TextClassificationModel, (tcm) => tcm.modelFile, {
         primary: true,
     })
+    @JoinColumn({
+        name: "model_id",
+    })
     model: TextClassificationModel;
 
     @ManyToOne(() => TextClassificationFile, (tcf) => tcf.modelFile, {
         primary: true,
+    })
+    @JoinColumn({
+        name: "file_id",
     })
     file: TextClassificationFile;
 
     @Column({
         type: "enum",
         enum: FileType,
+        name: "file_relation",
     })
     fileRelation: FileType;
 

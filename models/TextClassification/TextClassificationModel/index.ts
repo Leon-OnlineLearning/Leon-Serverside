@@ -31,7 +31,7 @@ export default class TextClassificationModel {
 
     @OneToMany(() => TextClassificationModel, (tcm) => tcm.superModule, {
         nullable: true,
-        cascade: true
+        cascade: true,
     })
     subModules: TextClassificationModel[];
 
