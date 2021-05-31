@@ -125,17 +125,15 @@ router.put(
 router.get("/report", async (req, res) => {
     simpleFinalMWDecorator(res, async () => {
         const logic: ReportLogic = new ReportLogicImpl();
-        
+
         // sanity check
-        if (!req.query.userId)
-            throw new Error("request must contain userId");
-        if (!req.query.examId)
-            throw new Error("request must contain examId");
-        
-        const studentId = req.query.userId as string
-        const examId = req.query.examId as string
+        if (!req.query.userId) throw new Error("request must contain userId");
+        if (!req.query.examId) throw new Error("request must contain examId");
+
+        const studentId = req.query.userId as string;
+        const examId = req.query.examId as string;
         const report = await logic.getReport(studentId, examId);
-        console.debug(`sending ${report.length} reports` )
+        console.debug(`sending ${report.length} reports`);
 
         return report;
     });
