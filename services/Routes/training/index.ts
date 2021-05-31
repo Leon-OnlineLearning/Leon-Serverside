@@ -38,15 +38,21 @@ const diskStorageBuilder = (
 
 const relatedFileStorageUploader = diskStorageBuilder(
     process.env["UPLOADED_RELATED_TRAINING_PATH"] ||
-        "textClassificationRelatedFiles/",
+        "textClassification/related/",
     (file: Express.Multer.File) => {
-        return `${file.originalname.replace(" ","_")}` + "-" + "related" + Date.now() + ".pdf";
+        return (
+            `${file.originalname.replaceAll(" ", "_")}` +
+            "-" +
+            "related" +
+            Date.now() +
+            ".pdf"
+        );
     }
 );
 
 const nonRelatedFileStorageUploader = diskStorageBuilder(
     process.env["UPLOADED_NON_RELATED_TRAINING_PATH"] ||
-        "textClassificationNonRelatedFiles/",
+        "textClassification/non_related",
     (file: Express.Multer.File) => {
         return `${file.originalname}` + "-" + "related" + Date.now() + ".pdf";
     }
@@ -54,7 +60,7 @@ const nonRelatedFileStorageUploader = diskStorageBuilder(
 
 const testFileStorageUploader = diskStorageBuilder(
     process.env["TXT_CLASSIFICATION_TEST_PATH"] ||
-        "textClassificationTestingFiles/",
+        "textClassification/testing",
     (file: Express.Multer.File) => {
         return `${file.originalname}` + "-" + "related" + Date.now() + ".pdf";
     }

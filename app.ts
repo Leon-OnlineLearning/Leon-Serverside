@@ -11,6 +11,7 @@ import lectureRouter from "@services/Routes/Event/Lecture";
 import courseRouter from "@services/Routes/Course";
 import departmentRouter from "@services/Routes/Department";
 import trainingRouter from "@services/Routes/training";
+import staticRouter from "@services/Routes/static";
 import passport from "@services/Auth";
 import cookieParser from "cookie-parser";
 import cors from "cors";
@@ -37,6 +38,7 @@ app.use("/exams", examRouter);
 app.use("/lectures", lectureRouter);
 app.use("/departments", departmentRouter);
 app.use("/training", trainingRouter);
+app.use("/static", staticRouter);
 
 app.use("/lecturesFiles", express.static("lectures"));
 

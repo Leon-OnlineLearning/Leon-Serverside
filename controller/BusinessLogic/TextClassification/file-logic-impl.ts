@@ -11,7 +11,7 @@ import ModelLogicImpl from "./models-logic-impl";
 export default class FileLogicImpl implements TextClassificationFilesLogic {
     async getFilesByName(fileName: string): Promise<TextClassificationFile[]> {
         const files = await getRepository(TextClassificationFile).find({
-            filePath: Like(`%${fileName.replace(" ", "_").toLowerCase()}%`),
+            filePath: Like(`%${fileName.replaceAll(" ", "_").toLowerCase()}%`)
         });
         return files;
     }

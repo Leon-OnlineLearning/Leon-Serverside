@@ -85,14 +85,13 @@ export class ModelsFacadeImpl implements ModelsFacade {
     }
 
     async uploadFile(
-        files: any[],
+        requestedFiles: any[],
         courseId: string,
         className: string,
         professorId: string,
         fileType: FileType
     ): Promise<UploadResult> {
         const tcLogic: TextClassificationFilesLogic = new FileLogicImpl();
-        const requestedFiles = files;
         const modelLogic: ModelLogic = new ModelLogicImpl();
         const professorLogic: ProfessorLogic = new ProfessorLogicImpl();
 
@@ -108,15 +107,13 @@ export class ModelsFacadeImpl implements ModelsFacade {
             modelId = model.id;
         }
 
-        console.log("requestedFiles ", requestedFiles);
-
         for (
             let fileIndex = 0;
             fileIndex < requestedFiles.length;
             fileIndex++
         ) {
             const textClassifierFile = new TextClassificationFile();
-            textClassifierFile.filePath = requestedFiles[fileIndex].path;
+            textClassifierFile.filePath = "/static/" + requestedFiles[fileIndex].path;
             const _file = await tcLogic.createFile(textClassifierFile);
             tcLogic.linkFileToModel(_file.id, modelId, fileType, className);
         }
