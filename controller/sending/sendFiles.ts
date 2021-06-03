@@ -70,6 +70,22 @@ export const sendExamFile = async (
     }
 };
 
+export async function sendLectureVideo(
+    video: Buffer,
+    lectureId: string,
+    callback: (res: any) => Promise<any>,
+    url: string
+) {
+    await sendFileHttpMethod(
+        `lectureVideo-${lectureId}.webm`,
+        "lecture_video",
+        url,
+        callback,
+        video,
+        { lectureId }
+    );
+}
+
 export async function sendInitialVideo(
     video: Buffer,
     studentId: string,

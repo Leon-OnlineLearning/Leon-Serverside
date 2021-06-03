@@ -47,7 +47,7 @@ router.put(
                 req.file.buffer,
                 req.body.userId,
                 serverBaseUrl,
-                async (student_id, emmbedding) => {
+                async (student_id: string, emmbedding: any) => {
                     const logic: StudentLogic = new StudentLogicImpl();
                     logic.setEmbedding(student_id, emmbedding);
                 }

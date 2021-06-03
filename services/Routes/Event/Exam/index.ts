@@ -16,7 +16,6 @@ import {
     ExamChunkResultCallback,
     ExamFileInfo,
     sendExamFile,
-    sendInitialVideo,
 } from "@controller/sending/sendFiles";
 import { randomInt } from "crypto";
 import StudentLogicImpl from "@controller/BusinessLogic/User/Student/students-logic-impl";
