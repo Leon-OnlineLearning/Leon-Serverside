@@ -50,18 +50,18 @@ describe("Uploading video and recording embeddings", () => {
 
             // 1- copy the file
             fs.copyFileSync(
-                __dirname + "/../../unit/SendVideo/videoTst.webm",
-                __dirname + "/../../unit/SendVideo/videoTstC.webm"
+                __dirname + "/../../unit/SendExamVideo/videoTst.webm",
+                __dirname + "/../../unit/SendExamVideo/videoTstC.webm"
             );
             // use the new copied file to get the buffer
 
             await sendInitialVideo(
                 fs.readFileSync(
-                    __dirname + "/../../unit/SendVideo/videoTstC.webm"
+                    __dirname + "/../../unit/SendExamVideo/videoTstC.webm"
                 ),
                 student.id,
                 "http://localhost:6790",
-                studentLogic.setEmbedding,
+                studentLogic.setEmbedding
             );
             const embedding = await studentLogic.getEmbedding(student.id);
             expect(embedding.vector).toEqual(embeddingRes.embedding);

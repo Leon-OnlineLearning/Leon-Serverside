@@ -14,8 +14,8 @@ describe("Sending video with http POST method", () => {
     beforeAll((done) => {
         app = express();
         uploader = multer();
-        server = app.listen(6789, () => {
-            console.log("testing server started at http://localhost:6789");
+        server = app.listen(6770, () => {
+            console.log("testing server started at http://localhost:6770");
             done();
         });
     });
@@ -61,7 +61,7 @@ describe("Sending video with http POST method", () => {
 
         sendExamFile(
             userId,
-            "http://localhost:6789",
+            "http://localhost:6770",
             {
                 chunk: fs.readFileSync(__dirname + "/videoTst.webm"),
                 chunkEndTime: endTime,
@@ -77,7 +77,7 @@ describe("Sending video with http POST method", () => {
 
         sendExamFile(
             userId,
-            "http://localhost:6789",
+            "http://localhost:6770",
             {
                 chunk: fs.readFileSync(__dirname + "/videoTst.webm"),
                 chunkEndTime: endTime,

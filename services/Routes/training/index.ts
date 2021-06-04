@@ -19,7 +19,7 @@ import { onlyProfessors } from "../User/AuthorizationMiddleware";
 import { Response, Request } from "express";
 import ModelLogicImpl from "@controller/BusinessLogic/TextClassification/models-logic-impl";
 import ModelLogic from "@controller/BusinessLogic/TextClassification/models-logic";
-import diskStorageBuilder from "@services/Routes/utils/dataStorageBuilder"
+import diskStorageBuilder from "@services/Routes/utils/dataStorageBuilder";
 
 const router = Router();
 
@@ -41,12 +41,19 @@ const nonRelatedFileStorageUploader = diskStorageBuilder(
     process.env["UPLOADED_NON_RELATED_TRAINING_PATH"] ||
         "static/textclassification/non_related",
     (file: Express.Multer.File) => {
-        return `${file.originalname.split(".pdf")[0]}` + "-" + "related" + Date.now() + ".pdf";
+        return (
+            `${file.originalname.split(".pdf")[0]}` +
+            "-" +
+            "related" +
+            Date.now() +
+            ".pdf"
+        );
     }
 );
 
 const testFileStorageUploader = diskStorageBuilder(
-    process.env["TXT_CLASSIFICATION_TEST_PATH"] || "static/textclassification/testing",
+    process.env["TXT_CLASSIFICATION_TEST_PATH"] ||
+        "static/textclassification/testing",
     (file: Express.Multer.File) => {
         return `${file.originalname}` + "-" + "related" + Date.now() + ".pdf";
     }
@@ -196,15 +203,15 @@ router.post("/finish", async (req, res) => {
 
 router.get("/models", (req, res) => {
     simpleFinalMWDecorator(res, async () => {
-        const modelLogic : ModelLogic = new ModelLogicImpl()
-        return modelLogic.getAllModels()
+        const modelLogic: ModelLogic = new ModelLogicImpl();
+        return modelLogic.getAllModels();
     });
 });
 
 router.post("/models/raise", (req, res) => {
     simpleFinalMWDecorator(res, async () => {
         // TODO write a logic to raise a specific model
-    })
+    });
 });
 
 export default router;
