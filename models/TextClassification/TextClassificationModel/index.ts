@@ -56,5 +56,5 @@ export default class TextClassificationModel {
     modelFile: TextClassificationModelFile;
 
     @CreateDateColumn({ type: "timestamp" })
-    created_at: Date;
+    createdAt: Date;
 }

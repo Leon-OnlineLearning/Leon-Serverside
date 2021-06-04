@@ -24,7 +24,7 @@ export default class ProfessorLogicImpl implements ProfessorLogic {
         await getConnection()
             .createQueryBuilder()
             .update(Professor)
-            .set({ session_id: undefined })
+            .set({ sessionId: undefined })
             .where("id = :professorId", { professorId })
             .execute();
     }
@@ -36,7 +36,7 @@ export default class ProfessorLogicImpl implements ProfessorLogic {
         if (!professor) {
             throw new UserInputError("Invalid professor id");
         }
-        return professor.session_id;
+        return professor.sessionId;
     }
 
     async setTextClassificationSessionId(
@@ -46,7 +46,7 @@ export default class ProfessorLogicImpl implements ProfessorLogic {
         await getRepository(Professor)
             .createQueryBuilder("professor")
             .update()
-            .set({ session_id: sessionId })
+            .set({ sessionId: sessionId })
             .where("professor.id = :professorId", { professorId })
             .execute();
     }
