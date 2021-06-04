@@ -43,5 +43,5 @@ export default class Professor extends User {
     lectures!: Lecture[];
 
     @Column({ nullable: true, comment: "session id is the model id" })
-    sessionId: string;
+    session_id: string;
 }
