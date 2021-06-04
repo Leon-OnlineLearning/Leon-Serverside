@@ -61,7 +61,7 @@ describe("Uploading video and recording embeddings", () => {
                 ),
                 student.id,
                 "http://localhost:6790",
-                studentLogic.setEmbedding,
+                studentLogic.setEmbedding
             );
             const embedding = await studentLogic.getEmbedding(student.id);
             expect(embedding.vector).toEqual(embeddingRes.embedding);

@@ -10,6 +10,6 @@ export default interface LecturesLogic {
     getLectureById(lectureId: string): Promise<Lecture>;
     storeLectureTranscript(
         lectureId: string,
-        lectureContent: any,
+        lectureContent: any
     ): Promise<LectureTranscript>;
 }
