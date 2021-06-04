@@ -15,7 +15,8 @@ import {
     OneToOne,
     PrimaryGeneratedColumn,
 } from "typeorm";
-import Event from "./Event";
+import Event from "../Event";
+import LectureTranscript from "./LectureTranscript";
 
 @Entity()
 export default class Lecture extends Event {
@@ -37,4 +38,8 @@ export default class Lecture extends Event {
 
     @ManyToMany(() => Department, (department) => department.lectures)
     departments!: Department[];
+
+    @OneToOne(() => LectureTranscript, (lt) => lt.lecture)
+    @JoinColumn()
+    transcript: LectureTranscript;
 }

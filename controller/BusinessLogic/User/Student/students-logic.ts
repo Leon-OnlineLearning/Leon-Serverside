@@ -1,6 +1,6 @@
 import Course from "@models/Course";
 import Exam from "@models/Events/Exam";
-import Lecture from "@models/Events/Lecture";
+import Lecture from "@models/Events/Lecture/Lecture";
 import Embedding from "@models/Users/Embedding";
 import Student from "@models/Users/Student";
 

@@ -12,7 +12,7 @@ import LecturesLogicImpl from "@controller/BusinessLogic/Event/Lecture/lectures-
 import { onlyProfessors } from "@services/Routes/User/AuthorizationMiddleware";
 import simpleFinalMWDecorator from "@services/utils/RequestDecorator";
 import multer from "multer";
-import Lecture from "@models/Events/Lecture";
+import Lecture from "@models/Events/Lecture/Lecture";
 import UserInputError from "@services/utils/UserInputError";
 
 const router = Router();

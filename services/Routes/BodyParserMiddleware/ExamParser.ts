@@ -5,7 +5,7 @@ import {
     LecturePartialValidatorSchema,
     LectureValidatorSchema,
 } from "@models/Events/validators/LectureValidator";
-import Lecture from "@models/Events/Lecture";
+import Lecture from "@models/Events/Lecture/Lecture";
 import Exam from "@models/Events/Exam";
 import {
     ExamPartialValidatorSchema,

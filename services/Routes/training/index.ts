@@ -19,24 +19,9 @@ import { onlyProfessors } from "../User/AuthorizationMiddleware";
 import { Response, Request } from "express";
 import ModelLogicImpl from "@controller/BusinessLogic/TextClassification/models-logic-impl";
 import ModelLogic from "@controller/BusinessLogic/TextClassification/models-logic";
+import diskStorageBuilder from "@services/Routes/utils/dataStorageBuilder"
 
 const router = Router();
-
-const diskStorageBuilder = (
-    distinction: string,
-    fileNameFactory: (file: Express.Multer.File) => string
-) => {
-    return multer({
-        storage: multer.diskStorage({
-            destination: (_, __, cb) => {
-                cb(null, distinction);
-            },
-            filename: (_, file, cb) => {
-                cb(null, fileNameFactory(file));
-            },
-        }),
-    });
-};
 
 const relatedFileStorageUploader = diskStorageBuilder(
     process.env["UPLOADED_RELATED_TRAINING_PATH"] ||

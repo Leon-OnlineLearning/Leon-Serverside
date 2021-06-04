@@ -1,6 +1,6 @@
 import Course from "@models/Course";
 import Exam from "@models/Events/Exam";
-import Lecture from "@models/Events/Lecture";
+import Lecture from "@models/Events/Lecture/Lecture";
 import Professor from "@models/Users/Professor";
 
 export default interface ProfessorLogic {

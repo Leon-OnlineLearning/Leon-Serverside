@@ -1,4 +1,4 @@
-import Lecture from "@models/Events/Lecture";
+import Lecture from "@models/Events/Lecture/Lecture";
 import Student from "@models/Users/Student";
 import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
 

@@ -1,7 +1,7 @@
 import Course from "@models/Course";
 import Event from "@models/Events/Event";
 import Exam from "@models/Events/Exam";
-import Lecture from "@models/Events/Lecture";
+import Lecture from "@models/Events/Lecture/Lecture";
 import Professor from "@models/Users/Professor";
 import Student from "@models/Users/Student";
 import { Min } from "class-validator";

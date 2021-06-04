@@ -1,7 +1,7 @@
 import StudentRepo from "@controller/DataAccess/student-repo";
 import Course from "@models/Course";
 import Exam from "@models/Events/Exam";
-import Lecture from "@models/Events/Lecture";
+import Lecture from "@models/Events/Lecture/Lecture";
 import StudentsExams from "@models/JoinTables/StudentExam";
 import Student from "@models/Users/Student";
 import { hashPassword } from "@utils/passwords";

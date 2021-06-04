@@ -1,7 +1,7 @@
 import Course from "@models/Course";
 import Department from "@models/Department";
 import Exam from "@models/Events/Exam";
-import Lecture from "@models/Events/Lecture";
+import Lecture from "@models/Events/Lecture/Lecture";
 import TextClassificationModel from "@models/TextClassification/TextClassificationModel";
 import UserInputError from "@services/utils/UserInputError";
 import { getRepository } from "typeorm";
