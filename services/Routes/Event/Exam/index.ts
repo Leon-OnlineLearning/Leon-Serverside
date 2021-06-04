@@ -60,17 +60,13 @@ router.put(
         simpleFinalMWDecorator(res, async () => {
             const logic: ExamsLogic = new ExamsLogicImpl();
 
-            // TODO we may only save when there is problem
-
-            // TODO
-            // * send to ML
             const fileInfo: ExamFileInfo = {
                 examId: req.body.examId,
-                chunkIndex: req.body.chunckIndex,
+                chunkIndex: parseInt(req.body.chunckIndex),
                 lastChunk: req.body.lastChunk,
                 chunk: req.file.buffer,
-                chunkStartTime: req.body.chunkStartTime,
-                chunkEndTime: req.body.chunkEndTime,
+                chunkStartTime: parseInt(req.body.chunkStartTime),
+                chunkEndTime: parseInt(req.body.chunkEndTime),
             };
 
             // save recived chunk
