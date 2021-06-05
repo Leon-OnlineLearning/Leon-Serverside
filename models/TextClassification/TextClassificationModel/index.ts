@@ -11,6 +11,12 @@ import {
 import TextClassificationModelFile from "@models/TextClassification/TextClassificationModelFile";
 import { Max, Min } from "class-validator";
 
+interface ModelState {
+    model_id: string;
+    accuracy: number;
+    Classes: any;
+}
+
 @Entity()
 export default class TextClassificationModel {
     @PrimaryGeneratedColumn("uuid")
@@ -45,6 +51,9 @@ export default class TextClassificationModel {
 
     @Column({ nullable: true })
     stateFilePath: string;
+
+    @Column({ nullable: true, type: "jsonb" })
+    state: ModelState;
 
     @Column({ nullable: true })
     trainingModelPath: string;

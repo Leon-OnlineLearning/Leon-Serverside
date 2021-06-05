@@ -49,6 +49,7 @@ export default class ModelLogicImpl implements ModelLogic {
         );
         state = JSON.parse(state);
         model.accuracy = state.accuracy;
+        model.state = state;
         return model;
     }
     getAllModels(): Promise<TextClassificationModel[]> {
