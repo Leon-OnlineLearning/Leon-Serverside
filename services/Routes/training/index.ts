@@ -190,32 +190,28 @@ router.post("/finish", async (req, res) => {
             .send({ success: false, message: "invalid session id" });
     }
     await professorLogic.unsetSessionId(req.body["professorId"]);
-    simpleFinalMWDecorator(res, async () => {
-        // delete the session id
-        const modelsFacade: ModelsFacade = new ModelsFacadeImpl();
-        modelsFacade
-            .sendModelFiles(
-                sessionId,
-                process.env["TEXT_CLASSIFICATION_BASE_URL"] ??
-                    "/text_classification/train_files"
-            )
-            .then((res) => {
-                const modelLogic: ModelLogic = new ModelLogicImpl();
-                modelLogic.receiveModelFiles(sessionId, res);
-            });
-    });
+    // i didn't use the decorator here because
+    // i want to access the res object directly
+    const modelsFacade: ModelsFacade = new ModelsFacadeImpl();
+    modelsFacade
+        .sendModelFiles(
+            sessionId,
+            `${process.env["TEXT_CLASSIFICATION_BASE_URL"]}/train` ??
+                "/text_classification/train"
+        )
+        .then((res) => {
+            const modelLogic: ModelLogic = new ModelLogicImpl();
+            modelLogic.receiveModelFiles(sessionId, res);
+        })
+        .catch((error) => {
+            res.status(500).send({ success: false, message: error.message });
+        });
 });
 
 router.get("/models", (req, res) => {
     simpleFinalMWDecorator(res, async () => {
         const modelLogic: ModelLogic = new ModelLogicImpl();
         return modelLogic.getAllModels();
-    });
-});
-
-router.post("/models/raise", (req, res) => {
-    simpleFinalMWDecorator(res, async () => {
-        // TODO write a logic to raise a specific model
     });
 });
 

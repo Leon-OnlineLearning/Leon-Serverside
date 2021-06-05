@@ -16,6 +16,8 @@ export interface UploadResult {
     sessionId: string;
 }
 
+// model logic that is outside the scope of the DTOs
+// for example it will handle requests to other servers
 export interface ModelsFacade {
     uploadFile(
         files: any[],
@@ -35,9 +37,16 @@ export interface ModelsFacade {
     getFileInfo(modelId: string, fileRelation: FileType): Promise<any>;
     sendModelFiles(modelId: string, to: string): Promise<any>;
     getFileInfoForTraining(modelId: string): Promise<any>;
+    sendRaiseModel(modelId: string, to: string): Promise<any>;
 }
 
 export class ModelsFacadeImpl implements ModelsFacade {
+    async sendRaiseModel(modelId: string, to: string): Promise<any> {
+        const modelLogic: ModelLogic = new ModelLogicImpl();
+        const subModel = modelLogic.createSubModel(modelId);
+        axios.post(to, subModel);
+    }
+
     async getFileInfoForTraining(modelId: string): Promise<any> {
         // get all class names
         const classNamesQuery = `
@@ -53,16 +62,22 @@ export class ModelsFacadeImpl implements ModelsFacade {
             inner join text_classification_model_file as t on f.id = t.file_id
             where t."className" = $1;
         `;
-        let res: any = { modelId };
+        let res: any = { modelId, dictionary_classes: {} };
         for (let className of classNames) {
             const paths = await getManager().query(filesQuery, [
                 className.className,
             ]);
-            res[className.className] = paths.map(
+            res["dictionary_classes"][className.className] = paths.map(
                 // TODO check if there is a better (dynamic) way to get the base url
-                (path: { filePath: string }) =>
-                    process.env["BASE_URL"] ??
-                    "https://localhost/backend/" + path.filePath
+                (path: { filePath: string }) => {
+                    console.log("path is", path);
+                    return (
+                        `${
+                            process.env["BASE_URL"] ??
+                            "https://localhost/backend/"
+                        }` + path.filePath
+                    );
+                }
             );
         }
         console.log("result is", res);

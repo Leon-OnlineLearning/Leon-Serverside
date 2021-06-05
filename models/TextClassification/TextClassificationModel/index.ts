@@ -33,9 +33,9 @@ export default class TextClassificationModel {
     @ManyToOne(() => TextClassificationModel, (tcm) => tcm.subModules, {
         nullable: true,
     })
-    superModule: TextClassificationModel;
+    superModel: TextClassificationModel;
 
-    @OneToMany(() => TextClassificationModel, (tcm) => tcm.superModule, {
+    @OneToMany(() => TextClassificationModel, (tcm) => tcm.superModel, {
         nullable: true,
         cascade: true,
     })

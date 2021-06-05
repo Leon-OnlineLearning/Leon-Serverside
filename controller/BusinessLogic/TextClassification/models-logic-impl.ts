@@ -9,6 +9,21 @@ import ModelLogic from "./models-logic";
 import extract from "extract-zip";
 
 export default class ModelLogicImpl implements ModelLogic {
+    async createSubModel(modelId: string): Promise<TextClassificationModel> {
+        const superModel = await getRepository(TextClassificationModel).findOne(
+            modelId
+        );
+        if (!superModel) throw new UserInputError("Invalid model id");
+        const _subModel = new TextClassificationModel();
+        _subModel.superModel = superModel;
+        _subModel.dataClassificationModelPath =
+            superModel.dataClassificationModelPath;
+        _subModel.dataLanguageModelPath = superModel.dataLanguageModelPath;
+        _subModel.state = { ...superModel.state, accuracy: -1 };
+        const subModel = await getRepository(TextClassificationModel).save(_subModel);
+        return subModel;
+    }
+
     async receiveModelFiles(
         modelId: string,
         zipFile: any
@@ -31,7 +46,10 @@ export default class ModelLogicImpl implements ModelLogic {
         // delete the zip file
         await fs.unlink(zipPath);
         // create the model
-        const model = new TextClassificationModel();
+        const model = await getRepository(TextClassificationModel).findOne(
+            modelId
+        );
+        if (!model) throw new UserInputError("invalid model id");
         // add the paths to our model
         const pathPrefix = `${baseUrl}${extractionDir}/models/${modelId}`;
         model.trainingModelPath = `${pathPrefix}/models/training_model_${modelId}.pth`;
@@ -50,6 +68,7 @@ export default class ModelLogicImpl implements ModelLogic {
         state = JSON.parse(state);
         model.accuracy = state.accuracy;
         model.state = state;
+        await getRepository(TextClassificationModel).save(model);
         return model;
     }
     getAllModels(): Promise<TextClassificationModel[]> {

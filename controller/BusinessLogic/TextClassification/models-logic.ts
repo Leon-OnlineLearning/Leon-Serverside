@@ -8,4 +8,5 @@ export default interface ModelLogic {
     getModelById(modeId: string): Promise<TextClassificationModel>;
     getAllModels(): Promise<TextClassificationModel[]>;
     receiveModelFiles(modelId: string, zipFile: any): Promise<TextClassificationModel>;
+    createSubModel(modelId: string) : Promise<TextClassificationModel>;
 }
