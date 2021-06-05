@@ -44,7 +44,7 @@ export default class TextClassificationModel {
     predictionModelPath: string;
 
     @Column({ nullable: true })
-    modelPath: string;
+    trainingModelPath: string;
 
     @Column({ nullable: true })
     dataLanguageModelPath: string;

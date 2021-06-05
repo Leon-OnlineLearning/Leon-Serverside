@@ -11,3 +11,4 @@ recordings/
 test/unit/SendVideo/videoTstC.webm
 env:Zone.Identifier
 static/
+zip_state.txt

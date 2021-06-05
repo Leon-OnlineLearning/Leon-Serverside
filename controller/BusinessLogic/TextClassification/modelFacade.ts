@@ -34,13 +34,46 @@ export interface ModelsFacade {
     getFileInfoReport(modelId: string): Promise<any>;
     getFileInfo(modelId: string, fileRelation: FileType): Promise<any>;
     sendModelFiles(modelId: string, to: string): Promise<void>;
+    getFileInfoForTraining(modelId: string): Promise<any>;
 }
 
 export class ModelsFacadeImpl implements ModelsFacade {
+    async getFileInfoForTraining(modelId: string): Promise<any> {
+        // get all class names
+        const classNamesQuery = `
+            select distinct "className" from text_classification_model_file;
+        `;
+        const classNames: [{ className: string }] = await getManager().query(
+            classNamesQuery
+        );
+        console.log("class names", classNames);
+        // get all files that has the exact class name
+        const filesQuery = `
+            select f."filePath" from text_classification_file as f 
+            inner join text_classification_model_file as t on f.id = t.file_id
+            where t."className" = $1;
+        `;
+        let res: any = { modelId };
+        for (let className of classNames) {
+            const paths = await getManager().query(filesQuery, [
+                className.className,
+            ]);
+            res[className.className] = paths.map(
+                // TODO check if there is a better (dynamic) way to get the base url
+                (path: { filePath: string }) =>
+                    process.env["BASE_URL"] ??
+                    "https://localhost/backend/" + path.filePath
+            );
+        }
+        console.log("result is", res);
+        return res;
+    }
+
     async sendModelFiles(modelId: string, to: string): Promise<void> {
-        const report = await this.getFileInfoReport(modelId);
-        console.log("report is", report);
-        await axios.post(to, report);
+        // const report = await this.getFileInfoReport(modelId);
+        const res = await this.getFileInfoForTraining(modelId);
+        console.log("report is", res);
+        await axios.post(to, res);
     }
 
     async getFileInfo(modelId: string, fileRelation: FileType): Promise<any[]> {
