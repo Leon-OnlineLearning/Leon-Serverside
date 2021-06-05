@@ -13,6 +13,7 @@ const modelFilesStorage = diskStorageBuilder(
 
 // TODO create the end point that will recive files
 // from the tcs
-router.post("/", modelFilesStorage.single("model_files"), (req, res) => {});
+router.post("/", modelFilesStorage.single("model_files"), (req, res) => {
+});
 
 export default router;

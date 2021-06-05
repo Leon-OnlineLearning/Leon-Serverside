@@ -58,6 +58,7 @@
     "express": "^4.17.1",
     "express-cors": "0.0.3",
     "express-rate-limit": "^5.2.6",
+    "extract-zip": "^2.0.1",
     "fix-webm-duration": "^1.0.0",
     "fluent-ffmpeg": "^2.1.2",
     "form-data": "^2.3.3",

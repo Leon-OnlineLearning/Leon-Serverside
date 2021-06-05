@@ -191,13 +191,18 @@ router.post("/finish", async (req, res) => {
     }
     await professorLogic.unsetSessionId(req.body["professorId"]);
     simpleFinalMWDecorator(res, async () => {
-        // delete the sesssion id
+        // delete the session id
         const modelsFacade: ModelsFacade = new ModelsFacadeImpl();
-        modelsFacade.sendModelFiles(
-            sessionId,
-            process.env["TEXT_CLASSIFICATION_BASE_URL"] ??
-                "/text_classification/train_files"
-        );
+        modelsFacade
+            .sendModelFiles(
+                sessionId,
+                process.env["TEXT_CLASSIFICATION_BASE_URL"] ??
+                    "/text_classification/train_files"
+            )
+            .then((res) => {
+                const modelLogic: ModelLogic = new ModelLogicImpl();
+                modelLogic.receiveModelFiles(sessionId, res);
+            });
     });
 });
 

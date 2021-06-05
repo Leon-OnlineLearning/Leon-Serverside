@@ -33,7 +33,7 @@ export interface ModelsFacade {
     ): Promise<void>;
     getFileInfoReport(modelId: string): Promise<any>;
     getFileInfo(modelId: string, fileRelation: FileType): Promise<any>;
-    sendModelFiles(modelId: string, to: string): Promise<void>;
+    sendModelFiles(modelId: string, to: string): Promise<any>;
     getFileInfoForTraining(modelId: string): Promise<any>;
 }
 
@@ -69,11 +69,11 @@ export class ModelsFacadeImpl implements ModelsFacade {
         return res;
     }
 
-    async sendModelFiles(modelId: string, to: string): Promise<void> {
+    async sendModelFiles(modelId: string, to: string): Promise<any> {
         // const report = await this.getFileInfoReport(modelId);
         const res = await this.getFileInfoForTraining(modelId);
         console.log("report is", res);
-        await axios.post(to, res);
+        return axios.post(to, res);
     }
 
     async getFileInfo(modelId: string, fileRelation: FileType): Promise<any[]> {
