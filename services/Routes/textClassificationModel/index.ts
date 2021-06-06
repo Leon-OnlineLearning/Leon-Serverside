@@ -39,7 +39,7 @@ router.post("/raise", onlyProfessors, (req, res) => {
         `${
             process.env["TEXT_CLASSIFICATION_BASE_URL"] ??
             "/text_classification"
-        }/raise_accuracy.zip` 
+        }/raise_accuracy.zip`
         // There for testing
         // `${
         //     process.env["TEXT_CLASSIFICATION_BASE_URL"] ??
