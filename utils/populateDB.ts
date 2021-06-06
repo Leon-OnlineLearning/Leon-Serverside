@@ -15,6 +15,8 @@ import Department from "@models/Department";
 import CourseLogicImpl from "@controller/BusinessLogic/Course/courses-logic-impl";
 import DepartmentsLogicImpl from "@controller/BusinessLogic/Department/departments-logic-impl";
 import User from "@models/Users/User";
+import TextClassificationModel from "@models/TextClassification/TextClassificationModel";
+import ModelLogicImpl from "@controller/BusinessLogic/TextClassification/models-logic-impl";
 
 function _createUser(baseUser: User, name: string, password = "1234") {
     baseUser.email = `${name}@test.com`;
@@ -88,4 +90,15 @@ export default async function populateDB() {
 
     const created_exam = await new ExamsLogicImpl().createExam(baseExam);
     console.debug(`created exam ${created_exam.id}`);
+
+    // create fake models (not suitable for machine learning)
+    const fakeTCModel = new TextClassificationModel();
+    fakeTCModel.name = "fake tc model";
+    fakeTCModel.accuracy = 0.98;
+
+    const createdFakeTCModel = await new ModelLogicImpl().addModelInCourse(
+        fakeTCModel,
+        sample_course.id
+    );
+    console.debug(`create text classification model ${createdFakeTCModel.id}`);
 }
