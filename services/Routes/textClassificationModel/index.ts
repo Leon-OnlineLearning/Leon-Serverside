@@ -23,7 +23,9 @@ const modelFilesStorage = diskStorageBuilder(
     process.env["TEXT_CLASSIFICATION_MODELS_PATH"] ??
         "static/textclassification/related",
     (file) => {
-        return `model-${file.originalname}-${Date.now()}.${getExtension(file.originalname)}`;
+        return `model-${file.originalname}-${Date.now()}.${getExtension(
+            file.originalname
+        )}`;
     }
 );
 

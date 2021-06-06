@@ -9,6 +9,18 @@ import ModelLogic from "./models-logic";
 import extract from "extract-zip";
 
 export default class ModelLogicImpl implements ModelLogic {
+    getAllModelsByCourseId(
+        courseId: string
+    ): Promise<TextClassificationModel[]> {
+        const course = getRepository(Course).findOne(courseId);
+        if (!courseId) throw new UserInputError("invalid course id");
+        return getRepository(TextClassificationModel).find({
+            where: {
+                course,
+            },
+        });
+    }
+
     async createSubModel(modelId: string): Promise<TextClassificationModel> {
         const superModel = await getRepository(TextClassificationModel).findOne(
             modelId
@@ -35,12 +47,13 @@ export default class ModelLogicImpl implements ModelLogic {
         console.log("files received");
 
         console.log("dirname", __dirname);
-        
+
         const zipPath = `${__dirname}/../../../static/textclassification/tempzip/${modelId}.zip`;
-        const extractionDir =
-            `${__dirname}/../../../${process.env["MODELS_PATH"] ?? "static/textclassification"}`;
+        const extractionDir = `${__dirname}/../../../${
+            process.env["MODELS_PATH"] ?? "static/textclassification"
+        }`;
         const baseUrl = process.env["BASE_URL"] ?? "https://localhost/backend/";
-        console.log("the file is",zipFile)
+        console.log("the file is", zipFile);
         await fs.writeFile(zipPath, zipFile);
         // extract the zip file to static folder
         try {
@@ -66,7 +79,7 @@ export default class ModelLogicImpl implements ModelLogic {
         model.stateFilePath = `${pathPrefix}/state_${modelId}.json`;
         // for accuracy read the json file and get the accuracy
         // for class mapper
-        const filesPrefix = `${extractionDir}/models/${modelId}`
+        const filesPrefix = `${extractionDir}/models/${modelId}`;
         let state: any = await fs.readFile(
             `${filesPrefix}/state_${modelId}.json`,
             {
