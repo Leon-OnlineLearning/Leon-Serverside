@@ -61,14 +61,23 @@ export class ModelsFacadeImpl implements ModelsFacade {
 
     async requestRaise(modelId: string, to: string): Promise<any> {
         const modelLogic: ModelLogic = new ModelLogicImpl();
-        const subModel = modelLogic.createSubModel(modelId);
+        const subModel = await modelLogic.createSubModel(modelId);
         // TODO see what is the format for test
-        console.log("the submodule:", subModel);
+        const subModuleSummary = {
+            modelId: subModel.id,
+            model_files: {
+                data_language_model: subModel.dataLanguageModelPath,
+                data_classification_model: subModel.dataClassificationModelPath,
+                training_model: subModel.trainingModelPath,
+            },
+        };
+        console.log("data send:", subModuleSummary);
         return axios
-            .post(to, subModel)
-            .then((res) => {
-                console.log("raise result", res.data);
-                return res.data;
+            .post(to, subModuleSummary)
+            .then((res) => res.data)
+            .then((data) => {
+                const modelLogic: ModelLogic = new ModelLogicImpl();
+                modelLogic.receiveModelFiles(subModel.id, data);
             })
             .catch((err) => {
                 console.error(err);

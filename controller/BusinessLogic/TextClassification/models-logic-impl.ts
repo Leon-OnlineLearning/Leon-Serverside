@@ -22,9 +22,8 @@ export default class ModelLogicImpl implements ModelLogic {
     }
 
     async createSubModel(modelId: string): Promise<TextClassificationModel> {
-        const superModel = await getRepository(TextClassificationModel).findOne(
-            modelId
-        );
+        const textClassificationRepo = getRepository(TextClassificationModel);
+        const superModel = await textClassificationRepo.findOne(modelId);
         if (!superModel) throw new UserInputError("Invalid model id");
         const _subModel = new TextClassificationModel();
         _subModel.superModel = superModel;
@@ -32,10 +31,11 @@ export default class ModelLogicImpl implements ModelLogic {
             superModel.dataClassificationModelPath;
         _subModel.dataLanguageModelPath = superModel.dataLanguageModelPath;
         _subModel.state = { ...superModel.state, accuracy: -1 };
-        _subModel.name = `sub_module_for_${modelId}`
+        _subModel.name = `sub_module_for_${modelId}`;
         const subModel = await getRepository(TextClassificationModel).save(
             _subModel
         );
+        await textClassificationRepo.save(superModel);
         return subModel;
     }
 
