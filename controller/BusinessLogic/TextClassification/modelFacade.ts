@@ -63,10 +63,16 @@ export class ModelsFacadeImpl implements ModelsFacade {
         const modelLogic: ModelLogic = new ModelLogicImpl();
         const subModel = modelLogic.createSubModel(modelId);
         // TODO see what is the format for test
-        return axios.post(to, subModel).then((res) => {
-            console.log("raise result", res.data);
-            return res.data;
-        });
+        console.log("the submodule:", subModel);
+        return axios
+            .post(to, subModel)
+            .then((res) => {
+                console.log("raise result", res.data);
+                return res.data;
+            })
+            .catch((err) => {
+                console.error(err);
+            });
     }
 
     async getFilePathsByClassName(className: string) {

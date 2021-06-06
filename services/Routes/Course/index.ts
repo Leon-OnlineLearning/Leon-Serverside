@@ -140,6 +140,8 @@ router.get("/", async (_, res) => {
 router.get("/:courseId/models", (req, res) => {
     simpleFinalMWDecorator(res, async () => {
         const modelLogic: ModelLogic = new ModelLogicImpl();
+        console.log("course id received:", req.params["courseId"]);
+
         return await modelLogic.getAllModelsByCourseId(req.params["courseId"]);
     });
 });

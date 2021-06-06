@@ -95,10 +95,18 @@ export default async function populateDB() {
     const fakeTCModel = new TextClassificationModel();
     fakeTCModel.name = "fake tc model";
     fakeTCModel.accuracy = 0.98;
+    fakeTCModel.id = "8c1d6508-3d53-4024-877d-f4aa5cc9537c";
+    if (!process.env["BASE_URL"])
+        throw new Error("BASE_URL env var is not found");
+    const baseURL = `${process.env["BASE_URL"]}static/textclassification/models/${fakeTCModel.id}/`;
+    fakeTCModel.trainingModelPath = `${baseURL}models/training_model_${fakeTCModel.id}.pth`;
+    fakeTCModel.dataClassificationModelPath = `${baseURL}data_classification_model_${fakeTCModel.id}.pkl`;
+    fakeTCModel.dataLanguageModelPath = `${baseURL}data_language_model_${fakeTCModel.id}.pkl`;
+    fakeTCModel.predictionModelPath = `${baseURL}prediction_model_${fakeTCModel.id}.pkl`;
 
     const createdFakeTCModel = await new ModelLogicImpl().addModelInCourse(
         fakeTCModel,
         sample_course.id
     );
-    console.debug(`create text classification model ${createdFakeTCModel.id}`);
+    console.debug(`created text classification model ${createdFakeTCModel.id}`);
 }

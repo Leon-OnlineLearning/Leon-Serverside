@@ -12,13 +12,13 @@ export default class ModelLogicImpl implements ModelLogic {
     getAllModelsByCourseId(
         courseId: string
     ): Promise<TextClassificationModel[]> {
+        console.log("course ID is", courseId);
         const course = getRepository(Course).findOne(courseId);
         if (!courseId) throw new UserInputError("invalid course id");
-        return getRepository(TextClassificationModel).find({
-            where: {
-                course,
-            },
-        });
+        return getRepository(TextClassificationModel)
+            .createQueryBuilder("tcm")
+            .where("tcm.courseId = :courseId", { courseId })
+            .getMany();
     }
 
     async createSubModel(modelId: string): Promise<TextClassificationModel> {
@@ -32,6 +32,7 @@ export default class ModelLogicImpl implements ModelLogic {
             superModel.dataClassificationModelPath;
         _subModel.dataLanguageModelPath = superModel.dataLanguageModelPath;
         _subModel.state = { ...superModel.state, accuracy: -1 };
+        _subModel.name = `sub_module_for_${modelId}`
         const subModel = await getRepository(TextClassificationModel).save(
             _subModel
         );

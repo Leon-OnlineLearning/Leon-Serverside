@@ -34,6 +34,10 @@ ts-node -r tsconfig-paths/register ./node_modules/.bin/typeorm migration:run
 ts-node -r tsconfig-paths/register ./node_modules/.bin/typeorm migration:generate -n $MIGRATION_NAME
 ```
 
+## Text classification Model
+you should download the text classification model from [here](https://drive.google.com/file/d/1vzKS674MLBxK_TcY7NAteV3ptonEJROb/view?usp=sharing) and extract it to `static/textclassification/models`
+if you want to populate the text classification model
+
 ## Testing
 ## Jest tests
 ### How to?
