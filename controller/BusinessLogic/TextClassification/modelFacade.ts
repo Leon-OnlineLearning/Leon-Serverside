@@ -66,22 +66,45 @@ export class ModelsFacadeImpl implements ModelsFacade {
         const subModuleSummary = {
             modelId: subModel.id,
             model_files: {
-                data_language_model: subModel.dataLanguageModelPath,
-                data_classification_model: subModel.dataClassificationModelPath,
-                training_model: subModel.trainingModelPath,
+                data_language_model: [subModel.dataLanguageModelPath],
+                data_classification_model: [
+                    subModel.dataClassificationModelPath,
+                ],
+                training_model: [subModel.trainingModelPath],
             },
         };
         console.log("data send:", subModuleSummary);
         return axios
-            .post(to, subModuleSummary)
-            .then((res) => res.data)
-            .then((data) => {
-                const modelLogic: ModelLogic = new ModelLogicImpl();
-                modelLogic.receiveModelFiles(subModel.id, data);
-            })
-            .catch((err) => {
-                console.error(err);
-            });
+        .post(to, subModuleSummary, {
+            headers: {
+                Accept: "application/zip",
+            },
+            responseType: "arraybuffer",
+        })
+        .then((res) => res.data)
+        .then((data) => {
+            const modelLogic: ModelLogic = new ModelLogicImpl();
+            modelLogic.receiveModelFiles(subModel.id, data);
+        })
+        .catch((err) => {
+            console.error(err);
+        });
+        // THERE FOR TESTING IMPORTANT uncomment the code change this to post request
+        // return axios
+        //     .get(to, {
+        //         headers: {
+        //             Accept: "application/zip",
+        //         },
+        //         responseType: "arraybuffer",
+        //     })
+        //     .then((res) => res.data)
+        //     .then((data) => {
+        //         const modelLogic: ModelLogic = new ModelLogicImpl();
+        //         modelLogic.receiveModelFiles(subModel.id, data);
+        //     })
+        //     .catch((err) => {
+        //         console.error(err);
+        //     });
     }
 
     async getFilePathsByClassName(className: string) {

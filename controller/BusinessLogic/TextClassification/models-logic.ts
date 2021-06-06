@@ -15,4 +15,8 @@ export default interface ModelLogic {
     getAllModelsByCourseId(
         courseId: string
     ): Promise<TextClassificationModel[]>;
+    isSuperModel(modelId: string): Promise<boolean>;
+    getSuperModel(
+        modelId: string
+    ): Promise<TextClassificationModel | undefined>;
 }

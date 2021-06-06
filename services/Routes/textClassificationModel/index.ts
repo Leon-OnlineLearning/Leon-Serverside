@@ -29,14 +29,6 @@ const modelFilesStorage = diskStorageBuilder(
     }
 );
 
-// TODO create the end point that will recive files
-// from the tcs
-// router.post("/", (req, res) => {
-//     simpleFinalMWDecorator(res, async () => {
-
-//     })
-// });
-
 router.post("/raise", onlyProfessors, (req, res) => {
     // receive mode id
     const modelId = req.body["modelId"];
@@ -47,7 +39,12 @@ router.post("/raise", onlyProfessors, (req, res) => {
         `${
             process.env["TEXT_CLASSIFICATION_BASE_URL"] ??
             "/text_classification"
-        }/train`
+        }/raise_accuracy.zip` 
+        // There for testing
+        // `${
+        //     process.env["TEXT_CLASSIFICATION_BASE_URL"] ??
+        //     "/text_classification"
+        // }/raise_accuracy.zip` // TODO IMPORTANT FAST remove the .zip
     );
     // send data files
     // send training* file

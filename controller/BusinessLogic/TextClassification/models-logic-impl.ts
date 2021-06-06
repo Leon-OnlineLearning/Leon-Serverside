@@ -2,13 +2,47 @@ import Course from "@models/Course";
 import TextClassificationModel from "@models/TextClassification/TextClassificationModel";
 import UserInputError from "@services/utils/UserInputError";
 import fs from "fs/promises";
-import { getRepository } from "typeorm";
+import { getManager, getRepository } from "typeorm";
 import CoursesLogic from "../Course/courses-logic";
 import CourseLogicImpl from "../Course/courses-logic-impl";
 import ModelLogic from "./models-logic";
 import extract from "extract-zip";
 
 export default class ModelLogicImpl implements ModelLogic {
+    async isSuperModel(modelId: string): Promise<boolean> {
+        const superModelId = await this.getSuperModelId(modelId);
+        if (superModelId) return true;
+        else return false;
+    }
+
+    async getSuperModelId(modelId: string) {
+        // const resContent = await getManager()
+        //     .createQueryBuilder()
+        //     .select("tcm.superModelId")
+        //     .from(TextClassificationModel,"tcm")
+        //     .where("tcm.id = :subModelId", { modelId })
+        //     .getOne();
+        const resContent = await getManager().query(
+            `select "superModelId" from text_classification_model
+            where id = $1`,
+            [modelId]
+        );
+        console.log("super model id content", resContent);
+        const { superModelId } = resContent[0];
+        return superModelId;
+    }
+
+    async getSuperModel(
+        subModelId: string
+    ): Promise<TextClassificationModel | undefined> {
+        const superModelId = await this.getSuperModelId(subModelId);
+        const superModel = await getRepository(TextClassificationModel).findOne(
+            superModelId
+        );
+        console.log("super model", superModel);
+        return superModel;
+    }
+
     getAllModelsByCourseId(
         courseId: string
     ): Promise<TextClassificationModel[]> {
@@ -48,14 +82,19 @@ export default class ModelLogicImpl implements ModelLogic {
         // add it to tmp to be removed whenever server fault
         console.log("files received");
 
-        console.log("dirname", __dirname);
-
         const zipPath = `${__dirname}/../../../static/textclassification/tempzip/${modelId}.zip`;
         const extractionDir = `${__dirname}/../../../${
             process.env["MODELS_PATH"] ?? "static/textclassification"
         }`;
+        console.log(
+            "dirname",
+            __dirname,
+            "zip path",
+            zipPath,
+            "extract",
+            extractionDir
+        );
         const baseUrl = process.env["BASE_URL"] ?? "https://localhost/backend/";
-        console.log("the file is", zipFile);
         await fs.writeFile(zipPath, zipFile);
         // extract the zip file to static folder
         try {
@@ -73,15 +112,12 @@ export default class ModelLogicImpl implements ModelLogic {
         );
         if (!model) throw new UserInputError("invalid model id");
         // add the paths to our model
-        const pathPrefix = `${baseUrl}static/textclassification/models/${modelId}`;
-        model.trainingModelPath = `${pathPrefix}/models/training_model_${modelId}.pth`;
-        model.dataClassificationModelPath = `${pathPrefix}/data_classification_model_${modelId}.pkl`;
-        model.dataLanguageModelPath = `${pathPrefix}/data_language_model_${modelId}.pkl`;
-        model.predictionModelPath = `${pathPrefix}/prediction_model_${modelId}.pkl`;
-        model.stateFilePath = `${pathPrefix}/state_${modelId}.json`;
-        // for accuracy read the json file and get the accuracy
-        // for class mapper
         const filesPrefix = `${extractionDir}/models/${modelId}`;
+        const modelLogic: ModelLogic = new ModelLogicImpl();
+        const superModel = await modelLogic.getSuperModel(modelId);
+        const pathPrefix = `${baseUrl}static/textclassification/models/${modelId}`;
+        // if it doesn't have a super model take the files from the zip
+        // else take them from the super model
         let state: any = await fs.readFile(
             `${filesPrefix}/state_${modelId}.json`,
             {
@@ -90,7 +126,23 @@ export default class ModelLogicImpl implements ModelLogic {
         );
         state = JSON.parse(state);
         model.accuracy = state.accuracy;
-        model.state = state;
+        if (!superModel) {
+            model.dataClassificationModelPath = `${pathPrefix}/data_classification_model_${modelId}.pkl`;
+            model.dataLanguageModelPath = `${pathPrefix}/data_language_model_${modelId}.pkl`;
+            model.state = state;
+        } else {
+            model.dataClassificationModelPath =
+                superModel.dataClassificationModelPath;
+            model.dataLanguageModelPath = superModel.dataLanguageModelPath;
+            model.state = {
+                accuracy: state.accuracy,
+                model_id: state.model_name,
+                Classes: superModel?.state.Classes,
+            };
+        }
+        model.trainingModelPath = `${pathPrefix}/models/training_model_${modelId}.pth`;
+        model.predictionModelPath = `${pathPrefix}/prediction_model_${modelId}.pkl`;
+        model.stateFilePath = `${pathPrefix}/state_${modelId}.json`;
         await getRepository(TextClassificationModel).save(model);
         return model;
     }

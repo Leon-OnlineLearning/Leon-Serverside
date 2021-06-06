@@ -17,6 +17,7 @@ import DepartmentsLogicImpl from "@controller/BusinessLogic/Department/departmen
 import User from "@models/Users/User";
 import TextClassificationModel from "@models/TextClassification/TextClassificationModel";
 import ModelLogicImpl from "@controller/BusinessLogic/TextClassification/models-logic-impl";
+import fs from "fs/promises";
 
 function _createUser(baseUser: User, name: string, password = "1234") {
     baseUser.email = `${name}@test.com`;
@@ -104,6 +105,15 @@ export default async function populateDB() {
     fakeTCModel.dataLanguageModelPath = `${baseURL}data_language_model_${fakeTCModel.id}.pkl`;
     fakeTCModel.predictionModelPath = `${baseURL}prediction_model_${fakeTCModel.id}.pkl`;
 
+    let state: any = await fs.readFile(
+        `${__dirname}/../static/textclassification/models/8c1d6508-3d53-4024-877d-f4aa5cc9537c/state_8c1d6508-3d53-4024-877d-f4aa5cc9537c.json`,
+        {
+            encoding: "utf-8",
+        }
+    );
+    state = JSON.parse(state);
+    fakeTCModel.accuracy = state.accuracy;
+    fakeTCModel.state = state;
     const createdFakeTCModel = await new ModelLogicImpl().addModelInCourse(
         fakeTCModel,
         sample_course.id
