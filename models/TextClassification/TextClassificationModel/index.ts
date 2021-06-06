@@ -41,7 +41,7 @@ export default class TextClassificationModel {
     })
     subModules: TextClassificationModel[];
 
-    @Column({ nullable: true })
+    @Column("decimal", { nullable: true, precision: 21, scale: 20 })
     @Min(0)
     @Max(100)
     accuracy: number;

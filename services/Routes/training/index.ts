@@ -20,6 +20,10 @@ import { Response, Request } from "express";
 import ModelLogicImpl from "@controller/BusinessLogic/TextClassification/models-logic-impl";
 import ModelLogic from "@controller/BusinessLogic/TextClassification/models-logic";
 import diskStorageBuilder from "@services/Routes/utils/dataStorageBuilder";
+import getExtension from "@utils/extensionExtractor";
+import axios from "axios";
+import fs from "fs";
+import extract from "extract-zip";
 
 const router = Router();
 
@@ -32,7 +36,7 @@ const relatedFileStorageUploader = diskStorageBuilder(
             "-" +
             "related" +
             Date.now() +
-            ".pdf"
+            getExtension(file.originalname)
         );
     }
 );
@@ -42,11 +46,11 @@ const nonRelatedFileStorageUploader = diskStorageBuilder(
         "static/textclassification/non_related",
     (file: Express.Multer.File) => {
         return (
-            `${file.originalname.split(".pdf")[0]}` +
+            `${file.originalname.split(".")[0]}` +
             "-" +
             "related" +
             Date.now() +
-            ".pdf"
+            getExtension(file.originalname)
         );
     }
 );
@@ -55,7 +59,13 @@ const testFileStorageUploader = diskStorageBuilder(
     process.env["TXT_CLASSIFICATION_TEST_PATH"] ||
         "static/textclassification/testing",
     (file: Express.Multer.File) => {
-        return `${file.originalname}` + "-" + "related" + Date.now() + ".pdf";
+        return (
+            `${file.originalname.split(".")[0]}` +
+            "-" +
+            "related" +
+            Date.now() +
+            getExtension(file.originalname)
+        );
     }
 );
 
@@ -179,6 +189,36 @@ router.post(
     existingMiddlewareFactory(FileType.NON_RELATED)
 );
 
+router.get("/blah", (req, res) => {
+    axios
+        .post(
+            `${process.env["TEXT_CLASSIFICATION_BASE_URL"]}/send_full_model` ??
+                "/text_classification/send_full_model",
+            {
+                modelId: "1",
+            },
+            {
+                headers: {
+                    Accept: "application/zip",
+                },
+                responseType: "arraybuffer",
+            }
+        )
+        .then((res) => res.data)
+        .then(async (data) => {
+            console.log("data received ", data);
+            fs.writeFileSync(
+                __dirname + "/static/textclassification/hamada.zip",
+                data
+            );
+            console.log("dirname is", __dirname);
+            await extract(__dirname + "/static/textclassification/hamada.zip", {
+                dir: __dirname + "/static/textclassification",
+            });
+        });
+    res.send({ success: true });
+});
+
 router.post("/finish", async (req, res) => {
     const professorLogic: ProfessorLogic = new ProfessorLogicImpl();
     const sessionId = await professorLogic.getTextClassificationSessionId(
@@ -200,12 +240,16 @@ router.post("/finish", async (req, res) => {
                 "/text_classification/train"
         )
         .then((res) => {
+            console.log("files received");
+
             const modelLogic: ModelLogic = new ModelLogicImpl();
             modelLogic.receiveModelFiles(sessionId, res);
         })
         .catch((error) => {
-            res.status(500).send({ success: false, message: error.message });
+            console.error("ML error", error.message);
         });
+    // send response to the client
+    res.send({ success: true });
 });
 
 router.get("/models", (req, res) => {

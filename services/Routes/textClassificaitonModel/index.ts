@@ -1,3 +1,7 @@
+import {
+    ModelsFacade,
+    ModelsFacadeImpl,
+} from "@controller/BusinessLogic/TextClassification/modelFacade";
 import ModelLogic from "@controller/BusinessLogic/TextClassification/models-logic";
 import ModelLogicImpl from "@controller/BusinessLogic/TextClassification/models-logic-impl";
 import {
@@ -5,6 +9,7 @@ import {
     BlockedJWTMiddleware,
 } from "@services/Auth";
 import simpleFinalMWDecorator from "@services/utils/RequestDecorator";
+import getExtension from "@utils/extensionExtractor";
 import { Router } from "express";
 import { onlyProfessors } from "../User/AuthorizationMiddleware";
 import diskStorageBuilder from "../utils/dataStorageBuilder";
@@ -18,7 +23,7 @@ const modelFilesStorage = diskStorageBuilder(
     process.env["TEXT_CLASSIFICATION_MODELS_PATH"] ??
         "static/textclassification/related",
     (file) => {
-        return `model-${file.originalname}-${Date.now()}.zip`;
+        return `model-${file.originalname}-${Date.now()}.${getExtension(file.originalname)}`;
     }
 );
 
@@ -34,8 +39,14 @@ router.post("/raise", onlyProfessors, (req, res) => {
     // receive mode id
     const modelId = req.body["modelId"];
     // send raise request to the ml server
-    const modelLogic: ModelLogic = new ModelLogicImpl();
-    modelLogic.createSubModel(modelId);
+    const modelFacade: ModelsFacade = new ModelsFacadeImpl();
+    modelFacade.requestRaise(
+        modelId,
+        `${
+            process.env["TEXT_CLASSIFICATION_BASE_URL"] ??
+            "/text_classification"
+        }/train`
+    );
     // send data files
     // send training* file
     res.send({ success: true });

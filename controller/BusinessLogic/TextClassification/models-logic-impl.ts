@@ -20,7 +20,9 @@ export default class ModelLogicImpl implements ModelLogic {
             superModel.dataClassificationModelPath;
         _subModel.dataLanguageModelPath = superModel.dataLanguageModelPath;
         _subModel.state = { ...superModel.state, accuracy: -1 };
-        const subModel = await getRepository(TextClassificationModel).save(_subModel);
+        const subModel = await getRepository(TextClassificationModel).save(
+            _subModel
+        );
         return subModel;
     }
 
@@ -30,11 +32,16 @@ export default class ModelLogicImpl implements ModelLogic {
     ): Promise<TextClassificationModel> {
         // save the zip file
         // add it to tmp to be removed whenever server fault
-        const zipPath = `/tmp/${modelId}.zip`;
+        console.log("files received");
+
+        console.log("dirname", __dirname);
+        
+        const zipPath = `${__dirname}/../../../static/textclassification/tempzip/${modelId}.zip`;
         const extractionDir =
-            process.env["MODELS_PATH"] ?? "static/textclassification";
+            `${__dirname}/../../../${process.env["MODELS_PATH"] ?? "static/textclassification"}`;
         const baseUrl = process.env["BASE_URL"] ?? "https://localhost/backend/";
-        await fs.writeFile(zipFile, zipPath);
+        console.log("the file is",zipFile)
+        await fs.writeFile(zipPath, zipFile);
         // extract the zip file to static folder
         try {
             await extract(zipPath, {
@@ -51,7 +58,7 @@ export default class ModelLogicImpl implements ModelLogic {
         );
         if (!model) throw new UserInputError("invalid model id");
         // add the paths to our model
-        const pathPrefix = `${baseUrl}${extractionDir}/models/${modelId}`;
+        const pathPrefix = `${baseUrl}static/textclassification/models/${modelId}`;
         model.trainingModelPath = `${pathPrefix}/models/training_model_${modelId}.pth`;
         model.dataClassificationModelPath = `${pathPrefix}/data_classification_model_${modelId}.pkl`;
         model.dataLanguageModelPath = `${pathPrefix}/data_language_model_${modelId}.pkl`;
@@ -59,8 +66,9 @@ export default class ModelLogicImpl implements ModelLogic {
         model.stateFilePath = `${pathPrefix}/state_${modelId}.json`;
         // for accuracy read the json file and get the accuracy
         // for class mapper
+        const filesPrefix = `${extractionDir}/models/${modelId}`
         let state: any = await fs.readFile(
-            `${pathPrefix}/state_${modelId}.json`,
+            `${filesPrefix}/state_${modelId}.json`,
             {
                 encoding: "utf-8",
             }
