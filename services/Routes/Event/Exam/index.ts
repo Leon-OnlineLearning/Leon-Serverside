@@ -55,8 +55,6 @@ router.put(
     upload.single("chuck"),
     async (req, res) => {
         simpleFinalMWDecorator(res, async () => {
-            const logic: ExamsLogic = new ExamsLogicImpl();
-
             const fileInfo: ExamFileInfo = {
                 examId: req.body.examId,
                 chunkIndex: parseInt(req.body.chunckIndex),
@@ -67,7 +65,7 @@ router.put(
             };
 
             // save recived chunk
-            const filePath = await logic.saveRecording(
+            const filePath = await new ExamsLogicImpl().saveRecording(
                 fileInfo.chunk as Buffer,
                 fileInfo.examId,
                 req.body.userId,
