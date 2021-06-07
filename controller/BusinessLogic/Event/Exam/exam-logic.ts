@@ -13,7 +13,7 @@ export default interface ExamsLogic {
         examId: string,
         userId: string,
         chunkIndex: number
-    ): Promise<String>;
+    ): Promise<string>;
     // addQuestion(question: ExamQuestion): Promise<ExamQuestion>;
     // removeQuestion(questionId: string): Promise<void>;
     // updateQuestion(questionId:string, newData: ExamQuestion): Promise<ExamQuestion>;

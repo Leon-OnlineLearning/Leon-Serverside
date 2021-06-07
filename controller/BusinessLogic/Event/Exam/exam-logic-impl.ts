@@ -8,6 +8,7 @@ const appendFile = promises.appendFile;
 const writeFile = promises.writeFile;
 import { join } from "path";
 import StudentLogicImpl from "@controller/BusinessLogic/User/Student/students-logic-impl";
+import { get_video_path } from "@services/Routes/Event/Exam/recording_utils";
 
 let upload_folder = process.env["UPLOADED_RECORDING_PATH"] || "recordings";
 export default class ExamsLogicImpl implements ExamsLogic {
@@ -66,17 +67,17 @@ export default class ExamsLogicImpl implements ExamsLogic {
         examId: string,
         userId: string,
         chunckIndex: number
-    ): Promise<String> {
+    ): Promise<string> {
         let video_dir = join(upload_folder, examId);
 
         await mkdir(video_dir, { recursive: true });
 
         // TODO make sure the chunk order is right
-        const filePath = join(video_dir, `${userId}.webm`);
+        const filePath = get_video_path(userId, examId);
         if (chunckIndex == 0) {
-            await writeFile(join(video_dir, `${userId}.webm`), chunk);
+            await writeFile(filePath, chunk);
         } else {
-            await appendFile(join(video_dir, `${userId}.webm`), chunk);
+            await appendFile(filePath, chunk);
         }
         return filePath;
     }
