@@ -19,4 +19,7 @@ export default interface ModelLogic {
     getSuperModel(
         modelId: string
     ): Promise<TextClassificationModel | undefined>;
+    getTheLatestModel(
+        courseId: string
+    ) : Promise<TextClassificationModel | undefined>
 }

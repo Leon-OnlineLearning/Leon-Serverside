@@ -95,7 +95,6 @@ export default async function populateDB() {
     // create fake models (not suitable for machine learning)
     const fakeTCModel = new TextClassificationModel();
     fakeTCModel.name = "fake tc model";
-    fakeTCModel.accuracy = 0.98;
     fakeTCModel.id = "8c1d6508-3d53-4024-877d-f4aa5cc9537c";
     if (!process.env["BASE_URL"])
         throw new Error("BASE_URL env var is not found");
@@ -119,4 +118,30 @@ export default async function populateDB() {
         sample_course.id
     );
     console.debug(`created text classification model ${createdFakeTCModel.id}`);
+
+    // create sub model
+    const fakeSubModel = new TextClassificationModel();
+    fakeSubModel.id = "064730c1-c17f-42fc-bebd-010d7b0257db";
+    fakeSubModel.predictionModelPath = `${baseURL}prediction_model_${fakeSubModel.id}.pkl`;
+    fakeSubModel.trainingModelPath = `${baseURL}models/training_model_${fakeSubModel.id}.pth`;
+
+    let subState: any = await fs.readFile(
+        `${__dirname}/../static/textclassification/models/064730c1-c17f-42fc-bebd-010d7b0257db/state_064730c1-c17f-42fc-bebd-010d7b0257db.json`,
+        {
+            encoding: "utf-8",
+        }
+    );
+    subState = JSON.parse(subState);
+    fakeSubModel.state = subState;
+    fakeSubModel.accuracy = subState.accuracy;
+    fakeSubModel.superModel = fakeTCModel;
+    fakeSubModel.name = "sub module for" + fakeTCModel.name;
+    fakeSubModel.dataClassificationModelPath =
+        fakeTCModel.dataClassificationModelPath;
+    fakeSubModel.dataLanguageModelPath = fakeTCModel.dataLanguageModelPath;
+    const createdFakeSubModule = await new ModelLogicImpl().addModelInCourse(
+        fakeSubModel,
+        sample_course.id
+    )
+    console.debug(`created fake sub module ${createdFakeSubModule.id}`)
 }

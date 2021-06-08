@@ -4,13 +4,14 @@ import TextClassificationModelFile from "@models/TextClassification/TextClassifi
 import { FileType } from "@models/TextClassification/TextClassificationModelFile";
 import UserInputError from "@services/utils/UserInputError";
 import axios from "axios";
-import { getManager, getRepository } from "typeorm";
+import { createQueryBuilder, getManager, getRepository } from "typeorm";
 import ProfessorLogic from "../User/Professor/professors-logic";
 import ProfessorLogicImpl from "../User/Professor/professors-logic-impl";
 import FileLogicImpl from "./file-logic-impl";
 import TextClassificationFilesLogic from "./files-logic";
 import ModelLogic from "./models-logic";
 import ModelLogicImpl from "./models-logic-impl";
+import TestingQuery from "./TestingQuerys/TestingQuery";
 
 export interface UploadResult {
     success: boolean;
@@ -20,6 +21,7 @@ export interface UploadResult {
 // model logic that is outside the scope of the DTOs
 // for example it will handle requests to other servers
 export interface ModelsFacade {
+    getTestingFiles(model: TextClassificationModel): Promise<any>;
     uploadFile(
         files: any[],
         courseId: string,
@@ -39,24 +41,52 @@ export interface ModelsFacade {
     sendModelFiles(modelId: string, to: string): Promise<any>;
     getFileInfoForTraining(modelId: string): Promise<any>;
     requestRaise(modelId: string, to: string): Promise<any>;
-    requestTest(modelId: string): Promise<any>;
+    requestTest(
+        courseId: string,
+        testingQuery: TestingQuery,
+        to: string
+    ): Promise<any>;
 }
 
 export class ModelsFacadeImpl implements ModelsFacade {
-    async requestTest(modelId: string): Promise<any> {
-        // TODO implement request test
-        // - [x] get the test file path
-        // - [x] send the test file
-        // - [x] and the prediction file name it will stored in the ml server
-        // - [] you will receive the class names then check if these classes are related
-        const req: any = {};
-        const model = await getRepository(TextClassificationModel).findOne(
-            modelId
-        );
-        if (!model) throw new UserInputError("invalid model id");
-        req["testFile"] = this.getFilePathsByClassName("testing");
-        req["prediction_model"] = model.predictionModelPath;
-        // or not
+    async getTestingFiles(model: TextClassificationModel) {
+        const superModel = await new ModelLogicImpl().getSuperModel(model.id);
+        const files = await createQueryBuilder(TextClassificationFile, "tcf")
+            .innerJoin(
+                TextClassificationModelFile,
+                "tcmf",
+                "tcf.id = tcmf.file_id"
+            )
+            .where('tcmf."model_id" = :modelId', {
+                modelId: superModel ? superModel.id : model.id,
+            })
+            .andWhere('tcmf."className" = :c', { c: "testing" })
+            .getMany();
+        // const files = await getManager().query(query, [model.id]);
+        console.log("files are", files);
+        let res: any = {};
+        files.forEach((file: any) => {
+            res[file.id] = file.filePath;
+        });
+        return res;
+    }
+
+    // a general test request that fits in testing sentence | test_files | exam_video
+    async requestTest(
+        courseId: string,
+        testingQuery: TestingQuery,
+        to: string
+    ): Promise<any> {
+        // const modelLogic: ModelLogic = new ModelLogicImpl();
+        // const latestModel = await modelLogic.getTheLatestModel(courseId);
+        // if (!latestModel) throw new UserInputError("Error in latest model");
+        return await axios
+            .post(to, {
+                ...testingQuery.getCommonFields(),
+                ...(await testingQuery.getSpecificFields()),
+            })
+            .then((resp) => resp.data)
+            .catch((err) => console.error(err));
     }
 
     async requestRaise(modelId: string, to: string): Promise<any> {

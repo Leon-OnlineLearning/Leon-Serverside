@@ -4,11 +4,13 @@ import {
 } from "@controller/BusinessLogic/TextClassification/modelFacade";
 import ModelLogic from "@controller/BusinessLogic/TextClassification/models-logic";
 import ModelLogicImpl from "@controller/BusinessLogic/TextClassification/models-logic-impl";
+import { TestFiles, TestSentence, TestVideo } from "@controller/BusinessLogic/TextClassification/TestingQuerys/TestQueries";
 import {
     accessTokenValidationMiddleware,
     BlockedJWTMiddleware,
 } from "@services/Auth";
 import simpleFinalMWDecorator from "@services/utils/RequestDecorator";
+import UserInputError from "@services/utils/UserInputError";
 import getExtension from "@utils/extensionExtractor";
 import { Router } from "express";
 import { onlyProfessors } from "../User/AuthorizationMiddleware";
@@ -51,4 +53,63 @@ router.post("/raise", onlyProfessors, (req, res) => {
     res.send({ success: true });
 });
 
+router.post("/test-sentence", (req, res) => {
+    simpleFinalMWDecorator(res, async () => {
+        // get the latest model
+        const latestModel = await new ModelLogicImpl().getTheLatestModel(
+            req.body["courseId"]
+        );
+        if (!latestModel) throw new Error("error in latest model");
+        // send test request to the server given the course id
+        const modelFacade: ModelsFacade = new ModelsFacadeImpl();
+        return await modelFacade.requestTest(
+            req.body["courseId"],
+            new TestSentence(latestModel, req.body["sentence"]),
+            `${
+                process.env["TEXT_CLASSIFICATION_BASE_URL"] ??
+                "/text_classification"
+            }/test_text`
+        );
+    });
+});
+
+router.post("/test-files", (req, res) => {
+    simpleFinalMWDecorator(res, async () => {
+        // get the latest model
+        const latestModel = await new ModelLogicImpl().getTheLatestModel(
+            req.body["courseId"]
+        );
+        if (!latestModel) throw new Error("error in latest model");
+        // send test request to the server given the course id
+        const modelFacade: ModelsFacade = new ModelsFacadeImpl();
+        return await modelFacade.requestTest(
+            req.body["courseId"],
+            new TestFiles(latestModel),
+            `${
+                process.env["TEXT_CLASSIFICATION_BASE_URL"] ??
+                "/text_classification"
+            }/test_files`
+        );
+    });
+});
+
+router.post("/test-exam", (req, res) => {
+    simpleFinalMWDecorator(res, async () => {
+        // get the latest model
+        const latestModel = await new ModelLogicImpl().getTheLatestModel(
+            req.body["courseId"]
+        );
+        if (!latestModel) throw new Error("error in latest model");
+        // send test request to the server given the course id
+        const modelFacade: ModelsFacade = new ModelsFacadeImpl();
+        return await modelFacade.requestTest(
+            req.body["courseId"],
+            new TestVideo(latestModel, "add a real video id here", "add a real path here"),
+            `${
+                process.env["TEXT_CLASSIFICATION_BASE_URL"] ??
+                "/text_classification"
+            }/test_video`
+        );
+    });
+});
 export default router;
