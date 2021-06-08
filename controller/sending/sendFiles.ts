@@ -48,7 +48,7 @@ export const sendExamFile = async (
     embedding: Embedding,
     resultCallback: ExamChunkResultCallback
 ) => {
-    if (fileInfo.chunkIndex % 2 == 0) {
+    // if (fileInfo.chunkIndex % 2 == 0) {
         // const fileName = `${fileInfo.examId}-${userId}-${fileInfo.chunkIndex}.webm`;
 
         await sendFileHttpMethod(
@@ -67,7 +67,7 @@ export const sendExamFile = async (
             undefined,
             embedding.vector
         );
-    }
+    // }
 };
 
 export async function sendInitialVideo(
