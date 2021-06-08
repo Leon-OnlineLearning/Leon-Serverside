@@ -1,10 +1,17 @@
+import Course from "@models/Course";
 import TextClassificationFile from "@models/TextClassification/TextClassificationFile";
 import TextClassificationModel from "@models/TextClassification/TextClassificationModel";
 import TextClassificationModelFile from "@models/TextClassification/TextClassificationModelFile";
 import { FileType } from "@models/TextClassification/TextClassificationModelFile";
 import UserInputError from "@services/utils/UserInputError";
+import getFileName from "@utils/getFileName";
 import axios from "axios";
-import { createQueryBuilder, getManager, getRepository } from "typeorm";
+import {
+    createQueryBuilder,
+    getConnection,
+    getManager,
+    getRepository,
+} from "typeorm";
 import ProfessorLogic from "../User/Professor/professors-logic";
 import ProfessorLogicImpl from "../User/Professor/professors-logic-impl";
 import FileLogicImpl from "./file-logic-impl";
@@ -12,6 +19,7 @@ import TextClassificationFilesLogic from "./files-logic";
 import ModelLogic from "./models-logic";
 import ModelLogicImpl from "./models-logic-impl";
 import TestingQuery from "./TestingQuerys/TestingQuery";
+import { TestRequest } from "@models/Course/index";
 
 export interface UploadResult {
     success: boolean;
@@ -46,9 +54,36 @@ export interface ModelsFacade {
         testingQuery: TestingQuery,
         to: string
     ): Promise<any>;
+    getRelations(modelId: string): Promise<any>;
 }
 
 export class ModelsFacadeImpl implements ModelsFacade {
+    async getRelations(modelId: string): Promise<any> {
+        const model = await getRepository(TextClassificationModel).findOne(
+            modelId
+        );
+        if (!model) throw new UserInputError("invalid model id");
+        const primeModelId = model.primeModelId ?? model.id;
+        console.log("model id", modelId, "prime id", primeModelId);
+        const tcmfs = await getRepository(TextClassificationModelFile)
+            .createQueryBuilder("tcmf")
+            .where("tcmf.model_id = :mid", { mid: primeModelId })
+            .getMany();
+        console.log("text classification model file results", tcmfs);
+        const res: any = {};
+        tcmfs.forEach((tcm) => {
+            if (tcm.fileRelation !== FileType.TEST) {
+                if (res[tcm.fileRelation]) {
+                    res[tcm.fileRelation].push(tcm.className);
+                } else {
+                    res[tcm.fileRelation] = [tcm.className];
+                }
+                console.log("res will be", res);
+            }
+        });
+        return res;
+    }
+
     async getTestingFiles(model: TextClassificationModel) {
         const superModel = await new ModelLogicImpl().getSuperModel(model.id);
         const files = await createQueryBuilder(TextClassificationFile, "tcf")
@@ -66,7 +101,7 @@ export class ModelsFacadeImpl implements ModelsFacade {
         console.log("files are", files);
         let res: any = {};
         files.forEach((file: any) => {
-            res[file.id] = file.filePath;
+            res[getFileName(file.filePath)] = file.filePath;
         });
         return res;
     }
@@ -77,15 +112,38 @@ export class ModelsFacadeImpl implements ModelsFacade {
         testingQuery: TestingQuery,
         to: string
     ): Promise<any> {
-        // const modelLogic: ModelLogic = new ModelLogicImpl();
-        // const latestModel = await modelLogic.getTheLatestModel(courseId);
-        // if (!latestModel) throw new UserInputError("Error in latest model");
+        // set testing request to pending
+        await getConnection()
+            .createQueryBuilder()
+            .update(Course)
+            .set({ testingState: TestRequest.PENDING })
+            .where("id = :id", { id: courseId })
+            .execute();
+
         return await axios
-            .post(to, {
-                ...testingQuery.getCommonFields(),
-                ...(await testingQuery.getSpecificFields()),
-            })
+            .post(
+                to,
+                {
+                    ...(await testingQuery.getCommonFields()),
+                    ...(await testingQuery.getSpecificFields()),
+                },
+                {
+                    headers: {
+                        Accept: "application/json",
+                    },
+                }
+            )
             .then((resp) => resp.data)
+            .then(async (data) => {
+                // set testing request to idle
+                await testingQuery.storeTestResult(data);
+                await getConnection()
+                    .createQueryBuilder()
+                    .update(Course)
+                    .set({ testingState: TestRequest.IDLE })
+                    .where("id = :id", { id: courseId })
+                    .execute();
+            })
             .catch((err) => console.error(err));
     }
 
@@ -119,22 +177,6 @@ export class ModelsFacadeImpl implements ModelsFacade {
             .catch((err) => {
                 console.error(err);
             });
-        // THERE FOR TESTING IMPORTANT uncomment the code change this to post request
-        // return axios
-        //     .get(to, {
-        //         headers: {
-        //             Accept: "application/zip",
-        //         },
-        //         responseType: "arraybuffer",
-        //     })
-        //     .then((res) => res.data)
-        //     .then((data) => {
-        //         const modelLogic: ModelLogic = new ModelLogicImpl();
-        //         modelLogic.receiveModelFiles(subModel.id, data);
-        //     })
-        //     .catch((err) => {
-        //         console.error(err);
-        //     });
     }
 
     async getFilePathsByClassName(className: string) {
@@ -235,7 +277,7 @@ export class ModelsFacadeImpl implements ModelsFacade {
     }
 
     async uploadFile(
-        requestedFiles: any[],
+        requestedFiles: Express.Multer.File[],
         courseId: string,
         className: string,
         professorId: string,

@@ -1,4 +1,5 @@
 import TextClassificationModel from "@models/TextClassification/TextClassificationModel";
+import { ModelsFacade, ModelsFacadeImpl } from "../modelFacade";
 
 // export default interface TestingQuery {
 //     getKey(): string;
@@ -8,16 +9,21 @@ import TextClassificationModel from "@models/TextClassification/TextClassificati
 
 export default abstract class TestingQuery {
     constructor(protected model: TextClassificationModel) {}
-    getCommonFields(): {
+    async getCommonFields(): Promise<{
         modelId: string;
         prediction_model_path: string;
         dictionary_classes: any;
-    } {
+        relations: any;
+    }> {
+        const modelFacade: ModelsFacade = new ModelsFacadeImpl();
+        const relations = await modelFacade.getRelations(this.model.id);
         return {
             modelId: this.model.id,
             prediction_model_path: this.model.predictionModelPath,
             dictionary_classes: this.model.state.Classes,
+            relations,
         };
     }
     abstract getSpecificFields(): Promise<any>;
+    abstract storeTestResult(result: any): Promise<any>;
 }

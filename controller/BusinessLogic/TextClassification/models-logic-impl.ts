@@ -9,12 +9,11 @@ import ModelLogic from "./models-logic";
 import extract from "extract-zip";
 
 export default class ModelLogicImpl implements ModelLogic {
+
     async getTheLatestModel(
         courseId: string
     ): Promise<TextClassificationModel | undefined> {
-        const course = await getRepository(Course).findOne(
-            courseId
-        );
+        const course = await getRepository(Course).findOne(courseId);
         if (!course) throw new UserInputError("invalid course id");
         const subQuery = getManager()
             .createQueryBuilder(TextClassificationModel, "t")
@@ -28,18 +27,6 @@ export default class ModelLogicImpl implements ModelLogic {
             .andWhere('tcm."courseId" = :courseId', { courseId })
             .getOne();
         console.log("latest query is", res);
-        // const res = await getManager().query(
-        //     `
-        //     select * from text_classification_model
-        //     where "createdAt" = (
-        //         select MAX("createdAt") from text_classification_model where "courseId" = $1
-        //     )
-        //     and "courseId" = $1;
-        //     `,
-        //     [courseId]
-        // );
-        // // assign the most important properties
-        // console.log("latest is", res);
         return res;
     }
     async isSuperModel(modelId: string): Promise<boolean> {
@@ -93,6 +80,7 @@ export default class ModelLogicImpl implements ModelLogic {
         const superModel = await textClassificationRepo.findOne(modelId);
         if (!superModel) throw new UserInputError("Invalid model id");
         const _subModel = new TextClassificationModel();
+        _subModel.primeModelId = superModel.primeModelId ?? superModel.id;
         _subModel.course = superModel.course;
         _subModel.superModel = superModel;
         _subModel.dataClassificationModelPath =

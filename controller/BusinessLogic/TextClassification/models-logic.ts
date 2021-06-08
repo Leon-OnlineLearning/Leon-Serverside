@@ -21,5 +21,5 @@ export default interface ModelLogic {
     ): Promise<TextClassificationModel | undefined>;
     getTheLatestModel(
         courseId: string
-    ) : Promise<TextClassificationModel | undefined>
+    ): Promise<TextClassificationModel | undefined>;
 }

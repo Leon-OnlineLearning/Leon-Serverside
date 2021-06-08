@@ -18,6 +18,10 @@ import User from "@models/Users/User";
 import TextClassificationModel from "@models/TextClassification/TextClassificationModel";
 import ModelLogicImpl from "@controller/BusinessLogic/TextClassification/models-logic-impl";
 import fs from "fs/promises";
+import TextClassificationFile from "@models/TextClassification/TextClassificationFile";
+import TextClassificationFilesLogic from "@controller/BusinessLogic/TextClassification/files-logic";
+import FileLogicImpl from "@controller/BusinessLogic/TextClassification/file-logic-impl";
+import { FileType } from "@models/TextClassification/TextClassificationModelFile";
 
 function _createUser(baseUser: User, name: string, password = "1234") {
     baseUser.email = `${name}@test.com`;
@@ -98,11 +102,12 @@ export default async function populateDB() {
     fakeTCModel.id = "8c1d6508-3d53-4024-877d-f4aa5cc9537c";
     if (!process.env["BASE_URL"])
         throw new Error("BASE_URL env var is not found");
-    const baseURL = `${process.env["BASE_URL"]}static/textclassification/models/${fakeTCModel.id}/`;
-    fakeTCModel.trainingModelPath = `${baseURL}models/training_model_${fakeTCModel.id}.pth`;
-    fakeTCModel.dataClassificationModelPath = `${baseURL}data_classification_model_${fakeTCModel.id}.pkl`;
-    fakeTCModel.dataLanguageModelPath = `${baseURL}data_language_model_${fakeTCModel.id}.pkl`;
-    fakeTCModel.predictionModelPath = `${baseURL}prediction_model_${fakeTCModel.id}.pkl`;
+    const baseTextClassificationPath = `${process.env["BASE_URL"]}static/textclassification/`;
+    const modelBaseURL = `${baseTextClassificationPath}models/${fakeTCModel.id}/`;
+    fakeTCModel.trainingModelPath = `${modelBaseURL}models/training_model_${fakeTCModel.id}.pth`;
+    fakeTCModel.dataClassificationModelPath = `${modelBaseURL}data_classification_model_${fakeTCModel.id}.pkl`;
+    fakeTCModel.dataLanguageModelPath = `${modelBaseURL}data_language_model_${fakeTCModel.id}.pkl`;
+    fakeTCModel.predictionModelPath = `${modelBaseURL}prediction_model_${fakeTCModel.id}.pkl`;
 
     let state: any = await fs.readFile(
         `${__dirname}/../static/textclassification/models/8c1d6508-3d53-4024-877d-f4aa5cc9537c/state_8c1d6508-3d53-4024-877d-f4aa5cc9537c.json`,
@@ -119,11 +124,23 @@ export default async function populateDB() {
     );
     console.debug(`created text classification model ${createdFakeTCModel.id}`);
 
+    const tcLogic: TextClassificationFilesLogic = new FileLogicImpl();
+    const textClassifierFiles = [new TextClassificationFile(), new TextClassificationFile()];
+    textClassifierFiles[0].filePath = `${baseTextClassificationPath}testing/movies_(1).txt-related1622946144869.txt`;
+    const _file0 = await tcLogic.createFile(textClassifierFiles[0]);
+    tcLogic.linkFileToModel(_file0.id, fakeTCModel.id, FileType.TEST, "testing");
+    console.debug(`created test file linked to the model`, _file0.id);
+
+    textClassifierFiles[1].filePath =  `${baseTextClassificationPath}related/hello_world.pdf-related1622485489250.pdf`;
+    const _file1 = await tcLogic.createFile(textClassifierFiles[1])
+    tcLogic.linkFileToModel(_file1.id, fakeTCModel.id, FileType.RELATED, "a relevant class")
+    console.debug(`created test file linked to the model`, _file1.id);
+
     // create sub model
     const fakeSubModel = new TextClassificationModel();
     fakeSubModel.id = "064730c1-c17f-42fc-bebd-010d7b0257db";
-    fakeSubModel.predictionModelPath = `${baseURL}prediction_model_${fakeSubModel.id}.pkl`;
-    fakeSubModel.trainingModelPath = `${baseURL}models/training_model_${fakeSubModel.id}.pth`;
+    fakeSubModel.predictionModelPath = `${modelBaseURL}prediction_model_${fakeSubModel.id}.pkl`;
+    fakeSubModel.trainingModelPath = `${modelBaseURL}models/training_model_${fakeSubModel.id}.pth`;
 
     let subState: any = await fs.readFile(
         `${__dirname}/../static/textclassification/models/064730c1-c17f-42fc-bebd-010d7b0257db/state_064730c1-c17f-42fc-bebd-010d7b0257db.json`,
@@ -135,13 +152,15 @@ export default async function populateDB() {
     fakeSubModel.state = subState;
     fakeSubModel.accuracy = subState.accuracy;
     fakeSubModel.superModel = fakeTCModel;
+    fakeSubModel.primeModelId = fakeTCModel.id;
     fakeSubModel.name = "sub module for" + fakeTCModel.name;
     fakeSubModel.dataClassificationModelPath =
         fakeTCModel.dataClassificationModelPath;
     fakeSubModel.dataLanguageModelPath = fakeTCModel.dataLanguageModelPath;
+    fakeSubModel.state = fakeTCModel.state;
     const createdFakeSubModule = await new ModelLogicImpl().addModelInCourse(
         fakeSubModel,
         sample_course.id
-    )
-    console.debug(`created fake sub module ${createdFakeSubModule.id}`)
+    );
+    console.debug(`created fake sub module ${createdFakeSubModule.id}`);
 }

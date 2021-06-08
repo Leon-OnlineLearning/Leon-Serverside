@@ -30,10 +30,15 @@ export default class TextClassificationModel {
     @Column()
     name: string;
 
+    // this super model stores the id of the previous model to for a chain of models
     @ManyToOne(() => TextClassificationModel, (tcm) => tcm.subModules, {
         nullable: true,
     })
     superModel: TextClassificationModel;
+
+    // this prime model stores the id of the first model in the chain
+    @Column({ type: "uuid", nullable: true })
+    primeModelId: string;
 
     @OneToMany(() => TextClassificationModel, (tcm) => tcm.superModel, {
         nullable: true,

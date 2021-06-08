@@ -62,7 +62,7 @@ router.post("/test-sentence", (req, res) => {
         if (!latestModel) throw new Error("error in latest model");
         // send test request to the server given the course id
         const modelFacade: ModelsFacade = new ModelsFacadeImpl();
-        return await modelFacade.requestTest(
+        modelFacade.requestTest(
             req.body["courseId"],
             new TestSentence(latestModel, req.body["sentence"]),
             `${
@@ -82,7 +82,7 @@ router.post("/test-files", (req, res) => {
         if (!latestModel) throw new Error("error in latest model");
         // send test request to the server given the course id
         const modelFacade: ModelsFacade = new ModelsFacadeImpl();
-        return await modelFacade.requestTest(
+        await modelFacade.requestTest(
             req.body["courseId"],
             new TestFiles(latestModel),
             `${
@@ -102,7 +102,7 @@ router.post("/test-exam", (req, res) => {
         if (!latestModel) throw new Error("error in latest model");
         // send test request to the server given the course id
         const modelFacade: ModelsFacade = new ModelsFacadeImpl();
-        return await modelFacade.requestTest(
+        await modelFacade.requestTest(
             req.body["courseId"],
             new TestVideo(latestModel, "add a real video id here", "add a real path here"),
             `${
