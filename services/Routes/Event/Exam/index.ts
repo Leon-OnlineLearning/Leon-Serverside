@@ -24,7 +24,23 @@ import StudentLogic from "@controller/BusinessLogic/User/Student/students-logic"
 import Embedding from "@models/Users/Embedding";
 import ReportLogic from "@controller/BusinessLogic/Report/report-logic";
 import { ReportLogicImpl } from "@controller/BusinessLogic/Report/report-logic-impl";
-import { get_video_portion, report_res } from "./recording_utils";
+import {
+    get_video_path,
+    get_video_portion,
+    report_res,
+} from "./recording_utils";
+
+import fs from "fs";
+import NodeCache from "node-cache";
+
+const videoCache = new NodeCache({ stdTTL: 60 * 60 });
+videoCache.on("del", (key, val) => {
+    console.debug(`deleting cached file ${val}`)
+    fs.unlink(val , console.error)
+    // TODO test if this work
+});
+const cacheKey = (filePath: string, StartTime: number, duration: number) =>
+    `key-${filePath}-${StartTime}-${duration}`;
 
 const router = Router();
 
@@ -78,13 +94,21 @@ router.put(
             if (!embedding?.vector) {
                 throw new Error("no embedding for student");
             }
-            // get playaple buffer of last chunk
-
-            const cliped_path = await get_video_portion(
+            
+            // get playaple buffer of recieved chunk
+            const duration = fileInfo.chunkEndTime - fileInfo.chunkStartTime ;
+            const portion_args: [string, number, number] = [
                 filePath,
                 fileInfo.chunkStartTime,
-                fileInfo.chunkEndTime
-            );
+                duration,
+            ];
+            const cliped_path = await get_video_portion(...portion_args);
+            
+            // save the path in cache 
+            // witch will delete it after certain time
+            videoCache.set(cacheKey(...portion_args), cliped_path);
+
+            // send to face_auth ML server
             await sendExamFile(
                 req.body.userId,
                 serverBaseUrl,
