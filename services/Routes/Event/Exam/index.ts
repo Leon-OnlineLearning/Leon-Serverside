@@ -24,10 +24,7 @@ import StudentLogic from "@controller/BusinessLogic/User/Student/students-logic"
 import Embedding from "@models/Users/Embedding";
 import ReportLogic from "@controller/BusinessLogic/Report/report-logic";
 import { ReportLogicImpl } from "@controller/BusinessLogic/Report/report-logic-impl";
-import { report_res } from "./send_utils";
-
-const ffmpegPath = require("@ffmpeg-installer/ffmpeg").path;
-const ffmpeg = require("fluent-ffmpeg");
+import { get_video_portion, report_res } from "./recording_utils";
 
 const router = Router();
 
@@ -58,8 +55,6 @@ router.put(
     upload.single("chuck"),
     async (req, res) => {
         simpleFinalMWDecorator(res, async () => {
-            const logic: ExamsLogic = new ExamsLogicImpl();
-
             const fileInfo: ExamFileInfo = {
                 examId: req.body.examId,
                 chunkIndex: parseInt(req.body.chunckIndex),
@@ -70,7 +65,7 @@ router.put(
             };
 
             // save recived chunk
-            const filePath = await logic.saveRecording(
+            const filePath = await new ExamsLogicImpl().saveRecording(
                 fileInfo.chunk as Buffer,
                 fileInfo.examId,
                 req.body.userId,
@@ -84,36 +79,21 @@ router.put(
                 throw new Error("no embedding for student");
             }
             // get playaple buffer of last chunk
-            ffmpeg.setFfmpegPath(ffmpegPath);
 
-            const randNum = Date.now() + req.body.userId;
-            const chunkPath = `/tmp/chunk_${randNum}.mkv`;
-
-            ffmpeg(filePath)
-                .setStartTime(fileInfo.chunkStartTime)
-                .setDuration(10)
-                .output(chunkPath)
-                .videoCodec("copy")
-                .audioCodec("copy")
-                .on("end", async function (err: any) {
-                    if (!err) {
-                        console.log("conversion Done");
-                        await sendExamFile(
-                            req.body.userId,
-                            serverBaseUrl,
-                            fileInfo,
-                            chunkPath,
-                            embedding,
-                            report_res
-                        );
-                    }
-                })
-                .on("error", function (err: any) {
-                    console.log("error: ", err);
-                })
-                .run();
-
-            // TODO delete the file
+            const cliped_path = await get_video_portion(
+                filePath,
+                fileInfo.chunkStartTime,
+                fileInfo.chunkEndTime
+            );
+            await sendExamFile(
+                req.body.userId,
+                serverBaseUrl,
+                fileInfo,
+                cliped_path,
+                embedding,
+                report_res
+            );
+            // FIXME delete the file
         });
     }
 );
