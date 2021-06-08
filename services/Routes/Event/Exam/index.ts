@@ -35,8 +35,8 @@ import NodeCache from "node-cache";
 
 const videoCache = new NodeCache({ stdTTL: 60 * 60 });
 videoCache.on("del", (key, val) => {
-    console.debug(`deleting cached file ${val}`)
-    fs.unlink(val , console.error)
+    console.debug(`deleting cached file ${val}`);
+    fs.unlink(val, console.error);
     // TODO test if this work
 });
 const cacheKey = (filePath: string, StartTime: number, duration: number) =>
@@ -94,17 +94,17 @@ router.put(
             if (!embedding?.vector) {
                 throw new Error("no embedding for student");
             }
-            
+
             // get playaple buffer of recieved chunk
-            const duration = fileInfo.chunkEndTime - fileInfo.chunkStartTime ;
+            const duration = fileInfo.chunkEndTime - fileInfo.chunkStartTime;
             const portion_args: [string, number, number] = [
                 filePath,
                 fileInfo.chunkStartTime,
                 duration,
             ];
             const cliped_path = await get_video_portion(...portion_args);
-            
-            // save the path in cache 
+
+            // save the path in cache
             // witch will delete it after certain time
             videoCache.set(cacheKey(...portion_args), cliped_path);
 
@@ -148,61 +148,60 @@ type PartSpecType = {
 
 // FIXME resrtict access to [student with same ip, professor of exam, admin]
 router.get("/video", async (req, res) => {
-        const partSpec : PartSpecType= {
-            startingTime : parseInt(req.query.startingTime as string),
-            duration : parseInt(req.query.duration as string),
-            userId : req.query.userId as string,
-            examId : req.query.examId as string,
-        };
-        console.debug(partSpec)
-        const filePath = get_video_path(partSpec.userId, partSpec.examId);
+    const partSpec: PartSpecType = {
+        startingTime: parseInt(req.query.startingTime as string),
+        duration: parseInt(req.query.duration as string),
+        userId: req.query.userId as string,
+        examId: req.query.examId as string,
+    };
+    console.debug(partSpec);
+    const filePath = get_video_path(partSpec.userId, partSpec.examId);
 
-        // check from cache
-        let cliped_path: string;
-        const portion_args: [string, number, number] = [
+    // check from cache
+    let cliped_path: string;
+    const portion_args: [string, number, number] = [
+        filePath,
+        partSpec.startingTime,
+        partSpec.duration,
+    ];
+    let temp = videoCache.get(cacheKey(...portion_args));
+    if (temp) {
+        cliped_path = temp as string;
+    } else {
+        cliped_path = await get_video_portion(
             filePath,
             partSpec.startingTime,
-            partSpec.duration,
-        ];
-        let temp = videoCache.get(cacheKey(...portion_args));
-        if (temp) {
-            cliped_path = temp as string;
-        } else {
-            cliped_path = await get_video_portion(
-                filePath,
-                partSpec.startingTime,
-                partSpec.duration
-            );
-            videoCache.set(cacheKey(...portion_args), cliped_path);
-        }
+            partSpec.duration
+        );
+        videoCache.set(cacheKey(...portion_args), cliped_path);
+    }
 
-        const stat = fs.statSync(cliped_path);
-        const fileSize = stat.size;
+    const stat = fs.statSync(cliped_path);
+    const fileSize = stat.size;
 
-        const range = req.headers.range;
-        if (range) {
-            const parts = range.replace(/bytes=/, "").split("-");
-            const start = parseInt(parts[0], 10);
-            const end = parts[1] ? parseInt(parts[1], 10) : fileSize - 1;
-            const chunksize = end - start + 1;
-            const file = fs.createReadStream(filePath, { start, end });
-            const head = {
-                "Content-Range": `bytes ${start}-${end}/${fileSize}`,
-                "Accept-Ranges": "bytes",
-                "Content-Length": chunksize,
-                "Content-Type": "video/mp4",
-            };
-            res.writeHead(206, head);
-            file.pipe(res);
-        } else {
-            const head = {
-                "Content-Length": fileSize,
-                "Content-Type": "video/mp4",
-            };
-            res.writeHead(200, head);
-            fs.createReadStream(filePath).pipe(res);
-        }
-    
+    const range = req.headers.range;
+    if (range) {
+        const parts = range.replace(/bytes=/, "").split("-");
+        const start = parseInt(parts[0], 10);
+        const end = parts[1] ? parseInt(parts[1], 10) : fileSize - 1;
+        const chunksize = end - start + 1;
+        const file = fs.createReadStream(filePath, { start, end });
+        const head = {
+            "Content-Range": `bytes ${start}-${end}/${fileSize}`,
+            "Accept-Ranges": "bytes",
+            "Content-Length": chunksize,
+            "Content-Type": "video/mp4",
+        };
+        res.writeHead(206, head);
+        file.pipe(res);
+    } else {
+        const head = {
+            "Content-Length": fileSize,
+            "Content-Type": "video/mp4",
+        };
+        res.writeHead(200, head);
+        fs.createReadStream(filePath).pipe(res);
+    }
 });
 
 router.get("/student/:studentId", onlyStudents, async (req, res) => {

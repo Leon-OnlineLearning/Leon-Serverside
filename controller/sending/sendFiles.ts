@@ -49,24 +49,24 @@ export const sendExamFile = async (
     resultCallback: ExamChunkResultCallback
 ) => {
     // if (fileInfo.chunkIndex % 2 == 0) {
-        // const fileName = `${fileInfo.examId}-${userId}-${fileInfo.chunkIndex}.webm`;
+    // const fileName = `${fileInfo.examId}-${userId}-${fileInfo.chunkIndex}.webm`;
 
-        await sendFileHttpMethod(
-            filePath,
-            "chunk",
-            `${receiverBaseUrl}/exams/${userId}`,
-            async (res) => {
-                await resultCallback(
-                    userId,
-                    fileInfo.examId,
-                    res.matched,
-                    fileInfo.chunkStartTime,
-                    fileInfo.chunkEndTime
-                );
-            },
-            undefined,
-            embedding.vector
-        );
+    await sendFileHttpMethod(
+        filePath,
+        "chunk",
+        `${receiverBaseUrl}/exams/${userId}`,
+        async (res) => {
+            await resultCallback(
+                userId,
+                fileInfo.examId,
+                res.matched,
+                fileInfo.chunkStartTime,
+                fileInfo.chunkEndTime
+            );
+        },
+        undefined,
+        embedding.vector
+    );
     // }
 };
 

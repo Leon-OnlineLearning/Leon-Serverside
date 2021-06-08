@@ -71,7 +71,7 @@ export async function get_video_portion(
             .on("end", async (stdout: string, stderr: string) => {
                 // console.debug(`stdout ${stdout}`);
                 // console.debug(`error ${stderr}`);
-                console.debug("conversion end")
+                console.debug("conversion end");
                 resolve(tempPath);
             })
             .on("error", function (err: any) {
