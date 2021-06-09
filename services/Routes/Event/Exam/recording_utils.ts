@@ -69,8 +69,9 @@ export async function get_video_portion(
             .videoCodec("copy")
             .audioCodec("copy")
             .on("end", async (stdout: string, stderr: string) => {
-                console.debug(stdout);
-                console.debug(`error ${stderr}`);
+                // console.debug(`stdout ${stdout}`);
+                // console.debug(`error ${stderr}`);
+                console.debug("conversion end");
                 resolve(tempPath);
             })
             .on("error", function (err: any) {
