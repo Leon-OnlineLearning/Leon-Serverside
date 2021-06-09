@@ -19,8 +19,16 @@ export default interface ExamsLogic {
         examId: string,
         result: any
     ): Promise<any>;
-    getExamVideoPath (studentId: string, examId:string): Promise<string>;
+    /**
+     * Get the data related to the examination video
+     * @param studentId 
+     * @param examId 
+     * 
+     * @returns [videoPath, videoId]
+     */
+    getExamVideoData (studentId: string, examId:string): Promise<[string, string]>;
     getCourseId(examId: string): Promise<string>;
+    getStudentExamId(studentId: string, examId: string): Promise<string>;
     // addQuestion(question: ExamQuestion): Promise<ExamQuestion>;
     // removeQuestion(questionId: string): Promise<void>;
     // updateQuestion(questionId:string, newData: ExamQuestion): Promise<ExamQuestion>;

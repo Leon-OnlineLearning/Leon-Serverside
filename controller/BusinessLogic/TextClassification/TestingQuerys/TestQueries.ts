@@ -66,13 +66,15 @@ export class TestExamVideo extends TestingQuery {
     }
     async getSpecificFields() {
         const examLogic: ExamsLogic = new ExamsLogicImpl();
-        const videoPath = await examLogic.getExamVideoPath(
+        const [videoPath, videoId] = await examLogic.getExamVideoData(
             this.studentId,
             this.examId
         );
+
         return {
             exam_video_path: videoPath,
-            examId: this.examId,
+            // TODO change it to be the student exam id
+            videoId: videoId,
         };
     }
 }

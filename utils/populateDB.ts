@@ -114,11 +114,11 @@ export default async function populateDB() {
     if (!process.env["BASE_URL"])
         throw new Error("BASE_URL env var is not found");
     const baseTextClassificationPath = `${process.env["BASE_URL"]}static/textclassification/`;
-    const modelBaseURL = `${baseTextClassificationPath}models/${fakeTCModel.id}/`;
-    fakeTCModel.trainingModelPath = `${modelBaseURL}models/training_model_${fakeTCModel.id}.pth`;
-    fakeTCModel.dataClassificationModelPath = `${modelBaseURL}data_classification_model_${fakeTCModel.id}.pkl`;
-    fakeTCModel.dataLanguageModelPath = `${modelBaseURL}data_language_model_${fakeTCModel.id}.pkl`;
-    fakeTCModel.predictionModelPath = `${modelBaseURL}prediction_model_${fakeTCModel.id}.pkl`;
+    const modelBaseURL = `${baseTextClassificationPath}models/`;
+    fakeTCModel.trainingModelPath = `${modelBaseURL}${fakeTCModel.id}/models/training_model_${fakeTCModel.id}.pth`;
+    fakeTCModel.dataClassificationModelPath = `${modelBaseURL}${fakeTCModel.id}/data_classification_model_${fakeTCModel.id}.pkl`;
+    fakeTCModel.dataLanguageModelPath = `${modelBaseURL}${fakeTCModel.id}/data_language_model_${fakeTCModel.id}.pkl`;
+    fakeTCModel.predictionModelPath = `${modelBaseURL}${fakeTCModel.id}/prediction_model_${fakeTCModel.id}.pkl`;
 
     let state: any = await fs.readFile(
         `${__dirname}/../static/textclassification/models/8c1d6508-3d53-4024-877d-f4aa5cc9537c/state_8c1d6508-3d53-4024-877d-f4aa5cc9537c.json`,
@@ -163,8 +163,8 @@ export default async function populateDB() {
     // create sub model
     const fakeSubModel = new TextClassificationModel();
     fakeSubModel.id = "064730c1-c17f-42fc-bebd-010d7b0257db";
-    fakeSubModel.predictionModelPath = `${modelBaseURL}prediction_model_${fakeSubModel.id}.pkl`;
-    fakeSubModel.trainingModelPath = `${modelBaseURL}models/training_model_${fakeSubModel.id}.pth`;
+    fakeSubModel.predictionModelPath = `${modelBaseURL}${fakeSubModel.id}/prediction_model_${fakeSubModel.id}.pkl`;
+    fakeSubModel.trainingModelPath = `${modelBaseURL}${fakeSubModel.id}/models/training_model_${fakeSubModel.id}.pth`;
 
     let subState: any = await fs.readFile(
         `${__dirname}/../static/textclassification/models/064730c1-c17f-42fc-bebd-010d7b0257db/state_064730c1-c17f-42fc-bebd-010d7b0257db.json`,

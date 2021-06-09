@@ -119,7 +119,7 @@ router.post("/test-exam", (req, res) => {
             `${
                 process.env["TEXT_CLASSIFICATION_BASE_URL"] ??
                 "/text_classification"
-            }/test_video`
+            }/Classify_Exams`
         );
     });
 });

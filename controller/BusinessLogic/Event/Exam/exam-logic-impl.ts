@@ -13,6 +13,20 @@ import Student from "@models/Users/Student";
 
 let upload_folder = process.env["UPLOADED_RECORDING_PATH"] || "recordings";
 export default class ExamsLogicImpl implements ExamsLogic {
+    async getStudentExamId(studentId: string, examId: string): Promise<string> {
+        const student = await getRepository(Student).findOne(studentId);
+        if (!student) throw new UserInputError("Invalid student id");
+        const exam = await getRepository(Exam).findOne(examId);
+        if (!exam) throw new UserInputError("Invalid student id");
+        const studentExam = await getRepository(StudentsExams).findOne({
+            where: {
+                student,
+                exam,
+            },
+        });
+        if (!studentExam) throw new UserInputError("User didn't attend exam");
+        return studentExam.id;
+    }
     async getCourseId(examId: string): Promise<string> {
         const [{ courseId }] = await getManager().query(
             `select "courseId" from exam
@@ -23,14 +37,14 @@ export default class ExamsLogicImpl implements ExamsLogic {
 
         return courseId;
     }
-    async getExamVideoPath(studentId: string, examId: string): Promise<string> {
+    async getExamVideoData(studentId: string, examId: string): Promise<[string, string]> {
         const studentExam = await getRepository(StudentsExams)
             .createQueryBuilder("se")
             .where("se.examId = :examId", { examId })
             .andWhere("se.studentId = :studentId", { studentId })
             .getOne();
         if (!studentExam) throw new UserInputError("Invalid Student+Exam ids");
-        return studentExam.videoPath;
+        return [studentExam.videoPath, studentExam.id];
     }
 
     async storeExamTextClassificationResult(
