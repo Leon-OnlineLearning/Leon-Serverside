@@ -1,10 +1,15 @@
+import ExamsLogicImpl from "@controller/BusinessLogic/Event/Exam/exam-logic-impl";
 import {
     ModelsFacade,
     ModelsFacadeImpl,
 } from "@controller/BusinessLogic/TextClassification/modelFacade";
 import ModelLogic from "@controller/BusinessLogic/TextClassification/models-logic";
 import ModelLogicImpl from "@controller/BusinessLogic/TextClassification/models-logic-impl";
-import { TestFiles, TestSentence, TestVideo } from "@controller/BusinessLogic/TextClassification/TestingQuerys/TestQueries";
+import {
+    TestFiles,
+    TestSentence,
+    TestExamVideo,
+} from "@controller/BusinessLogic/TextClassification/TestingQuerys/TestQueries";
 import {
     accessTokenValidationMiddleware,
     BlockedJWTMiddleware,
@@ -96,15 +101,21 @@ router.post("/test-files", (req, res) => {
 router.post("/test-exam", (req, res) => {
     simpleFinalMWDecorator(res, async () => {
         // get the latest model
+        // get course id for exam
+        const courseId = await new ExamsLogicImpl().getCourseId(req.body["examId"])
         const latestModel = await new ModelLogicImpl().getTheLatestModel(
-            req.body["courseId"]
+            courseId
         );
         if (!latestModel) throw new Error("error in latest model");
         // send test request to the server given the course id
         const modelFacade: ModelsFacade = new ModelsFacadeImpl();
         await modelFacade.requestTest(
             req.body["courseId"],
-            new TestVideo(latestModel, "add a real video id here", "add a real path here"),
+            new TestExamVideo(
+                latestModel,
+                req.body["examId"],
+                req.body["studentId"]
+            ),
             `${
                 process.env["TEXT_CLASSIFICATION_BASE_URL"] ??
                 "/text_classification"

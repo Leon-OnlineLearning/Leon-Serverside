@@ -1,3 +1,5 @@
+import ExamsLogic from "@controller/BusinessLogic/Event/Exam/exam-logic";
+import ExamsLogicImpl from "@controller/BusinessLogic/Event/Exam/exam-logic-impl";
 import Course from "@models/Course";
 import TextClassificationModel from "@models/TextClassification/TextClassificationModel";
 import { getManager, getRepository } from "typeorm";
@@ -46,21 +48,31 @@ export class TestFiles extends TestingQuery {
     }
 }
 
-export class TestVideo extends TestingQuery {
+export class TestExamVideo extends TestingQuery {
     constructor(
         model: TextClassificationModel,
-        private videoId: string,
-        private videoPath: string
+        private examId: string,
+        private studentId: string
     ) {
         super(model);
     }
     storeTestResult(result: any): Promise<any> {
-        throw new Error("Method not implemented.");
+        const studentExamLogic: ExamsLogic = new ExamsLogicImpl();
+        return studentExamLogic.storeExamTextClassificationResult(
+            this.studentId,
+            this.examId,
+            result
+        );
     }
-    getSpecificFields() {
-        return Promise.resolve({
-            exam_video_path: this.videoPath,
-            videoId: this.videoId,
-        });
+    async getSpecificFields() {
+        const examLogic: ExamsLogic = new ExamsLogicImpl();
+        const videoPath = await examLogic.getExamVideoPath(
+            this.studentId,
+            this.examId
+        );
+        return {
+            exam_video_path: videoPath,
+            examId: this.examId,
+        };
     }
 }

@@ -13,6 +13,12 @@ export default class StudentsExams {
     @ManyToOne(() => Exam, (exam) => exam.studentExam)
     exam!: Promise<Exam>;
 
-    @Column()
+    @Column({ nullable: true })
     mark: number;
+
+    @Column({ nullable: true, type: "jsonb" })
+    examReport: any;
+
+    @Column({ nullable: true })
+    videoPath: string;
 }

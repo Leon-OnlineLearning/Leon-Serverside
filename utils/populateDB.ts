@@ -22,6 +22,8 @@ import TextClassificationFile from "@models/TextClassification/TextClassificatio
 import TextClassificationFilesLogic from "@controller/BusinessLogic/TextClassification/files-logic";
 import FileLogicImpl from "@controller/BusinessLogic/TextClassification/file-logic-impl";
 import { FileType } from "@models/TextClassification/TextClassificationModelFile";
+import StudentExam from "@models/JoinTables/StudentExam";
+import StudentLogic from "@controller/BusinessLogic/User/Student/students-logic";
 
 function _createUser(baseUser: User, name: string, password = "1234") {
     baseUser.email = `${name}@test.com`;
@@ -96,6 +98,15 @@ export default async function populateDB() {
     const created_exam = await new ExamsLogicImpl().createExam(baseExam);
     console.debug(`created exam ${created_exam.id}`);
 
+    const videoPath = `${process.env["BASE_URL"]}static/recording/recording.mp4`;
+    const studentLogic: StudentLogic = new StudentLogicImpl();
+    const resultStudentExam = await studentLogic.attendExam(
+        sample_student.id,
+        baseExam.id,
+        videoPath
+    );
+    console.debug(`student + exam relation created ${resultStudentExam.id}`);
+
     // create fake models (not suitable for machine learning)
     const fakeTCModel = new TextClassificationModel();
     fakeTCModel.name = "fake tc model";
@@ -125,15 +136,28 @@ export default async function populateDB() {
     console.debug(`created text classification model ${createdFakeTCModel.id}`);
 
     const tcLogic: TextClassificationFilesLogic = new FileLogicImpl();
-    const textClassifierFiles = [new TextClassificationFile(), new TextClassificationFile()];
+    const textClassifierFiles = [
+        new TextClassificationFile(),
+        new TextClassificationFile(),
+    ];
     textClassifierFiles[0].filePath = `${baseTextClassificationPath}testing/movies_(1).txt-related1622946144869.txt`;
     const _file0 = await tcLogic.createFile(textClassifierFiles[0]);
-    tcLogic.linkFileToModel(_file0.id, fakeTCModel.id, FileType.TEST, "testing");
+    tcLogic.linkFileToModel(
+        _file0.id,
+        fakeTCModel.id,
+        FileType.TEST,
+        "testing"
+    );
     console.debug(`created test file linked to the model`, _file0.id);
 
-    textClassifierFiles[1].filePath =  `${baseTextClassificationPath}related/hello_world.pdf-related1622485489250.pdf`;
-    const _file1 = await tcLogic.createFile(textClassifierFiles[1])
-    tcLogic.linkFileToModel(_file1.id, fakeTCModel.id, FileType.RELATED, "a relevant class")
+    textClassifierFiles[1].filePath = `${baseTextClassificationPath}related/hello_world.pdf-related1622485489250.pdf`;
+    const _file1 = await tcLogic.createFile(textClassifierFiles[1]);
+    tcLogic.linkFileToModel(
+        _file1.id,
+        fakeTCModel.id,
+        FileType.RELATED,
+        "a relevant class"
+    );
     console.debug(`created test file linked to the model`, _file1.id);
 
     // create sub model

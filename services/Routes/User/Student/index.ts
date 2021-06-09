@@ -179,7 +179,8 @@ router.post("/:studentId/exams", studentWithNoEmbedding, async (req, res) => {
         res,
         async () => {
             const logic: StudentLogic = new StudentLogicImpl();
-            await logic.attendExam(req.params.studentId, req.body.examId);
+            const videoId = "get video id for student" // TODO
+            await logic.attendExam(req.params.studentId, req.body.examId, videoId);
         },
         201
     );

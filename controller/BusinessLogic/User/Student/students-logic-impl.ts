@@ -238,7 +238,11 @@ export default class StudentLogicImpl implements StudentLogic {
         await getRepository(StudentLectureAttendance).save(sla);
     }
 
-    async attendExam(studentId: string, examId: string): Promise<void> {
+    async attendExam(
+        studentId: string,
+        examId: string,
+        examVideoUrl: string
+    ): Promise<StudentsExams> {
         const student = await getRepository(Student).findOne(studentId);
         if (!student) {
             throw new UserInputError("Student is not found");
@@ -250,6 +254,7 @@ export default class StudentLogicImpl implements StudentLogic {
         const studentExam = new StudentsExams();
         studentExam.exam = Promise.resolve(exam);
         studentExam.student = student;
-        await getRepository(StudentsExams).save(studentExam);
+        studentExam.videoPath = examVideoUrl;
+        return await getRepository(StudentsExams).save(studentExam);
     }
 }

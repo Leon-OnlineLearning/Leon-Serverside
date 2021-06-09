@@ -1,6 +1,6 @@
 import Exam from "@models/Events/Exam";
 import UserInputError from "@services/utils/UserInputError";
-import { getRepository } from "typeorm";
+import { getManager, getRepository } from "typeorm";
 import ExamsLogic from "./exam-logic";
 import { promises } from "fs";
 const mkdir = promises.mkdir;
@@ -8,9 +8,52 @@ const appendFile = promises.appendFile;
 const writeFile = promises.writeFile;
 import { join } from "path";
 import StudentLogicImpl from "@controller/BusinessLogic/User/Student/students-logic-impl";
+import StudentsExams from "@models/JoinTables/StudentExam";
+import Student from "@models/Users/Student";
 
 let upload_folder = process.env["UPLOADED_RECORDING_PATH"] || "recordings";
 export default class ExamsLogicImpl implements ExamsLogic {
+    async getCourseId(examId: string): Promise<string> {
+        const [{ courseId }] = await getManager().query(
+            `select "courseId" from exam
+            where id = $1`,
+            [examId]
+        );
+        console.log("course id is", courseId);
+
+        return courseId;
+    }
+    async getExamVideoPath(studentId: string, examId: string): Promise<string> {
+        const studentExam = await getRepository(StudentsExams)
+            .createQueryBuilder("se")
+            .where("se.examId = :examId", { examId })
+            .andWhere("se.studentId = :studentId", { studentId })
+            .getOne();
+        if (!studentExam) throw new UserInputError("Invalid Student+Exam ids");
+        return studentExam.videoPath;
+    }
+
+    async storeExamTextClassificationResult(
+        studentId: string,
+        examId: string,
+        report: any
+    ) {
+        const exam = await getRepository(Exam).findOne(examId);
+        if (!exam) throw new UserInputError("Invalid exam id");
+        const student = await getRepository(Student).findOne(studentId);
+        if (!student) throw new UserInputError("Invalid student id");
+        const studentExam = await getRepository(StudentsExams).findOne({
+            where: {
+                student,
+                exam,
+            },
+        });
+        if (!studentExam)
+            throw new UserInputError("student didn't attend the exam");
+        studentExam.examReport = report;
+        return await getRepository(StudentsExams).save(studentExam);
+    }
+
     async getExamById(examId: string): Promise<Exam> {
         const res = await getRepository(Exam).findOne(examId);
         if (res) return res;

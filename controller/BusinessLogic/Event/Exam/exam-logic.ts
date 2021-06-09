@@ -14,6 +14,13 @@ export default interface ExamsLogic {
         userId: string,
         chunkIndex: number
     ): Promise<String>;
+    storeExamTextClassificationResult(
+        studentId: string,
+        examId: string,
+        result: any
+    ): Promise<any>;
+    getExamVideoPath (studentId: string, examId:string): Promise<string>;
+    getCourseId(examId: string): Promise<string>;
     // addQuestion(question: ExamQuestion): Promise<ExamQuestion>;
     // removeQuestion(questionId: string): Promise<void>;
     // updateQuestion(questionId:string, newData: ExamQuestion): Promise<ExamQuestion>;
