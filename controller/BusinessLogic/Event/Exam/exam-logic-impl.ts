@@ -37,7 +37,10 @@ export default class ExamsLogicImpl implements ExamsLogic {
 
         return courseId;
     }
-    async getExamVideoData(studentId: string, examId: string): Promise<[string, string]> {
+    async getExamVideoData(
+        studentId: string,
+        examId: string
+    ): Promise<[string, string]> {
         const studentExam = await getRepository(StudentsExams)
             .createQueryBuilder("se")
             .where("se.examId = :examId", { examId })

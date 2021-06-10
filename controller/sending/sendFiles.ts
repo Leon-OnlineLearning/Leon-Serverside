@@ -141,9 +141,6 @@ export async function sendFileHttpMethod(
     const fd = new FormData();
     fd.append(fieldName, fs.createReadStream(fileName));
 
-    // DELETEME
-    console.log(fs.readFileSync(fileName));
-
     for (const key in additionalFields) {
         fd.append(key, additionalFields[key]);
     }

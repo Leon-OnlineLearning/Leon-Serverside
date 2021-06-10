@@ -102,7 +102,9 @@ router.post("/test-exam", (req, res) => {
     simpleFinalMWDecorator(res, async () => {
         // get the latest model
         // get course id for exam
-        const courseId = await new ExamsLogicImpl().getCourseId(req.body["examId"])
+        const courseId = await new ExamsLogicImpl().getCourseId(
+            req.body["examId"]
+        );
         const latestModel = await new ModelLogicImpl().getTheLatestModel(
             courseId
         );

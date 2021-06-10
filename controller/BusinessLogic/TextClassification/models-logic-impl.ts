@@ -9,7 +9,6 @@ import ModelLogic from "./models-logic";
 import extract from "extract-zip";
 
 export default class ModelLogicImpl implements ModelLogic {
-
     async getTheLatestModel(
         courseId: string
     ): Promise<TextClassificationModel | undefined> {

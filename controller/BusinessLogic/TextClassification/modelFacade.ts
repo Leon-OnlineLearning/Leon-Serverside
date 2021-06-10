@@ -119,20 +119,17 @@ export class ModelsFacadeImpl implements ModelsFacade {
             .set({ testingState: TestRequest.PENDING })
             .where("id = :id", { id: courseId })
             .execute();
-
+        const requestBody = {
+            ...(await testingQuery.getCommonFields()),
+            ...(await testingQuery.getSpecificFields()),
+        };
+        console.log("request body", requestBody);
         return await axios
-            .post(
-                to,
-                {
-                    ...(await testingQuery.getCommonFields()),
-                    ...(await testingQuery.getSpecificFields()),
+            .post(to, requestBody, {
+                headers: {
+                    Accept: "application/json",
                 },
-                {
-                    headers: {
-                        Accept: "application/json",
-                    },
-                }
-            )
+            })
             .then((resp) => resp.data)
             .then(async (data) => {
                 // set testing request to idle
