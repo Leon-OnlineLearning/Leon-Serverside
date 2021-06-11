@@ -111,7 +111,7 @@ router.post("/test-exam", (req, res) => {
         if (!latestModel) throw new Error("error in latest model");
         // send test request to the server given the course id
         const modelFacade: ModelsFacade = new ModelsFacadeImpl();
-        await modelFacade.requestTest(
+        modelFacade.requestTest(
             req.body["courseId"],
             new TestExamVideo(
                 latestModel,

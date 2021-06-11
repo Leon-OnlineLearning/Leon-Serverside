@@ -1,6 +1,7 @@
 import Department from "@models/Department";
 import Exam from "@models/Events/Exam";
 import Lecture from "@models/Events/Lecture/Lecture";
+import TestRequestStatus from "@models/TestRequest/testRequestStatus";
 import TextClassificationModel from "@models/TextClassification/TextClassificationModel";
 import Professor from "@models/Users/Professor";
 import Student from "@models/Users/Student";
@@ -13,11 +14,6 @@ import {
     PrimaryGeneratedColumn,
 } from "typeorm";
 
-export enum TestRequestStatus {
-    IDLE = "idle",
-    PENDING = "pending",
-    EMPTY = "empty",
-}
 
 @Entity()
 export default class Course {

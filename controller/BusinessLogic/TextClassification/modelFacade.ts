@@ -1,4 +1,5 @@
 import Course from "@models/Course";
+import TestRequestStatus from "@models/TestRequest/testRequestStatus";
 import TextClassificationFile from "@models/TextClassification/TextClassificationFile";
 import TextClassificationModel from "@models/TextClassification/TextClassificationModel";
 import TextClassificationModelFile from "@models/TextClassification/TextClassificationModelFile";
@@ -19,7 +20,6 @@ import TextClassificationFilesLogic from "./files-logic";
 import ModelLogic from "./models-logic";
 import ModelLogicImpl from "./models-logic-impl";
 import TestingQuery from "./TestingQuerys/TestingQuery";
-import { TestRequestStatus } from "@models/Course";
 
 export interface UploadResult {
     success: boolean;
@@ -113,8 +113,8 @@ export class ModelsFacadeImpl implements ModelsFacade {
         to: string
     ): Promise<any> {
         // set testing request to pending
-		// dependant on the testing query
-        
+        // dependant on the testing query
+        await testingQuery.changeTestingState(TestRequestStatus.PENDING);
         const requestBody = {
             ...(await testingQuery.getCommonFields()),
             ...(await testingQuery.getSpecificFields()),
@@ -130,12 +130,7 @@ export class ModelsFacadeImpl implements ModelsFacade {
             .then(async (data) => {
                 // set testing request to idle
                 await testingQuery.storeTestResult(data);
-                await getConnection()
-                    .createQueryBuilder()
-                    .update(Course)
-                    .set({ testingState: TestRequestStatus.IDLE })
-                    .where("id = :id", { id: courseId })
-                    .execute();
+                await testingQuery.changeTestingState(TestRequestStatus.IDLE);
             })
             .catch((err) => console.error(err));
     }

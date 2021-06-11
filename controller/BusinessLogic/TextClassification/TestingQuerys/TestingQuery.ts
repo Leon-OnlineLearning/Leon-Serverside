@@ -1,4 +1,4 @@
-import { TestRequestStatus } from "@models/Course";
+import TestRequestStatus from "@models/TestRequest/testRequestStatus";
 import TextClassificationModel from "@models/TextClassification/TextClassificationModel";
 import { ModelsFacade, ModelsFacadeImpl } from "../modelFacade";
 

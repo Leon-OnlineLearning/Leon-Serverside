@@ -1,5 +1,5 @@
-import { TestRequestStatus } from "@models/Course";
 import Exam from "@models/Events/Exam";
+import TestRequestStatus from "@models/TestRequest/testRequestStatus";
 import Student from "@models/Users/Student";
 import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
 

@@ -1,7 +1,8 @@
 import ExamsLogic from "@controller/BusinessLogic/Event/Exam/exam-logic";
 import ExamsLogicImpl from "@controller/BusinessLogic/Event/Exam/exam-logic-impl";
-import Course, { TestRequestStatus } from "@models/Course";
+import Course from "@models/Course";
 import StudentsExams from "@models/JoinTables/StudentExam";
+import TestRequestStatus from "@models/TestRequest/testRequestStatus";
 import TextClassificationModel from "@models/TextClassification/TextClassificationModel";
 import { getConnection, getManager, getRepository } from "typeorm";
 import { ModelsFacade, ModelsFacadeImpl } from "../modelFacade";
