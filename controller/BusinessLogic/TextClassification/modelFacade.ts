@@ -19,7 +19,7 @@ import TextClassificationFilesLogic from "./files-logic";
 import ModelLogic from "./models-logic";
 import ModelLogicImpl from "./models-logic-impl";
 import TestingQuery from "./TestingQuerys/TestingQuery";
-import { TestRequest } from "@models/Course/index";
+import { TestRequestStatus } from "@models/Course";
 
 export interface UploadResult {
     success: boolean;
@@ -113,12 +113,8 @@ export class ModelsFacadeImpl implements ModelsFacade {
         to: string
     ): Promise<any> {
         // set testing request to pending
-        await getConnection()
-            .createQueryBuilder()
-            .update(Course)
-            .set({ testingState: TestRequest.PENDING })
-            .where("id = :id", { id: courseId })
-            .execute();
+		// dependant on the testing query
+        
         const requestBody = {
             ...(await testingQuery.getCommonFields()),
             ...(await testingQuery.getSpecificFields()),
@@ -137,7 +133,7 @@ export class ModelsFacadeImpl implements ModelsFacade {
                 await getConnection()
                     .createQueryBuilder()
                     .update(Course)
-                    .set({ testingState: TestRequest.IDLE })
+                    .set({ testingState: TestRequestStatus.IDLE })
                     .where("id = :id", { id: courseId })
                     .execute();
             })

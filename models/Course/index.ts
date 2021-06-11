@@ -13,7 +13,7 @@ import {
     PrimaryGeneratedColumn,
 } from "typeorm";
 
-export enum TestRequest {
+export enum TestRequestStatus {
     IDLE = "idle",
     PENDING = "pending",
     EMPTY = "empty",
@@ -36,8 +36,8 @@ export default class Course {
     @Column({ nullable: true, type: "jsonb" })
     lastTestResults: any;
 
-    @Column({ type: "enum", enum: TestRequest, default: TestRequest.EMPTY })
-    testingState: TestRequest;
+    @Column({ type: "enum", enum: TestRequestStatus, default: TestRequestStatus.EMPTY })
+    testingState: TestRequestStatus;
 
     @OneToMany(() => Exam, (exam) => exam.course, { onDelete: "CASCADE" })
     exams: Promise<Exam[]>;

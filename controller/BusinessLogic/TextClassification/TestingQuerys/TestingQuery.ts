@@ -1,3 +1,4 @@
+import { TestRequestStatus } from "@models/Course";
 import TextClassificationModel from "@models/TextClassification/TextClassificationModel";
 import { ModelsFacade, ModelsFacadeImpl } from "../modelFacade";
 
@@ -24,6 +25,7 @@ export default abstract class TestingQuery {
             relations,
         };
     }
+	abstract changeTestingState(state: TestRequestStatus): Promise<any>;
     abstract getSpecificFields(): Promise<any>;
     abstract storeTestResult(result: any): Promise<any>;
 }

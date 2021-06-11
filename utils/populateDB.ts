@@ -24,6 +24,8 @@ import FileLogicImpl from "@controller/BusinessLogic/TextClassification/file-log
 import { FileType } from "@models/TextClassification/TextClassificationModelFile";
 import StudentExam from "@models/JoinTables/StudentExam";
 import StudentLogic from "@controller/BusinessLogic/User/Student/students-logic";
+import LecturesLogicImpl from "@controller/BusinessLogic/Event/Lecture/lectures-logic-impl";
+import Lecture from "@models/Events/Lecture/Lecture";
 
 function _createUser(baseUser: User, name: string, password = "1234") {
     baseUser.email = `${name}@test.com`;
@@ -187,4 +189,17 @@ export default async function populateDB() {
         sample_course.id
     );
     console.debug(`created fake sub module ${createdFakeSubModule.id}`);
+
+    const fakeLecture = new Lecture();
+    fakeLecture.course = Promise.resolve(sample_course);
+    fakeLecture.title = "blah blah";
+    fakeLecture.year = 1;
+    const startDate = new Date();
+    fakeLecture.startTime = startDate;
+    const newDate = new Date();
+    newDate.setHours(newDate.getHours() + 3);
+    fakeLecture.endTime = newDate;
+    fakeLecture.path = "fake path";
+    const lecture = await new LecturesLogicImpl().createLecture(fakeLecture);
+    console.debug(`created lecture ${lecture.id}`);
 }

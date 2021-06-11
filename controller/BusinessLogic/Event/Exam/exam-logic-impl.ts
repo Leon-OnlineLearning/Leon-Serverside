@@ -13,7 +13,10 @@ import Student from "@models/Users/Student";
 
 let upload_folder = process.env["UPLOADED_RECORDING_PATH"] || "recordings";
 export default class ExamsLogicImpl implements ExamsLogic {
-    async getStudentExamId(studentId: string, examId: string): Promise<string> {
+    async getStudentExam(
+        studentId: string,
+        examId: string
+    ): Promise<StudentsExams> {
         const student = await getRepository(Student).findOne(studentId);
         if (!student) throw new UserInputError("Invalid student id");
         const exam = await getRepository(Exam).findOne(examId);
@@ -25,7 +28,10 @@ export default class ExamsLogicImpl implements ExamsLogic {
             },
         });
         if (!studentExam) throw new UserInputError("User didn't attend exam");
-        return studentExam.id;
+        return studentExam;
+    }
+    async getStudentExamId(studentId: string, examId: string): Promise<string> {
+        return (await this.getStudentExam(studentId, examId)).id;
     }
     async getCourseId(examId: string): Promise<string> {
         const [{ courseId }] = await getManager().query(

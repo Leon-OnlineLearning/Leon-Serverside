@@ -1,3 +1,4 @@
+import { TestRequestStatus } from "@models/Course";
 import Exam from "@models/Events/Exam";
 import Student from "@models/Users/Student";
 import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
@@ -18,6 +19,13 @@ export default class StudentsExams {
 
     @Column({ nullable: true, type: "jsonb" })
     examReport: any;
+
+    @Column({
+        type: "enum",
+        enum: TestRequestStatus,
+        default: TestRequestStatus.EMPTY,
+    })
+    testingStatus: TestRequestStatus;
 
     @Column({ nullable: true })
     videoPath: string;

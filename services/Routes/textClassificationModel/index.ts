@@ -69,7 +69,7 @@ router.post("/test-sentence", (req, res) => {
         const modelFacade: ModelsFacade = new ModelsFacadeImpl();
         modelFacade.requestTest(
             req.body["courseId"],
-            new TestSentence(latestModel, req.body["sentence"]),
+            new TestSentence(latestModel, req.body["sentence"], req.body["courseId"]),
             `${
                 process.env["TEXT_CLASSIFICATION_BASE_URL"] ??
                 "/text_classification"
@@ -89,7 +89,7 @@ router.post("/test-files", (req, res) => {
         const modelFacade: ModelsFacade = new ModelsFacadeImpl();
         await modelFacade.requestTest(
             req.body["courseId"],
-            new TestFiles(latestModel),
+            new TestFiles(latestModel, req.body["courseId"]),
             `${
                 process.env["TEXT_CLASSIFICATION_BASE_URL"] ??
                 "/text_classification"
