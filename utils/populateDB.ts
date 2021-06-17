@@ -77,14 +77,17 @@ export default async function populateDB() {
 
     baseExam.title = test_exam.title;
     baseExam.year = parseInt(test_exam.year);
-    baseExam.startTime = new Date(test_exam.startDate);
-    baseExam.endTime = new Date(test_exam.endDate);
+    baseExam.startTime = new Date();
+    const exam_open_time = 30; //minutes
+    baseExam.endTime = new Date(
+        baseExam.startTime.getTime() + exam_open_time * 60000
+    );
     baseExam.mark = 120;
     baseExam.course = sample_course;
 
     baseExam.professor = sample_professor;
 
-    const sample_question = test_exam.questions as ExamQuestion[];
+    const sample_question = (test_exam.questions as unknown) as ExamQuestion[];
     baseExam.questions = sample_question;
 
     const created_exam = await new ExamsLogicImpl().createExam(baseExam);
