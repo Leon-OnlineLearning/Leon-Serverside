@@ -7,4 +7,9 @@ export default interface LecturesLogic {
     deleteLectureById(lectureId: string): Promise<void>;
     updateLecture(lectureId: string, newData: Lecture): Promise<Lecture>;
     getLectureById(lectureId: string): Promise<Lecture>;
+    getLecturesByCourse(
+        courseId: string,
+        startingFrom: string,
+        endingAt: string
+    ): Promise<Lecture[]>;
 }

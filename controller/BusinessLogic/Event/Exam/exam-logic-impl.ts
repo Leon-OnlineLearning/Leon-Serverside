@@ -12,6 +12,20 @@ import { get_video_path } from "@services/Routes/Event/Exam/recording_utils";
 
 let upload_folder = process.env["UPLOADED_RECORDING_PATH"] || "recordings";
 export default class ExamsLogicImpl implements ExamsLogic {
+    async getExamsByCourse(
+        courseId: string,
+        startingFrom: string,
+        endingAt: string
+    ): Promise<Exam[]> {
+        const examQb = getRepository(Exam).createQueryBuilder("ex");
+        return await examQb
+            .where("ex.courseId = :courseId", { courseId: courseId })
+            .andWhere("ex.startTime BETWEEN :start AND :end", {
+                start: startingFrom,
+                end: endingAt,
+            })
+            .getMany();
+    }
     async getExamById(examId: string): Promise<Exam> {
         const res = await getRepository(Exam).findOne(examId, {
             relations: ["questions"],
