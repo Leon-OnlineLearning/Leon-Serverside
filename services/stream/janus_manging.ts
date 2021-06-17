@@ -77,7 +77,7 @@ async function _create_room_plugin(
     console.debug(res.data);
 }
 
-const random_string = function (len: number) {
+export function random_string(len: number) {
     var charSet =
         "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
     var randomString = "";
@@ -86,7 +86,7 @@ const random_string = function (len: number) {
         randomString += charSet.substring(randomPoz, randomPoz + 1);
     }
     return randomString;
-};
+}
 
 async function getJanusInfo(jansus_server: string) {
     let res = await axios({
