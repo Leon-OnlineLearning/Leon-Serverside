@@ -129,6 +129,7 @@ export default async function populateDB() {
         }
     );
     state = JSON.parse(state);
+    console.log("state is", state);
     fakeTCModel.accuracy = state.accuracy;
     fakeTCModel.state = state;
     const createdFakeTCModel = await new ModelLogicImpl().addModelInCourse(
@@ -174,7 +175,8 @@ export default async function populateDB() {
             encoding: "utf-8",
         }
     );
-    subState = JSON.parse(subState);
+    subState = JSON.parse(subState); // that's why i didn't use the normal create subModule function (the state is already ready)
+	subState.Classes = state.Classes;
     fakeSubModel.state = subState;
     fakeSubModel.accuracy = subState.accuracy;
     fakeSubModel.superModel = fakeTCModel;
