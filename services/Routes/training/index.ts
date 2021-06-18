@@ -227,7 +227,7 @@ router.post("/finish", async (req, res) => {
     if (!sessionId) {
         return res
             .status(403)
-            .send({ success: false, message: "invalid session id" });
+            .send({ success: false, message: "Invalid session" });
     }
     await professorLogic.unsetSessionId(req.body["professorId"]);
     // i didn't use the decorator here because
