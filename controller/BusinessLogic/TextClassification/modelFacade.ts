@@ -185,6 +185,11 @@ export class ModelsFacadeImpl implements ModelsFacade {
         const classNames: [
             { className: string }
         ] = await getManager().query(classNamesQuery, [modelId]);
+		// if user added a single (or no) classes this will not make any sense
+		// to the machine learning service 
+		if (classNames.length < 2) {
+			throw new UserInputError("Invalid number of classes; it must be 2 or more")
+		}
         console.log("class names", classNames);
         // get all files that has the exact class name
         let res: any = { modelId, dictionary_classes: {} };
