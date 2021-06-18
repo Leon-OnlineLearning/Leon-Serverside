@@ -44,21 +44,23 @@ router.get("/timed", onlyStudentOrProfessor, (req, res) => {
         return;
     }
 
+    let userLogic: StudentLogic | ProfessorLogic;
+    const user = req.user as userTockenData;
+    switch (user.role) {
+        case UserTypes.PROFESSOR:
+            userLogic = new ProfessorLogicIml();
+            break;
+        case UserTypes.STUDENT:
+            userLogic = new StudentLogicImpl();
+            break;
+        default:
+            res.status(400).send({
+                success: false,
+                message: "this role cannot have courses",
+            });
+            return;
+    }
     simpleFinalMWDecorator(res, async () => {
-        // get events based in logic
-        let userLogic: StudentLogic | ProfessorLogic;
-        const user = req.user as userTockenData;
-        switch (user.role) {
-            case UserTypes.PROFESSOR:
-                userLogic = new ProfessorLogicIml();
-                break;
-            case UserTypes.STUDENT:
-                userLogic = new StudentLogicImpl();
-                break;
-            default:
-                throw new Error("invalid user type");
-        }
-
         console.debug(`getting events from ${startingFrom} to ${endingAt}`);
 
         const events = await userLogic.getAllEvents(
