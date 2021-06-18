@@ -56,7 +56,7 @@ router.get("/timed", onlyStudentOrProfessor, (req, res) => {
         default:
             res.status(400).send({
                 success: false,
-                message: "this role cannot have courses",
+                message: "this role dosn't have events",
             });
             return;
     }
