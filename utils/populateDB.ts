@@ -79,9 +79,7 @@ export default async function populateDB() {
     baseExam.year = parseInt(test_exam.year);
     baseExam.startTime = new Date();
     const exam_open_time = 30; //minutes
-    baseExam.endTime = new Date(
-        baseExam.startTime.getTime() + exam_open_time * 60000
-    );
+    baseExam.endTime = _time_after_now(exam_open_time);
     baseExam.mark = 120;
     baseExam.course = sample_course;
 
@@ -92,4 +90,11 @@ export default async function populateDB() {
 
     const created_exam = await new ExamsLogicImpl().createExam(baseExam);
     console.debug(`created exam ${created_exam.id}`);
+ *
+ * @param minutes minutes to add from now
+ * @returns data time of now + minutes
+ */
+function _time_after_now(minutes: number) {
+    const now = new Date();
+    return new Date(now.getTime() + minutes * 60000);
 }
