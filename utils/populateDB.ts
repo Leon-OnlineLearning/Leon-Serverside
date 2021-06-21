@@ -16,6 +16,8 @@ import Department from "@models/Department";
 import CourseLogicImpl from "@controller/BusinessLogic/Course/courses-logic-impl";
 import DepartmentsLogicImpl from "@controller/BusinessLogic/Department/departments-logic-impl";
 import User from "@models/Users/User";
+import Lecture from "@models/Events/Lecture";
+import LecturesLogicImpl from "@controller/BusinessLogic/Event/Lecture/lectures-logic-impl";
 
 function _createUser(baseUser: User, name: string, password = "1234") {
     baseUser.email = `${name}@test.com`;
