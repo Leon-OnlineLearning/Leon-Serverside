@@ -57,15 +57,21 @@ export default async function populateDB() {
     sample_professor = await professorlogic.createProfessor(sample_professor);
     console.debug(`created professor ${sample_professor.id}`);
 
-    new DepartmentsLogicImpl().addProfessorToDepartment(
+    await new DepartmentsLogicImpl().addProfessorToDepartment(
         sample_department.id,
         sample_professor.id
     );
-    new DepartmentsLogicImpl().addCourseToDepartment(
+    await new DepartmentsLogicImpl().addCourseToDepartment(
         sample_department.id,
         sample_course.id
     );
-    console.debug(`professor attached to course and department`);
+    console.debug(`department attached to course and professor`);
+
+    new ProfessorLogicIml().assignCourseToProfessor(
+        sample_professor.id,
+        sample_course.id
+    );
+    console.debug(`professor assigned to course ${sample_course.id}`);
 
     // create student at same depatment
     let sample_student = _createUser(new Student(), "student") as Student;
@@ -103,6 +109,12 @@ export default async function populateDB() {
     lecture.year = 2021;
     const sample_lecture = await new LecturesLogicImpl().createLecture(lecture);
     console.debug(`created lecture ${sample_lecture.id}`);
+
+    new ProfessorLogicIml().assignLectureToProfessor(
+        sample_professor.id,
+        sample_lecture.id
+    );
+    console.debug(`attaching professor ${sample_professor.id} to lecture `);
 }
 
 /**
