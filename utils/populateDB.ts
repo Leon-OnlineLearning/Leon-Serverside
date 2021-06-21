@@ -90,6 +90,20 @@ export default async function populateDB() {
 
     const created_exam = await new ExamsLogicImpl().createExam(baseExam);
     console.debug(`created exam ${created_exam.id}`);
+
+    const lecture = new Lecture();
+    lecture.course = sample_course;
+    lecture.professor = sample_professor;
+    lecture.startTime = _time_after_now(1);
+    lecture.endTime = _time_after_now(30);
+    lecture.path = "/test.pdf"; // test file available by front end
+    lecture.title = "amazing lecture";
+    lecture.year = 2021;
+    const sample_lecture = await new LecturesLogicImpl().createLecture(lecture);
+    console.debug(`created lecture ${sample_lecture.id}`);
+}
+
+/**
  *
  * @param minutes minutes to add from now
  * @returns data time of now + minutes
