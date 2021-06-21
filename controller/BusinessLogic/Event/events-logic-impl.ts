@@ -11,17 +11,28 @@ export default class EventslogicImpl implements EventLogic {
     deleteEventById(id: string): Promise<void> {
         throw new Error("Method not implemented.");
     }
+    /**
+     *
+     * @param role
+     * @param userId
+     * @param startingFrom minimum start time for event
+     * @param endingAt maximum end time for events
+     * @returns events betwean period startingFrom and endingat
+     *
+     * FIXME professor is assignes to lecture and exam individaully
+     * this will return all lectures and exam in course
+     */
     async getAllEvents(
         role: UserTypes,
-        studentId: string,
+        userId: string,
         startingFrom: string,
         endingAt: string
     ): Promise<Event[]> {
         let courses: Course[];
         if (role == UserTypes.PROFESSOR)
-            courses = await new ProfessorLogicIml().getAllCourses(studentId);
+            courses = await new ProfessorLogicIml().getAllCourses(userId);
         else if (role == UserTypes.STUDENT)
-            courses = await new StudentLogicImpl().getAllCourses(studentId);
+            courses = await new StudentLogicImpl().getAllCourses(userId);
         else throw new Error("unsupported role for courses");
 
         console.debug(`found ${courses.length} course`);
