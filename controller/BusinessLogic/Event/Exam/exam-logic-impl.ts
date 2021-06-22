@@ -9,9 +9,27 @@ const writeFile = promises.writeFile;
 import { join } from "path";
 import StudentLogicImpl from "@controller/BusinessLogic/User/Student/students-logic-impl";
 import { get_video_path } from "@services/Routes/Event/Exam/recording_utils";
+import CourseLogicImpl from "@controller/BusinessLogic/Course/courses-logic-impl";
 
 let upload_folder = process.env["UPLOADED_RECORDING_PATH"] || "recordings";
 export default class ExamsLogicImpl implements ExamsLogic {
+    async getExamsByCourse(
+        courseId: string,
+        startingFrom: string,
+        endingAt: string
+    ): Promise<Exam[]> {
+        // make sure course exist this will throw error if it doesn't
+        await new CourseLogicImpl().getCoursesById(courseId);
+
+        const examQb = getRepository(Exam).createQueryBuilder("ex");
+        return await examQb
+            .where("ex.courseId = :courseId", { courseId: courseId })
+            .andWhere("ex.startTime BETWEEN :start AND :end", {
+                start: startingFrom,
+                end: endingAt,
+            })
+            .getMany();
+    }
     async getExamById(examId: string): Promise<Exam> {
         const res = await getRepository(Exam).findOne(examId, {
             relations: ["questions"],

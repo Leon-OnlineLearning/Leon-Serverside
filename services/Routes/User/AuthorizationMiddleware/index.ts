@@ -38,6 +38,21 @@ export function onlyStudents(req: Request, res: Response, next: NextFunction) {
     }
 }
 
+export function onlyStudentOrProfessor(
+    req: Request,
+    res: Response,
+    next: NextFunction
+) {
+    const requestUser: any = req.user;
+    const isStudent = isCorrectRole(requestUser, UserTypes.STUDENT);
+    const isProfessor = isCorrectRole(requestUser, UserTypes.PROFESSOR);
+    if (isStudent || isProfessor) {
+        next();
+    } else {
+        res.send(401).json({ success: false, message: "Access denied" });
+    }
+}
+
 function isCorrectRole(user: any, role: UserTypes) {
     const comparableString: string = (<string>user.role).toLowerCase();
     // now if the privilege is admin he can access professors

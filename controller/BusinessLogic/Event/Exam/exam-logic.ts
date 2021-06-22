@@ -8,6 +8,11 @@ export default interface ExamsLogic {
     deleteExamById(examId: string): Promise<void>;
     getExamsByYear(year: number): Promise<Exam[]>;
     getExamByStudentId(studentId: string): Promise<Exam[]>;
+    getExamsByCourse(
+        courseId: string,
+        startingFrom: string,
+        endingAt: string
+    ): Promise<Exam[]>;
     saveRecording(
         chunk: Buffer,
         examId: string,

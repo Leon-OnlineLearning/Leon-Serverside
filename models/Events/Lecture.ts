@@ -24,7 +24,7 @@ export default class Lecture extends Event {
     path: string;
 
     @ManyToOne(() => Course, (course) => course.lectures)
-    course: Promise<Course>;
+    course: Course;
 
     @OneToMany(() => StudentLectureAttendance, (se) => se.lecture, {
         onDelete: "CASCADE",

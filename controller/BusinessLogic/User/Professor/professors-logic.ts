@@ -21,4 +21,9 @@ export default interface ProfessorLogic {
         professorId: string,
         lectureId: string
     ): Promise<void>;
+    getAllEvents(
+        professorId: string,
+        startingFrom: string,
+        endingAt: string
+    ): Promise<any>;
 }
