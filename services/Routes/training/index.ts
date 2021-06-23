@@ -189,36 +189,6 @@ router.post(
     existingMiddlewareFactory(FileType.NON_RELATED)
 );
 
-router.get("/blah", (req, res) => {
-    axios
-        .post(
-            `${process.env["TEXT_CLASSIFICATION_BASE_URL"]}/send_full_model` ??
-                "/text_classification/send_full_model",
-            {
-                modelId: "1",
-            },
-            {
-                headers: {
-                    Accept: "application/zip",
-                },
-                responseType: "arraybuffer",
-            }
-        )
-        .then((res) => res.data)
-        .then(async (data) => {
-            console.log("data received ", data);
-            fs.writeFileSync(
-                __dirname + "/static/textclassification/hamada.zip",
-                data
-            );
-            console.log("dirname is", __dirname);
-            await extract(__dirname + "/static/textclassification/hamada.zip", {
-                dir: __dirname + "/static/textclassification",
-            });
-        });
-    res.send({ success: true });
-});
-
 router.post("/finish", async (req, res) => {
     const professorLogic: ProfessorLogic = new ProfessorLogicImpl();
     const sessionId = await professorLogic.getTextClassificationSessionId(
