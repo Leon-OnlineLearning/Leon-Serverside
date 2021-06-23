@@ -31,7 +31,10 @@ export default class TextClassificationModel {
     name: string;
 
     // this super model stores the id of the previous model to for a chain of models
-    @ManyToOne(() => TextClassificationModel, (tcm) => tcm.subModules, {
+    // @ManyToOne(() => TextClassificationModel, (tcm) => tcm.subModules, {
+    //     nullable: true,
+    // })
+    @ManyToOne(() => TextClassificationModel, {
         nullable: true,
     })
     superModel: TextClassificationModel;
@@ -40,16 +43,11 @@ export default class TextClassificationModel {
     @Column({ type: "uuid", nullable: true })
     primeModelId: string;
 
-    @OneToMany(() => TextClassificationModel, (tcm) => tcm.superModel, {
-        nullable: true,
-        cascade: true,
-    })
-    subModules: TextClassificationModel[];
-
-    @Column("decimal", { nullable: true, precision: 21, scale: 20 })
-    @Min(0)
-    @Max(100)
-    accuracy: number;
+    // @OneToMany(() => TextClassificationModel, (tcm) => tcm.superModel, {
+    //     nullable: true,
+    //     cascade: true,
+    // })
+    // subModules: TextClassificationModel[];
 
     @Column({ nullable: true })
     predictionModelPath: string;

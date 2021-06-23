@@ -41,7 +41,6 @@ describe("text classification model", () => {
             _c.year = 3;
             const course = await courseLogic.createCourse(_c);
             const _model = new TextClassificationModel();
-            _model.accuracy = 12;
             _model.dataClassificationModelPath = "xyz";
             _model.dataLanguageModelPath = "xyz";
             _model.trainingModelPath = "xyz";

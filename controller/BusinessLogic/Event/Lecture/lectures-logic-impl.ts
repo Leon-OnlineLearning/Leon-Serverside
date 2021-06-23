@@ -6,7 +6,10 @@ import Student from "@models/Users/Student";
 import UserInputError from "@services/utils/UserInputError";
 import { getRepository } from "typeorm";
 import LecturesLogic from "./lectures-logic";
-import fs from "fs/promises";
+import { promises } from "fs";
+
+const writeFile = promises.writeFile;
+
 export default class LecturesLogicImpl implements LecturesLogic {
     async storeLectureTranscript(
         lectureId: string,
@@ -18,13 +21,15 @@ export default class LecturesLogicImpl implements LecturesLogic {
             process.env["LECTURES_TRANSCRIPT_STORAGE"] ?? "static/lectureText/"
         }${lectureId}.txt`;
 
-        await fs.writeFile(path, content);
+        await writeFile(path, content);
         const transcriptFile = new LectureTranscript();
         transcriptFile.filePath = path;
         transcriptFile.lecture = lecture;
         const transcriptRes = await getRepository(LectureTranscript).save(
             transcriptFile
         );
+		// TODO create a file from this transcript and link it 
+		// to model as related
         lecture.transcript = transcriptRes;
         await getRepository(Lecture).save(lecture);
         return transcriptRes;

@@ -17,7 +17,7 @@ import DepartmentsLogicImpl from "@controller/BusinessLogic/Department/departmen
 import User from "@models/Users/User";
 import TextClassificationModel from "@models/TextClassification/TextClassificationModel";
 import ModelLogicImpl from "@controller/BusinessLogic/TextClassification/models-logic-impl";
-import fs from "fs/promises";
+import {promises} from "fs";
 import TextClassificationFile from "@models/TextClassification/TextClassificationFile";
 import TextClassificationFilesLogic from "@controller/BusinessLogic/TextClassification/files-logic";
 import FileLogicImpl from "@controller/BusinessLogic/TextClassification/file-logic-impl";
@@ -27,6 +27,7 @@ import StudentLogic from "@controller/BusinessLogic/User/Student/students-logic"
 import LecturesLogicImpl from "@controller/BusinessLogic/Event/Lecture/lectures-logic-impl";
 import Lecture from "@models/Events/Lecture/Lecture";
 
+const readFile = promises.readFile;
 function _createUser(baseUser: User, name: string, password = "1234") {
     baseUser.email = `${name}@test.com`;
     baseUser.password = password;
@@ -122,7 +123,7 @@ export default async function populateDB() {
     fakeTCModel.dataLanguageModelPath = `${modelBaseURL}${fakeTCModel.id}/data_language_model_${fakeTCModel.id}.pkl`;
     fakeTCModel.predictionModelPath = `${modelBaseURL}${fakeTCModel.id}/prediction_model_${fakeTCModel.id}.pkl`;
 
-    let state: any = await fs.readFile(
+    let state: any = await readFile(
         `${__dirname}/../static/textclassification/models/8c1d6508-3d53-4024-877d-f4aa5cc9537c/state_8c1d6508-3d53-4024-877d-f4aa5cc9537c.json`,
         {
             encoding: "utf-8",
@@ -130,7 +131,6 @@ export default async function populateDB() {
     );
     state = JSON.parse(state);
     console.log("state is", state);
-    fakeTCModel.accuracy = state.accuracy;
     fakeTCModel.state = state;
     const createdFakeTCModel = await new ModelLogicImpl().addModelInCourse(
         fakeTCModel,
@@ -169,7 +169,7 @@ export default async function populateDB() {
     fakeSubModel.predictionModelPath = `${modelBaseURL}${fakeSubModel.id}/prediction_model_${fakeSubModel.id}.pkl`;
     fakeSubModel.trainingModelPath = `${modelBaseURL}${fakeSubModel.id}/models/training_model_${fakeSubModel.id}.pth`;
 
-    let subState: any = await fs.readFile(
+    let subState: any = await readFile(
         `${__dirname}/../static/textclassification/models/064730c1-c17f-42fc-bebd-010d7b0257db/state_064730c1-c17f-42fc-bebd-010d7b0257db.json`,
         {
             encoding: "utf-8",
@@ -178,7 +178,6 @@ export default async function populateDB() {
     subState = JSON.parse(subState); // that's why i didn't use the normal create subModule function (the state is already ready)
 	subState.Classes = state.Classes;
     fakeSubModel.state = subState;
-    fakeSubModel.accuracy = subState.accuracy;
     fakeSubModel.superModel = fakeTCModel;
     fakeSubModel.primeModelId = fakeTCModel.id;
     fakeSubModel.name = "sub module for" + fakeTCModel.name;

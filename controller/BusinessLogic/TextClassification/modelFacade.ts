@@ -50,15 +50,24 @@ export interface ModelsFacade {
     getFileInfoForTraining(modelId: string): Promise<any>;
     requestRaise(modelId: string, to: string): Promise<any>;
     requestTest(
-        courseId: string,
         testingQuery: TestingQuery,
         to: string
     ): Promise<any>;
     getRelations(modelId: string): Promise<any>;
 }
 
+type ClassRelation = {
+    related: string[];
+    "non-related": string[];
+};
+
 export class ModelsFacadeImpl implements ModelsFacade {
-    async getRelations(modelId: string): Promise<any> {
+    /**
+     * Get the relation between all the files for the model given its id
+     * @param modelId
+     * @returns
+     */
+    async getRelations(modelId: string): Promise<ClassRelation> {
         const model = await getRepository(TextClassificationModel).findOne(
             modelId
         );
@@ -70,7 +79,10 @@ export class ModelsFacadeImpl implements ModelsFacade {
             .where("tcmf.model_id = :mid", { mid: primeModelId })
             .getMany();
         console.log("text classification model file results", tcmfs);
-        const res: any = {};
+        const res: ClassRelation = {
+            related: [],
+            "non-related": [],
+        };
         tcmfs.forEach((tcm) => {
             if (tcm.fileRelation !== FileType.TEST) {
                 if (res[tcm.fileRelation]) {
@@ -84,6 +96,11 @@ export class ModelsFacadeImpl implements ModelsFacade {
         return res;
     }
 
+    /**
+     *
+     * @param model
+     * @returns an object that has file name as a key and the path as a value
+     */
     async getTestingFiles(model: TextClassificationModel) {
         const superModel = await new ModelLogicImpl().getSuperModel(model.id);
         const files = await createQueryBuilder(TextClassificationFile, "tcf")
@@ -106,12 +123,17 @@ export class ModelsFacadeImpl implements ModelsFacade {
         return res;
     }
 
-    // a general test request that fits in testing sentence | test_files | exam_video
+	/**
+	 * a general test request that fits in testing sentence | test_files | exam_video
+	 *
+	 * @param testingQuery an abstraction for the query 
+	 * @param url the url of the ml server
+	 * @returns 
+	 */
     async requestTest(
-        courseId: string,
         testingQuery: TestingQuery,
-        to: string
-    ): Promise<any> {
+        url: string
+    ): Promise<void> {
         // set testing request to pending
         // dependant on the testing query
         await testingQuery.changeTestingState(TestRequestStatus.PENDING);
@@ -119,9 +141,8 @@ export class ModelsFacadeImpl implements ModelsFacade {
             ...(await testingQuery.getCommonFields()),
             ...(await testingQuery.getSpecificFields()),
         };
-        console.log("request body", requestBody);
         return await axios
-            .post(to, requestBody, {
+            .post(url, requestBody, {
                 headers: {
                     Accept: "application/json",
                 },
@@ -185,11 +206,13 @@ export class ModelsFacadeImpl implements ModelsFacade {
         const classNames: [
             { className: string }
         ] = await getManager().query(classNamesQuery, [modelId]);
-		// if user added a single (or no) classes this will not make any sense
-		// to the machine learning service 
-		if (classNames.length < 2) {
-			throw new UserInputError("Invalid number of classes; it must be 2 or more")
-		}
+        // if user added a single (or no) classes this will not make any sense
+        // to the machine learning service
+        if (classNames.length < 2) {
+            throw new UserInputError(
+                "Invalid number of classes; it must be 2 or more"
+            );
+        }
         console.log("class names", classNames);
         // get all files that has the exact class name
         let res: any = { modelId, dictionary_classes: {} };

@@ -8,7 +8,9 @@ import { getConnection, getManager, getRepository } from "typeorm";
 import { ModelsFacade, ModelsFacadeImpl } from "../modelFacade";
 import TestingQuery from "./TestingQuery";
 
+// TODO move it to course logic
 async function storeResultInCourse(modelId: string, data: any) {
+    // TODO add the test results LIFO
     const { courseId } = await getManager().query(
         `select "courseId" from text_classification_model
             where id = $1 

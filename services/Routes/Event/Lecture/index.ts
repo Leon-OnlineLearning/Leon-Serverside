@@ -15,8 +15,9 @@ import multer from "multer";
 import Lecture from "@models/Events/Lecture/Lecture";
 import UserInputError from "@services/utils/UserInputError";
 import { sendLectureVideo } from "@controller/sending/sendFiles";
-import fs from "fs/promises";
+import {promises} from "fs";
 
+const readFile = promises.readFile;
 const router = Router();
 
 const lecturesStorage = multer.diskStorage({
@@ -120,7 +121,7 @@ router.post("/:lectureId/video", async (req, res) => {
     simpleFinalMWDecorator(res, async () => {
         const logic: LecturesLogic = new LecturesLogicImpl();
         // TODO get lecture from a proper source probably a stream
-        fs.readFile(
+        readFile(
             `${__dirname}/../../../../static/recording/recording.mp4`
         ).then((file) => {
             sendLectureVideo(

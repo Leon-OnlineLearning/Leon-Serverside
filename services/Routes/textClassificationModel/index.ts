@@ -47,11 +47,6 @@ router.post("/raise", onlyProfessors, (req, res) => {
             process.env["TEXT_CLASSIFICATION_BASE_URL"] ??
             "/text_classification"
         }/raise_accuracy`
-        // There for testing
-        // `${
-        //     process.env["TEXT_CLASSIFICATION_BASE_URL"] ??
-        //     "/text_classification"
-        // }/raise_accuracy.zip` // TODO IMPORTANT FAST remove the .zip
     );
     // send data files
     // send training* file
@@ -68,8 +63,7 @@ router.post("/test-sentence", (req, res) => {
         // send test request to the server given the course id
         const modelFacade: ModelsFacade = new ModelsFacadeImpl();
         modelFacade.requestTest(
-            req.body["courseId"],
-            new TestSentence(latestModel, req.body["sentence"], req.body["courseId"]),
+             new TestSentence(latestModel, req.body["sentence"], req.body["courseId"]),
             `${
                 process.env["TEXT_CLASSIFICATION_BASE_URL"] ??
                 "/text_classification"
@@ -88,7 +82,6 @@ router.post("/test-files", (req, res) => {
         // send test request to the server given the course id
         const modelFacade: ModelsFacade = new ModelsFacadeImpl();
         await modelFacade.requestTest(
-            req.body["courseId"],
             new TestFiles(latestModel, req.body["courseId"]),
             `${
                 process.env["TEXT_CLASSIFICATION_BASE_URL"] ??
@@ -112,7 +105,6 @@ router.post("/test-exam", (req, res) => {
         // send test request to the server given the course id
         const modelFacade: ModelsFacade = new ModelsFacadeImpl();
         modelFacade.requestTest(
-            req.body["courseId"],
             new TestExamVideo(
                 latestModel,
                 req.body["examId"],

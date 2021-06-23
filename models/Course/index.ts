@@ -14,7 +14,6 @@ import {
     PrimaryGeneratedColumn,
 } from "typeorm";
 
-
 @Entity()
 export default class Course {
     @PrimaryGeneratedColumn("uuid")
@@ -29,10 +28,18 @@ export default class Course {
     })
     lectures: Promise<Lecture[]>;
 
+    // TODO
+    /**
+     *  use it as a stack add the last test state first
+     */
     @Column({ nullable: true, type: "jsonb" })
     lastTestResults: any;
 
-    @Column({ type: "enum", enum: TestRequestStatus, default: TestRequestStatus.EMPTY })
+    @Column({
+        type: "enum",
+        enum: TestRequestStatus,
+        default: TestRequestStatus.EMPTY,
+    })
     testingState: TestRequestStatus;
 
     @OneToMany(() => Exam, (exam) => exam.course, { onDelete: "CASCADE" })
