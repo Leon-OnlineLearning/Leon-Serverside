@@ -18,6 +18,8 @@ import StudentLogicImpl from "../Student/students-logic-impl";
 import ProfessorLogic from "./professors-logic";
 import UserInputError from "@services/utils/UserInputError";
 import { hashPassword } from "@utils/passwords";
+import EventslogicImpl from "@controller/BusinessLogic/Event/events-logic-impl";
+import UserTypes from "@models/Users/UserTypes";
 
 export default class ProfessorLogicImpl implements ProfessorLogic {
     async unsetSessionId(professorId: string): Promise<void> {
@@ -51,6 +53,18 @@ export default class ProfessorLogicImpl implements ProfessorLogic {
             .execute();
     }
 
+    getAllEvents(
+        professorId: string,
+        startingFrom: string,
+        endingAt: string
+    ): Promise<any> {
+        return new EventslogicImpl().getAllEvents(
+            UserTypes.PROFESSOR,
+            professorId,
+            startingFrom,
+            endingAt
+        );
+    }
     async getLectures(professorId: string): Promise<Lecture[]> {
         const professor = await getRepository(Professor).findOne(professorId, {
             relations: ["lectures"],

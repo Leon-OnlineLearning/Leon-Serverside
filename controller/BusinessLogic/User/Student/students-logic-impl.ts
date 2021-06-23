@@ -1,11 +1,10 @@
-import StudentRepo from "@controller/DataAccess/student-repo";
 import Course from "@models/Course";
 import Exam from "@models/Events/Exam";
 import Lecture from "@models/Events/Lecture/Lecture";
 import StudentsExams from "@models/JoinTables/StudentExam";
 import Student from "@models/Users/Student";
 import { hashPassword } from "@utils/passwords";
-import { getConnection, getRepository } from "typeorm";
+import { getRepository } from "typeorm";
 import AdminLogic from "../Admin/admin-logic";
 import AdminLogicImpl from "../Admin/admin-logic-impl";
 import StudentLogic from "./students-logic";
@@ -14,8 +13,9 @@ import ProfessorLogic from "../Professor/professors-logic";
 import ProfessorLogicImpl from "../Professor/professors-logic-impl";
 import UserInputError from "@services/utils/UserInputError";
 import StudentLectureAttendance from "@models/JoinTables/StudentLectureAttended";
-import Event from "@models/Events/Event";
 import Embedding from "@models/Users/Embedding";
+import EventslogicImpl from "@controller/BusinessLogic/Event/events-logic-impl";
+import UserTypes from "@models/Users/UserTypes";
 
 export default class StudentLogicImpl implements StudentLogic {
     async setEmbedding(studentId: string, vector: number[]): Promise<void> {
@@ -87,35 +87,12 @@ export default class StudentLogicImpl implements StudentLogic {
         startingFrom: string,
         endingAt: string
     ) {
-        const courses = await this.getAllCourses(studentId);
-
-        let res: Array<Event> = [];
-        for (const course of courses) {
-            const lecQb = getRepository(Lecture).createQueryBuilder("lec");
-            let lectures = await lecQb
-                .where("lec.courseId = :courseId", { courseId: course.id })
-                .andWhere("lec.startTime BETWEEN :start AND :end", {
-                    start: startingFrom,
-                    end: endingAt,
-                })
-                .getMany();
-            lectures = lectures.map((lect) => {
-                return { ...lect, eventType: "lecture" };
-            });
-            const examQb = getRepository(Exam).createQueryBuilder("ex");
-            let exams = await examQb
-                .where("ex.courseId = :courseId", { courseId: course.id })
-                .andWhere("ex.startTime BETWEEN :start AND :end", {
-                    start: startingFrom,
-                    end: endingAt,
-                })
-                .getMany();
-            exams = exams.map((ex) => {
-                return { ...ex, eventType: "exam" };
-            });
-            res = [...res, ...lectures, ...exams];
-        }
-        return res;
+        return new EventslogicImpl().getAllEvents(
+            UserTypes.STUDENT,
+            studentId,
+            startingFrom,
+            endingAt
+        );
     }
 
     async updateStudent(studentId: string, newData: Student): Promise<Student> {

@@ -50,6 +50,7 @@ router.put(
                 async (student_id: string, emmbedding: any) => {
                     const logic: StudentLogic = new StudentLogicImpl();
                     logic.setEmbedding(student_id, emmbedding);
+                    console.debug(`emeding saved for user ${student_id}`);
                 }
             );
             // NOTE don't think we need to save refrance

@@ -66,15 +66,21 @@ export default async function populateDB() {
     sample_professor = await professorlogic.createProfessor(sample_professor);
     console.debug(`created professor ${sample_professor.id}`);
 
-    new DepartmentsLogicImpl().addProfessorToDepartment(
+    await new DepartmentsLogicImpl().addProfessorToDepartment(
         sample_department.id,
         sample_professor.id
     );
-    new DepartmentsLogicImpl().addCourseToDepartment(
+    await new DepartmentsLogicImpl().addCourseToDepartment(
         sample_department.id,
         sample_course.id
     );
-    console.debug(`professor attached to course and department`);
+    console.debug(`department attached to course and professor`);
+
+    new ProfessorLogicImpl().assignCourseToProfessor(
+        sample_professor.id,
+        sample_course.id
+    );
+    console.debug(`professor assigned to course ${sample_course.id}`);
 
     // create student at same depatment
     let sample_student = _createUser(new Student(), "student") as Student;
@@ -88,14 +94,15 @@ export default async function populateDB() {
 
     baseExam.title = test_exam.title;
     baseExam.year = parseInt(test_exam.year);
-    baseExam.startTime = new Date(test_exam.startDate);
-    baseExam.endTime = new Date(test_exam.endDate);
+    baseExam.startTime = new Date();
+    const exam_open_time = 30; //minutes
+    baseExam.endTime = _time_after_now(exam_open_time);
     baseExam.mark = 120;
     baseExam.course = sample_course;
 
     baseExam.professor = sample_professor;
 
-    const sample_question = test_exam.questions as ExamQuestion[];
+    const sample_question = (test_exam.questions as unknown) as ExamQuestion[];
     baseExam.questions = sample_question;
 
     const created_exam = await new ExamsLogicImpl().createExam(baseExam);
@@ -192,7 +199,7 @@ export default async function populateDB() {
     console.debug(`created fake sub module ${createdFakeSubModule.id}`);
 
     const fakeLecture = new Lecture();
-    fakeLecture.course = Promise.resolve(sample_course);
+    fakeLecture.course = sample_course;
     fakeLecture.title = "blah blah";
     fakeLecture.year = 1;
     const startDate = new Date();
@@ -200,7 +207,23 @@ export default async function populateDB() {
     const newDate = new Date();
     newDate.setHours(newDate.getHours() + 3);
     fakeLecture.endTime = newDate;
-    fakeLecture.path = "fake path";
+    fakeLecture.startTime = _time_after_now(1);
+    fakeLecture.endTime = _time_after_now(30);
+    fakeLecture.path = "/test.pdf"; // test file available by front end
+
     const lecture = await new LecturesLogicImpl().createLecture(fakeLecture);
     console.debug(`created lecture ${lecture.id}`);
+ new ProfessorLogicImpl().assignLectureToProfessor(
+        sample_professor.id,
+        fakeLecture.id
+    );/**
+ *
+ * @param minutes minutes to add from now
+ * @returns data time of now + minutes
+ */
+function _time_after_now(minutes: number) {
+    const now = new Date();
+    return new Date(now.getTime() + minutes * 60000)
+}
+    console.debug(`attaching professor ${sample_professor.id} to lecture `);
 }

@@ -29,4 +29,9 @@ export default interface ProfessorLogic {
         professorId: string
     ): Promise<string | undefined>;
     unsetSessionId(professorId: string): Promise<void>;
+    getAllEvents(
+        professorId: string,
+        startingFrom: string,
+        endingAt: string
+    ): Promise<any>;
 }

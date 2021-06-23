@@ -73,4 +73,19 @@ export default class LecturesLogicImpl implements LecturesLogic {
     async createLecture(lecture: Lecture): Promise<Lecture> {
         return await getRepository(Lecture).save(lecture);
     }
+
+    async getLecturesByCourse(
+        courseId: string,
+        startingFrom: string,
+        endingAt: string
+    ) {
+        const lecQb = getRepository(Lecture).createQueryBuilder("lec");
+        return await lecQb
+            .where("lec.courseId = :courseId", { courseId: courseId })
+            .andWhere("lec.startTime BETWEEN :start AND :end", {
+                start: startingFrom,
+                end: endingAt,
+            })
+            .getMany();
+    }
 }

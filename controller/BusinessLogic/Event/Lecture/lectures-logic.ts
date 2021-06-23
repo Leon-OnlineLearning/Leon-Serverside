@@ -12,4 +12,9 @@ export default interface LecturesLogic {
         lectureId: string,
         lectureContent: any
     ): Promise<LectureTranscript>;
+    getLecturesByCourse(
+        courseId: string,
+        startingFrom: string,
+        endingAt: string
+    ): Promise<Lecture[]>;
 }

@@ -9,12 +9,17 @@ export default interface ExamsLogic {
     deleteExamById(examId: string): Promise<void>;
     getExamsByYear(year: number): Promise<Exam[]>;
     getExamByStudentId(studentId: string): Promise<Exam[]>;
+    getExamsByCourse(
+        courseId: string,
+        startingFrom: string,
+        endingAt: string
+    ): Promise<Exam[]>;
     saveRecording(
         chunk: Buffer,
         examId: string,
         userId: string,
         chunkIndex: number
-    ): Promise<String>;
+    ): Promise<string>;
     storeExamTextClassificationResult(
         studentId: string,
         examId: string,
@@ -32,8 +37,13 @@ export default interface ExamsLogic {
         examId: string
     ): Promise<[string, string]>;
     getCourseId(examId: string): Promise<string>;
-    getStudentExam(studentId: string, examId: string): Promise<StudentsExams> ;
+    getStudentExam(studentId: string, examId: string): Promise<StudentsExams>;
     getStudentExamId(studentId: string, examId: string): Promise<string>;
+    getExamsByCourse(
+        courseId: string,
+        startingFrom: string,
+        endingAt: string
+    ): Promise<Exam[]>;
     // addQuestion(question: ExamQuestion): Promise<ExamQuestion>;
     // removeQuestion(questionId: string): Promise<void>;
     // updateQuestion(questionId:string, newData: ExamQuestion): Promise<ExamQuestion>;
