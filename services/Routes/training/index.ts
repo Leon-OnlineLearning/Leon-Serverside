@@ -32,7 +32,7 @@ const relatedFileStorageUploader = diskStorageBuilder(
         "static/textclassification/related/",
     (file: Express.Multer.File) => {
         return (
-            `${file.originalname.replaceAll(" ", "_")}` +
+            `${file.originalname.replaceAll(" ", "_").split(".")[0]}` +
             "-" +
             "related" +
             Date.now() +
@@ -46,9 +46,9 @@ const nonRelatedFileStorageUploader = diskStorageBuilder(
         "static/textclassification/non_related",
     (file: Express.Multer.File) => {
         return (
-            `${file.originalname.split(".")[0]}` +
+            `${file.originalname.replaceAll(" ", "_").split(".")[0]}` +
             "-" +
-            "related" +
+            "non-related" +
             Date.now() +
             getExtension(file.originalname)
         );
@@ -60,7 +60,7 @@ const testFileStorageUploader = diskStorageBuilder(
         "static/textclassification/testing",
     (file: Express.Multer.File) => {
         return (
-            `${file.originalname.split(".")[0]}` +
+            `${file.originalname.replaceAll(" ", "_").split(".")[0]}` +
             "-" +
             "related" +
             Date.now() +
