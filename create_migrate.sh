@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+
 if [ "$#" -ne 1 ]; then
     echo "Illegal number of parameters"
     echo "Usage create_migtations migration_name"

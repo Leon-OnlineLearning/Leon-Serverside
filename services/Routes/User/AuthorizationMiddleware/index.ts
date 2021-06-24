@@ -17,10 +17,10 @@ export function onlyAdmins(req: Request, res: Response, next: NextFunction) {
 
 /**
  * Professors and admins can access this
- * 
- * @param req 
- * @param res 
- * @param next 
+ *
+ * @param req
+ * @param res
+ * @param next
  */
 export function onlyProfessors(
     req: Request,
@@ -38,10 +38,10 @@ export function onlyProfessors(
 
 /**
  * Students and admins can access this
- * 
- * @param req 
- * @param res 
- * @param next 
+ *
+ * @param req
+ * @param res
+ * @param next
  */
 export function onlyStudents(req: Request, res: Response, next: NextFunction) {
     const requestUser: any = req.user;

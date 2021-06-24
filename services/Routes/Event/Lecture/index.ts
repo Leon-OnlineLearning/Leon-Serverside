@@ -15,7 +15,7 @@ import multer from "multer";
 import Lecture from "@models/Events/Lecture/Lecture";
 import UserInputError from "@services/utils/UserInputError";
 import { sendLectureVideo } from "@controller/sending/sendFiles";
-import {promises} from "fs";
+import { promises } from "fs";
 
 const readFile = promises.readFile;
 const router = Router();

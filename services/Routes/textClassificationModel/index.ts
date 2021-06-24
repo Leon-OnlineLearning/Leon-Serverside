@@ -63,7 +63,11 @@ router.post("/test-sentence", (req, res) => {
         // send test request to the server given the course id
         const modelFacade: ModelsFacade = new ModelsFacadeImpl();
         modelFacade.requestTest(
-             new TestSentence(latestModel, req.body["sentence"], req.body["courseId"]),
+            new TestSentence(
+                latestModel,
+                req.body["sentence"],
+                req.body["courseId"]
+            ),
             `${
                 process.env["TEXT_CLASSIFICATION_BASE_URL"] ??
                 "/text_classification"

@@ -28,8 +28,8 @@ export default class LecturesLogicImpl implements LecturesLogic {
         const transcriptRes = await getRepository(LectureTranscript).save(
             transcriptFile
         );
-		// TODO create a file from this transcript and link it 
-		// to model as related
+        // TODO create a file from this transcript and link it
+        // to model as related
         lecture.transcript = transcriptRes;
         await getRepository(Lecture).save(lecture);
         return transcriptRes;

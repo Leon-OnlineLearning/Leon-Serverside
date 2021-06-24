@@ -1,5 +1,5 @@
-import {promises} from "fs";
-const access = promises.access
+import { promises } from "fs";
+const access = promises.access;
 
 export default async function fileExist(path: string) {
     try {

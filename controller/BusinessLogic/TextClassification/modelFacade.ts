@@ -49,10 +49,7 @@ export interface ModelsFacade {
     sendModelFiles(modelId: string, to: string): Promise<any>;
     getFileInfoForTraining(modelId: string): Promise<any>;
     requestRaise(modelId: string, to: string): Promise<any>;
-    requestTest(
-        testingQuery: TestingQuery,
-        to: string
-    ): Promise<any>;
+    requestTest(testingQuery: TestingQuery, to: string): Promise<any>;
     getRelations(modelId: string): Promise<any>;
 }
 
@@ -123,17 +120,14 @@ export class ModelsFacadeImpl implements ModelsFacade {
         return res;
     }
 
-	/**
-	 * a general test request that fits in testing sentence | test_files | exam_video
-	 *
-	 * @param testingQuery an abstraction for the query 
-	 * @param url the url of the ml server
-	 * @returns 
-	 */
-    async requestTest(
-        testingQuery: TestingQuery,
-        url: string
-    ): Promise<void> {
+    /**
+     * a general test request that fits in testing sentence | test_files | exam_video
+     *
+     * @param testingQuery an abstraction for the query
+     * @param url the url of the ml server
+     * @returns
+     */
+    async requestTest(testingQuery: TestingQuery, url: string): Promise<void> {
         // set testing request to pending
         // dependant on the testing query
         await testingQuery.changeTestingState(TestRequestStatus.PENDING);

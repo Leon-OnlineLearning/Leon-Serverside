@@ -17,7 +17,7 @@ import DepartmentsLogicImpl from "@controller/BusinessLogic/Department/departmen
 import User from "@models/Users/User";
 import TextClassificationModel from "@models/TextClassification/TextClassificationModel";
 import ModelLogicImpl from "@controller/BusinessLogic/TextClassification/models-logic-impl";
-import {promises} from "fs";
+import { promises } from "fs";
 import TextClassificationFile from "@models/TextClassification/TextClassificationFile";
 import TextClassificationFilesLogic from "@controller/BusinessLogic/TextClassification/files-logic";
 import FileLogicImpl from "@controller/BusinessLogic/TextClassification/file-logic-impl";
@@ -183,7 +183,7 @@ export default async function populateDB() {
         }
     );
     subState = JSON.parse(subState); // that's why i didn't use the normal create subModule function (the state is already ready)
-	subState.Classes = state.Classes;
+    subState.Classes = state.Classes;
     fakeSubModel.state = subState;
     fakeSubModel.superModel = fakeTCModel;
     fakeSubModel.primeModelId = fakeTCModel.id;
@@ -213,17 +213,18 @@ export default async function populateDB() {
 
     const lecture = await new LecturesLogicImpl().createLecture(fakeLecture);
     console.debug(`created lecture ${lecture.id}`);
- new ProfessorLogicImpl().assignLectureToProfessor(
+    new ProfessorLogicImpl().assignLectureToProfessor(
         sample_professor.id,
         fakeLecture.id
-    );/**
- *
- * @param minutes minutes to add from now
- * @returns data time of now + minutes
- */
-function _time_after_now(minutes: number) {
-    const now = new Date();
-    return new Date(now.getTime() + minutes * 60000)
-}
+    );
+    /**
+     *
+     * @param minutes minutes to add from now
+     * @returns data time of now + minutes
+     */
+    function _time_after_now(minutes: number) {
+        const now = new Date();
+        return new Date(now.getTime() + minutes * 60000);
+    }
     console.debug(`attaching professor ${sample_professor.id} to lecture `);
 }
