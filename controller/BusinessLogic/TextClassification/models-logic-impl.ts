@@ -54,7 +54,7 @@ export default class ModelLogicImpl implements ModelLogic {
         subModelId: string
     ): Promise<TextClassificationModel | undefined> {
         const superModelId = await this.getSuperModelId(subModelId);
-		// If you call findOne with null value typeorm just give you a one instance 🤷‍♂️
+        // If you call findOne with null value typeorm just give you a one instance 🤷‍♂️
         if (!superModelId) return undefined;
         const superModel = await getRepository(TextClassificationModel).findOne(
             superModelId
