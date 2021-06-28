@@ -33,17 +33,12 @@ export default class ModelLogicImpl implements ModelLogic {
         return res;
     }
     async getSuperModelId(modelId: string) {
-        // const resContent = await getManager()
-        //     .createQueryBuilder()
-        //     .select("tcm.superModelId")
-        //     .from(TextClassificationModel,"tcm")
-        //     .where("tcm.id = :subModelId", { modelId })
-        //     .getOne();
         const resContent = await getManager().query(
             `select "superModelId" from text_classification_model
             where id = $1`,
             [modelId]
         );
+
         console.log("super model id content", resContent);
         const { superModelId } = resContent[0];
         return superModelId;
@@ -59,6 +54,8 @@ export default class ModelLogicImpl implements ModelLogic {
         subModelId: string
     ): Promise<TextClassificationModel | undefined> {
         const superModelId = await this.getSuperModelId(subModelId);
+		// If you call findOne with null value typeorm just give you a one instance 🤷‍♂️
+        if (!superModelId) return undefined;
         const superModel = await getRepository(TextClassificationModel).findOne(
             superModelId
         );
@@ -150,7 +147,9 @@ export default class ModelLogicImpl implements ModelLogic {
             }
         );
         state = JSON.parse(state);
+        console.log("new state is:", state, "super model", superModel);
         if (!superModel) {
+            console.log("no super model");
             model.dataClassificationModelPath = `${pathPrefix}/data_classification_model_${modelId}.pkl`;
             model.dataLanguageModelPath = `${pathPrefix}/data_language_model_${modelId}.pkl`;
             model.state = state;
@@ -167,6 +166,8 @@ export default class ModelLogicImpl implements ModelLogic {
         model.trainingModelPath = `${pathPrefix}/models/training_model_${modelId}.pth`;
         model.predictionModelPath = `${pathPrefix}/prediction_model_${modelId}.pkl`;
         model.stateFilePath = `${pathPrefix}/state_${modelId}.json`;
+        console.log("model is?", model);
+
         await getRepository(TextClassificationModel).save(model);
         return model;
     }
@@ -186,6 +187,8 @@ export default class ModelLogicImpl implements ModelLogic {
         courseId: string
     ): Promise<TextClassificationModel> {
         try {
+            console.log("input model", model);
+
             const courseLogic: CoursesLogic = new CourseLogicImpl();
             const course = await courseLogic.getCoursesById(courseId);
             model.course = course;
