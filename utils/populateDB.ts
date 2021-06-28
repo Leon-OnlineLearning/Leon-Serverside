@@ -155,8 +155,8 @@ export default async function populateDB() {
     tcLogic.linkFileToModel(
         _file0.id,
         fakeTCModel.id,
-        FileType.TEST,
-        "testing"
+        FileType.NON_RELATED,
+        "hamada"
     );
     console.debug(`created test file linked to the model`, _file0.id);
 
