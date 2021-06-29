@@ -10,6 +10,8 @@ import CourseLogicImpl from "@controller/BusinessLogic/Course/courses-logic-impl
 import { onlyAdmins, onlyProfessors } from "../User/AuthorizationMiddleware";
 import simpleFinalMWDecorator from "@services/utils/RequestDecorator";
 import { accessTokenValidationMiddleware } from "@services/Auth";
+import ModelLogic from "@controller/BusinessLogic/TextClassification/models-logic";
+import ModelLogicImpl from "@controller/BusinessLogic/TextClassification/models-logic-impl";
 
 const router = Router();
 
@@ -135,4 +137,12 @@ router.get("/", async (_, res) => {
     });
 });
 
+router.get("/:courseId/models", (req, res) => {
+    simpleFinalMWDecorator(res, async () => {
+        const modelLogic: ModelLogic = new ModelLogicImpl();
+        console.log("course id received:", req.params["courseId"]);
+
+        return await modelLogic.getAllModelsByCourseId(req.params["courseId"]);
+    });
+});
 export default router;

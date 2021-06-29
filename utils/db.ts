@@ -40,8 +40,6 @@ const exams = {
     ],
     mark: 5,
     title: "Quiz on software engineering may 2020",
-    startDate: "2021-05-03T03:40:19.363Z",
-    endDate: "2021-05-03T06:40:48.437Z",
     year: "2013",
 };
 

@@ -1,6 +1,7 @@
 import Course from "@models/Course";
 import Exam from "@models/Events/Exam";
-import Lecture from "@models/Events/Lecture";
+import Lecture from "@models/Events/Lecture/Lecture";
+import TextClassificationModel from "@models/TextClassification/TextClassificationModel";
 import { type } from "os";
 
 export default interface CoursesLogic {
@@ -17,4 +18,5 @@ export default interface CoursesLogic {
     getLecturesStatistics(
         courseId: string
     ): Promise<{ lectureTitle: string; count: number }[]>;
+    getAllTextClassificationModels(courseId: string): Promise<any>;
 }

@@ -4,6 +4,8 @@ import fs from "fs";
 import StudentLogic from "@controller/BusinessLogic/User/Student/students-logic";
 import StudentLogicImpl from "@controller/BusinessLogic/User/Student/students-logic-impl";
 import Embedding from "@models/Users/Embedding";
+import LecturesLogic from "@controller/BusinessLogic/Event/Lecture/lectures-logic";
+import LecturesLogicImpl from "@controller/BusinessLogic/Event/Lecture/lectures-logic-impl";
 const fsPromises = fs.promises;
 const FormData = require("form-data");
 
@@ -70,6 +72,31 @@ export const sendExamFile = async (
     }
 };
 
+// this adapter get the lecture id as an input and return
+// a function suitable to be a callback for send lecture video
+export async function storeLectureAdapter(lectureId: string) {
+    return async (res: any) => {
+        const lectureLogic: LecturesLogic = new LecturesLogicImpl();
+        return await lectureLogic.storeLectureTranscript(lectureId, res);
+    };
+}
+
+export async function sendLectureVideo(
+    video: Buffer,
+    lectureId: string,
+    callback: (res: any) => Promise<any>,
+    url: string
+) {
+    await sendFileHttpMethod(
+        `lectureVideo-${lectureId}.webm`,
+        "lecture_video",
+        url,
+        callback,
+        video,
+        { lectureId }
+    );
+}
+
 export async function sendInitialVideo(
     video: Buffer,
     studentId: string,
@@ -113,9 +140,6 @@ export async function sendFileHttpMethod(
     }
     const fd = new FormData();
     fd.append(fieldName, fs.createReadStream(fileName));
-
-    // DELETEME
-    console.log(fs.readFileSync(fileName));
 
     for (const key in additionalFields) {
         fd.append(key, additionalFields[key]);

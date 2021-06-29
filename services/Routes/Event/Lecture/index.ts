@@ -12,9 +12,12 @@ import LecturesLogicImpl from "@controller/BusinessLogic/Event/Lecture/lectures-
 import { onlyProfessors } from "@services/Routes/User/AuthorizationMiddleware";
 import simpleFinalMWDecorator from "@services/utils/RequestDecorator";
 import multer from "multer";
-import Lecture from "@models/Events/Lecture";
+import Lecture from "@models/Events/Lecture/Lecture";
 import UserInputError from "@services/utils/UserInputError";
+import { sendLectureVideo } from "@controller/sending/sendFiles";
+import { promises } from "fs";
 
+const readFile = promises.readFile;
 const router = Router();
 
 const lecturesStorage = multer.diskStorage({
@@ -103,4 +106,38 @@ router.get("/:lectureId/students", async (req, res) => {
     });
 });
 
+// TODO this should be replaced with a proper saving lecture mechanism
+router.post("/:lectureId/video", async (req, res) => {
+    if (!process.env["TESTING"]) {
+        res.status(403).send({
+            success: false,
+            message: "This is for testing only",
+        });
+        return;
+    }
+    console.debug(
+        "WARNING: This end point is enabled by the testing flag it is not meant for production"
+    );
+    simpleFinalMWDecorator(res, async () => {
+        const logic: LecturesLogic = new LecturesLogicImpl();
+        // TODO get lecture from a proper source probably a stream
+        readFile(
+            `${__dirname}/../../../../static/recording/recording.mp4`
+        ).then((file) => {
+            sendLectureVideo(
+                file,
+                req.params["lectureId"],
+                async (data) => {
+                    await logic.storeLectureTranscript(
+                        req.params["lectureId"],
+                        data
+                    );
+                },
+                `${process.env["LECTURES_VIDEO_SERVER_BASE_URL"]}/lecture/video` ??
+                    "http://text-classification:9000/lecture/video"
+            );
+        });
+        return;
+    });
+});
 export default router;

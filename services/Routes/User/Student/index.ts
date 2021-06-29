@@ -47,7 +47,7 @@ router.put(
                 req.file.buffer,
                 req.body.userId,
                 serverBaseUrl,
-                async (student_id, emmbedding) => {
+                async (student_id: string, emmbedding: any) => {
                     const logic: StudentLogic = new StudentLogicImpl();
                     logic.setEmbedding(student_id, emmbedding);
                     console.debug(`emeding saved for user ${student_id}`);
@@ -180,7 +180,12 @@ router.post("/:studentId/exams", studentWithNoEmbedding, async (req, res) => {
         res,
         async () => {
             const logic: StudentLogic = new StudentLogicImpl();
-            await logic.attendExam(req.params.studentId, req.body.examId);
+            const videoId = "get video id for student"; // TODO
+            await logic.attendExam(
+                req.params.studentId,
+                req.body.examId,
+                videoId
+            );
         },
         201
     );

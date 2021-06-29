@@ -6,6 +6,10 @@ import User from "@models/Users/User";
 import UserTypes from "@models/Users/UserTypes";
 import { getConnection, getRepository, Repository } from "typeorm";
 
+/**
+ * This has a very limited usage that will probably be
+ * deprecated in the next refactoring
+ */
 export default class UserRepo {
     async insertOrIgnore(user: User) {
         await getConnection()

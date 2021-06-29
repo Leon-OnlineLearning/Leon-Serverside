@@ -2,10 +2,15 @@ import CoursesLogic from "@controller/BusinessLogic/Course/courses-logic";
 import CourseLogicImpl from "@controller/BusinessLogic/Course/courses-logic-impl";
 import Course from "@models/Course";
 import Exam from "@models/Events/Exam";
-import Lecture from "@models/Events/Lecture";
+import Lecture from "@models/Events/Lecture/Lecture";
 import Professor from "@models/Users/Professor";
 import { AccountWithSimilarEmailExist } from "@models/Users/User";
-import { createQueryBuilder, getRepository, QueryFailedError } from "typeorm";
+import {
+    createQueryBuilder,
+    getConnection,
+    getRepository,
+    QueryFailedError,
+} from "typeorm";
 import AdminLogic from "../Admin/admin-logic";
 import AdminLogicImpl from "../Admin/admin-logic-impl";
 import StudentLogic from "../Student/students-logic";
@@ -13,8 +18,53 @@ import StudentLogicImpl from "../Student/students-logic-impl";
 import ProfessorLogic from "./professors-logic";
 import UserInputError from "@services/utils/UserInputError";
 import { hashPassword } from "@utils/passwords";
+import EventslogicImpl from "@controller/BusinessLogic/Event/events-logic-impl";
+import UserTypes from "@models/Users/UserTypes";
 
-export default class ProfessorLogicIml implements ProfessorLogic {
+export default class ProfessorLogicImpl implements ProfessorLogic {
+    async unsetSessionId(professorId: string): Promise<void> {
+        await getConnection()
+            .createQueryBuilder()
+            .update(Professor)
+            .set({ sessionId: undefined })
+            .where("id = :professorId", { professorId })
+            .execute();
+    }
+
+    async getTextClassificationSessionId(
+        professorId: string
+    ): Promise<string | undefined> {
+        const professor = await getRepository(Professor).findOne(professorId);
+        if (!professor) {
+            throw new UserInputError("Invalid professor id");
+        }
+        return professor.sessionId;
+    }
+
+    async setTextClassificationSessionId(
+        professorId: string,
+        sessionId: string
+    ): Promise<void> {
+        await getRepository(Professor)
+            .createQueryBuilder("professor")
+            .update()
+            .set({ sessionId: sessionId })
+            .where("professor.id = :professorId", { professorId })
+            .execute();
+    }
+
+    getAllEvents(
+        professorId: string,
+        startingFrom: string,
+        endingAt: string
+    ): Promise<any> {
+        return new EventslogicImpl().getAllEvents(
+            UserTypes.PROFESSOR,
+            professorId,
+            startingFrom,
+            endingAt
+        );
+    }
     async getLectures(professorId: string): Promise<Lecture[]> {
         const professor = await getRepository(Professor).findOne(professorId, {
             relations: ["lectures"],

@@ -1,5 +1,5 @@
 import { Router } from "express";
-import passport, {
+import {
     accessTokenValidationMiddleware,
     BlockedJWTMiddleware,
 } from "@services/Auth";

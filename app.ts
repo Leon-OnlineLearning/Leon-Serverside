@@ -10,6 +10,10 @@ import examRouter from "@services/Routes/Event/Exam";
 import lectureRouter from "@services/Routes/Event/Lecture";
 import courseRouter from "@services/Routes/Course";
 import departmentRouter from "@services/Routes/Department";
+import trainingRouter from "@services/Routes/training";
+import staticRouter from "@services/Routes/staticContent";
+import textClassificationModelsRouts from "@services/Routes/textClassificationModel";
+import eventRouter from "@services/Routes/Event/event.routes";
 import passport from "@services/Auth";
 import cookieParser from "cookie-parser";
 import cors from "cors";
@@ -34,7 +38,11 @@ app.use("/admins", adminRouter);
 app.use("/courses", courseRouter);
 app.use("/exams", examRouter);
 app.use("/lectures", lectureRouter);
+app.use("/events", eventRouter);
 app.use("/departments", departmentRouter);
+app.use("/training", trainingRouter);
+app.use("/text-classification-models", textClassificationModelsRouts);
+app.use("/static", staticRouter);
 
 app.use("/lecturesFiles", express.static("lectures"));
 
