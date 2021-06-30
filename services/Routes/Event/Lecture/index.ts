@@ -40,8 +40,8 @@ const parser: BodyParserMiddleware = new LectureParser();
 router.get("/:lectureId", async (req, res) => {
     simpleFinalMWDecorator(res, async () => {
         const logic: LecturesLogic = new LecturesLogicImpl();
-        const exam = await logic.getLectureById(req.params.lectureId);
-        return exam;
+        const lecture = await logic.getLectureById(req.params.lectureId);
+        return lecture;
     });
 });
 
