@@ -5,9 +5,9 @@ import Professor from "@models/Users/Professor";
 import Student from "@models/Users/Student";
 import { IsFQDN, Max } from "class-validator";
 import {
-    ChildEntity,
     Column,
     Entity,
+    Generated,
     JoinColumn,
     ManyToMany,
     ManyToOne,
@@ -15,6 +15,7 @@ import {
     OneToOne,
     PrimaryGeneratedColumn,
 } from "typeorm";
+import AudioRoom from "../AudioRoom";
 import Event from "../Event";
 import LectureTranscript from "./LectureTranscript";
 
@@ -22,7 +23,7 @@ import LectureTranscript from "./LectureTranscript";
 export default class Lecture extends Event {
     @Column()
     @Max(2048)
-    path: string;
+    path: string; // stored file associated with lecture
 
     @ManyToOne(() => Course, (course) => course.lectures)
     course: Course;
@@ -42,4 +43,10 @@ export default class Lecture extends Event {
     @OneToOne(() => LectureTranscript, (lt) => lt.lecture)
     @JoinColumn()
     transcript: LectureTranscript;
+
+    @OneToOne(() => AudioRoom, (audioRoom) => audioRoom.lecture, {
+        cascade: true,
+    })
+    @JoinColumn()
+    liveRoom: AudioRoom;
 }

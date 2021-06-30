@@ -1,4 +1,3 @@
-import Course from "@models/Course";
 import Lecture from "@models/Events/Lecture/Lecture";
 import LectureTranscript from "@models/Events/Lecture/LectureTranscript";
 import StudentLectureAttendance from "@models/JoinTables/StudentLectureAttended";
@@ -7,6 +6,7 @@ import UserInputError from "@services/utils/UserInputError";
 import { getRepository } from "typeorm";
 import LecturesLogic from "./lectures-logic";
 import { promises } from "fs";
+import AudioRoom from "@models/Events/AudioRoom";
 
 const writeFile = promises.writeFile;
 
@@ -70,7 +70,14 @@ export default class LecturesLogicImpl implements LecturesLogic {
         else throw new UserInputError("Invalid lecture id");
     }
 
+    /**
+     * create a lecture and room skelton for it
+     * @param lecture
+     * @returns
+     */
     async createLecture(lecture: Lecture): Promise<Lecture> {
+        const audioRoom = await getRepository(AudioRoom).create();
+        lecture.liveRoom = audioRoom;
         return await getRepository(Lecture).save(lecture);
     }
 
