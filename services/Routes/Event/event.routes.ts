@@ -21,7 +21,7 @@ export type userTockenData = {
     id: string;
     firstName: string;
     lastName: string;
-    role: string;
+    role: UserTypes;
     iat: number;
     exp: number;
 };
