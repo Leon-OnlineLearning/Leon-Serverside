@@ -7,6 +7,13 @@ import UserInputError from "@services/utils/UserInputError";
 import { getRepository } from "typeorm";
 import CoursesLogic from "./courses-logic";
 export default class CourseLogicImpl implements CoursesLogic {
+    async getCourseByLecture(lectureId: string): Promise<Course> {
+        const lecture = await getRepository(Lecture).findOne(lectureId, {
+            relations: ["course"],
+        });
+        if (!lecture) throw new Error("lecture not found");
+        return lecture.course;
+    }
     async getAllTextClassificationModels(
         courseId: string
     ): Promise<TextClassificationModel[]> {

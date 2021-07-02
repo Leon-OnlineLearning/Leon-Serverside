@@ -70,7 +70,11 @@ export default class ProfessorLogicImpl implements ProfessorLogic {
             relations: ["lectures"],
         });
         if (!professor) throw new UserInputError("Invalid professor Id");
-        return professor.lectures;
+        let lec_with_course = professor.lectures.map(async (lec) => {
+            lec.course = await new CourseLogicImpl().getCourseByLecture(lec.id);
+            return lec;
+        });
+        return await Promise.all(lec_with_course);
     }
 
     async assignLectureToProfessor(
