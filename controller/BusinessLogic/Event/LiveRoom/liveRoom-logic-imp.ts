@@ -25,6 +25,10 @@ export default class LiveRoomLogicImpl implements LiveRoomLogic {
         const isLectureTime =
             lecture.startTime < new Date() && lecture.endTime > new Date();
         if (!isLectureTime) {
+            console.debug(
+                `start: ${lecture.startTime}, end:${lecture.endTime}`
+            );
+            console.debug(`time now: ${new Date()}`);
             throw new Error("lecture is not now");
         }
 
@@ -32,7 +36,7 @@ export default class LiveRoomLogicImpl implements LiveRoomLogic {
         if (!canStartRoom) {
             throw new Error("wait the professor to start lecture");
         }
-        const file_path = "lecture/req.params.lectureId.wav"; //REVIEW
+        const file_path = `lecture/${lectureId}.wav`; //REVIEW
 
         await start_janus_room(
             liveRoom.roomId,

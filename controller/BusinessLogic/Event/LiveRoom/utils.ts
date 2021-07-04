@@ -83,7 +83,10 @@ export async function _create_room_plugin(
         url: `${janus_server}/${sessino_id}/${attachment_id}`,
         data: create_room_request,
     });
-    console.debug(res.data);
+    if (res.data.janus != "success") {
+        throw new Error("cannot create room");
+    }
+    console.debug(`room created succefully with id ${roomId}`);
 }
 
 export function random_string(len: number) {
@@ -103,6 +106,9 @@ export async function getJanusInfo(jansus_server: string) {
         url: `${jansus_server}/info`,
     });
     console.log(res.data);
+    if (res.data.janus != "success") {
+        throw new Error("cannot create room");
+    }
 }
 
 export async function create_session(janus_server: string) {
@@ -160,8 +166,10 @@ export async function destroy_session(
         url: `${janus_server}/${session_id}`,
         data: destroy_msg,
     });
-
-    console.debug(res.data);
+    if (res.data.janus != "success") {
+        throw new Error("cannot destroy session");
+    }
+    console.debug(`session detached with id ${session_id}`);
 }
 
 export async function destroy_plugin_attach(
@@ -178,5 +186,8 @@ export async function destroy_plugin_attach(
         url: `${janus_server}/${session_id}/${attach_id}`,
         data: destroy_msg,
     });
-    console.debug(res.data);
+    if (res.data.janus != "success") {
+        throw new Error("cannot destroy attachment");
+    }
+    console.debug(`plugin dettachec with id ${attach_id}`);
 }
