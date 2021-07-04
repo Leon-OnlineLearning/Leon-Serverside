@@ -2,3 +2,13 @@ node_modules/
 .env
 .vscode/
 build/
+todo
+# just in case chrome forced using https i've added the cert to gitignore
+localhost.pem
+localhost-key.pem
+lectures/
+recordings/
+test/unit/SendVideo/videoTstC.webm
+env:Zone.Identifier
+static/
+zip_state.txt

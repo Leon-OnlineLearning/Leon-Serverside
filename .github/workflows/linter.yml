@@ -1,0 +1,19 @@
+name: Linter
+on:
+  [push, pull_request]
+
+jobs:
+  linter: 
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v1
+    - uses: actions/setup-node@v1
+      with:
+        node-version: '15.x'
+    - name: get dependencies
+      run: npm install
+    - name: lint
+      uses: wearerequired/lint-action@v1
+      with:
+        prettier: true
+      

@@ -1,0 +1,1904 @@
+{
+	"info": {
+		"_postman_id": "f00c7e75-3338-4168-9e9e-23f5cfdbcd1a",
+		"name": "Leon",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Hello",
+			"item": [
+				{
+					"name": "SayHello",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Say Hello, Hello',()=> {",
+									"    pm.expect(pm.response.text()).to.be.oneOf(['hello'])",
+									"    pm.response.to.have.status(200)",
+									"})"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/sayHello",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"sayHello"
+							]
+						},
+						"description": "Check if the server is up and lisitening to our requests "
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "refreshToken",
+			"item": [
+				{
+					"name": "refreshToken",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/auth/refreshToken",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"auth",
+								"refreshToken"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Create Admin Account With weak password",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test('should fail create admin with weak password',()=>{",
+							"    pm.response.to.have.status(400);",
+							"})",
+							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"const email = `random${Date.now()}.admin.email@gmail.com`",
+							"const password = \"weak password\"",
+							"pm.environment.set('email',email)",
+							"pm.environment.set('password', password)"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"email\": \"{{email}}\",\n    \"password\": \"{{password}}\",\n    \"firstName\": \"random\",\n    \"lastName\": \"lname\",\n    \"role\": \"admin\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/auth/signup",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"auth",
+						"signup"
+					]
+				},
+				"description": "Sign up with role\n\n**DO NOT DEPEND ON IT AS IT IS** the role part will be removed in the alpha version and replaced with admin account from config file [see this issue](https://github.com/Leon-OnlineLearning/Leon-Serverside/issues/10) for more information."
+			},
+			"response": []
+		},
+		{
+			"name": "Create Admin Account",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test('should create a new user',()=>{",
+							"    pm.response.to.have.status(201);",
+							"})",
+							"",
+							"pm.test('should return valid fields', ()=> {",
+							"    const resp = pm.response.json();",
+							"    pm.expect(resp.success).to.be.ok;",
+							"    pm.expect(resp.token).to.be.ok;",
+							"    pm.expect(resp.refreshToken).to.be.ok;",
+							"    pm.expect(resp.email).to.be.ok;",
+							"    pm.expect(resp.firstName).to.be.ok;",
+							"    pm.expect(resp.lastName).to.be.ok;",
+							"    pm.expect(resp.password).to.be.undefined;",
+							"})"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"const email = `random${Date.now()}.admin.email@gmail.com`",
+							"const password = \"RanDoM_PassW123\"",
+							"pm.environment.set('email',email)",
+							"pm.environment.set('password', password)"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"email\": \"{{email}}\",\n    \"password\": \"{{password}}\",\n    \"firstName\": \"random\",\n    \"lastName\": \"lname\",\n    \"role\": \"admin\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/auth/signup",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"auth",
+						"signup"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Login",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test('Login successfully',()=>{",
+							"    pm.response.to.have.status(200)",
+							"})",
+							"",
+							"pm.test('Return valid fields', ()=> {",
+							"    const result = pm.response.json()",
+							"    // i couldn't find a way to do a post request script :(",
+							"    // pm.environment.set('jwt', result.token)",
+							"    // pm.environment.set('refreshToken', result.refreshToken)    ",
+							"    pm.expect(result.token).to.be.ok;",
+							"    pm.expect(result.refreshToken).to.be.ok;",
+							"    pm.expect(result.password).to.be.undefined;",
+							"})"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"email\": \"{{email}}\",\n    \"password\": \"{{password}}\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/auth/login",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"auth",
+						"login"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Login with wrong password",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test('should fail logic with incorrect password', ()=> {",
+							"    pm.response.to.have.status(401)",
+							"})"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"email\": \"{{email}}\",\n    \"password\": \"invalidPassword\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/auth/login",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"auth",
+						"login"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create new department",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test('it should create department', ()=> {",
+							"    pm.response.to.have.status(201)",
+							"})",
+							"",
+							"pm.test('it should result valid fields', ()=> {",
+							"    const data = pm.response.json()",
+							"    pm.environment.set('departmentId', data.id)",
+							"    pm.environment.set('departmentIdArray', [data.id])",
+							"    pm.expect(data.id).to.be.ok;",
+							"    pm.expect(data.name).to.be.ok;",
+							"})"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"name\": \"department1\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/departments",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"departments"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get department",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test('should get a valid course', ()=> {",
+							"    pm.response.to.have.status(200);",
+							"    const responseData = pm.response.json();",
+							"    pm.expect(responseData.id).to.be.ok;",
+							"    pm.expect(responseData.name).to.be.ok;",
+							"})"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrl}}/departments/{{departmentId}}",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"departments",
+						"{{departmentId}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create a new course",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test('should create course successfully',()=>{",
+							"    pm.response.to.have.status(201)",
+							"})",
+							"",
+							"pm.test('should return valid fields', ()=>{",
+							"    const data = pm.response.json()",
+							"    pm.environment.set('courseId', data.id);",
+							"    pm.expect(data.name).to.be.ok;",
+							"    pm.expect(data.id).to.be.ok;",
+							"})"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"const courseName = \"course1\";",
+							"pm.environment.set('courseName', courseName);"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"name\": \"{{courseName}}\",\n    \"year\": 1,\n    \"department\": \"{{departmentId}}\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/courses",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"courses"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get course",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test('should get a valid course', ()=> {",
+							"    pm.response.to.have.status(200);",
+							"    const responseData = pm.response.json();",
+							"    pm.expect(responseData.id).to.be.ok;",
+							"    pm.expect(responseData.name).to.be.ok;",
+							"    pm.expect(responseData.professor).to.be.undefined;",
+							"})"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrl}}/courses/{{courseId}}",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"courses",
+						"{{courseId}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create course with no name",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test('it should fail creating a course with no name', ()=> {",
+							"    pm.response.to.have.status(400)",
+							"}) "
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrl}}/courses",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"courses"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create Professor with same email",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test('shouldn\\'t create two accounts with the same email', ()=> {",
+							"    pm.response.to.have.status(400)",
+							"})"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"firstName\": \"prfoessor1\",\n    \"lastName\": \"lastName1\",\n    \"email\": \"{{email}}\",\n    \"password\": \"WhaTeveR_123\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/professors",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"professors"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create valid professor account",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"const professorEmail = `professor${Date.now()}@professor.com`",
+							"pm.environment.set('professorEmail', professorEmail)"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test('should create a valid user', ()=> {",
+							"    pm.response.to.have.status(201)",
+							"})",
+							"",
+							"pm.test('should return valid fields', ()=> {",
+							"    const resp = pm.response.json();",
+							"",
+							"    pm.expect(resp.email).to.be.ok;",
+							"    pm.expect(resp.id).to.be.ok;",
+							"    pm.environment.set('professorId', resp.id);",
+							"    pm.expect(resp.firstName).to.be.ok;",
+							"    pm.expect(resp.lastName).to.be.ok;",
+							"    pm.expect(resp.password).to.be.undefined;",
+							"})"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"firstName\": \"prfoessor1\",\n    \"lastName\": \"lastName1\",\n    \"email\": \"{{professorEmail}}\",\n    \"password\": \"WhaTeveR_123\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/professors",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"professors"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Log Admin Out",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test('should logout successfully',()=> {",
+							"    pm.response.to.have.status(205)",
+							"})"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrl}}/auth/logout",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"auth",
+						"logout"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create professor after logout",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"const professorEmail = `professor${Date.now()}@professor.com`",
+							"pm.environment.set('professorEmail', professorEmail)"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test('should fail creating user after logout', ()=> {",
+							"    pm.response.to.have.status(401)",
+							"})"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"firstName\": \"prfoessor1\",\n    \"lastName\": \"lastName1\",\n    \"email\": \"{{professorEmail}}\",\n    \"password\": \"WhaTeveR_123\",\n    \"role\": \"admin\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/professors",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"professors"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Login",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test('Login successfully',()=>{",
+							"    pm.response.to.have.status(200)",
+							"})",
+							"",
+							"pm.test('Return valid fields', ()=> {",
+							"    const result = pm.response.json()",
+							"    // i couldn't find a way to do a post request script :(",
+							"    // pm.environment.set('jwt', result.token)",
+							"    // pm.environment.set('refreshToken', result.refreshToken)    ",
+							"    pm.expect(result.token).to.be.ok;",
+							"    pm.expect(result.refreshToken).to.be.ok;",
+							"    pm.expect(result.password).to.be.undefined;",
+							"})"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"email\": \"{{email}}\",\n    \"password\": \"{{password}}\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/auth/login",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"auth",
+						"login"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Assing course to professor",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test('should assign test to professor', ()=>{",
+							"    pm.response.to.have.status(200)",
+							"    const resp = pm.response.json()",
+							"    pm.expect(resp.success).to.be.true;",
+							"})"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"courseId\": \"{{courseId}}\" \n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/professors/{{professorId}}/courses",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"professors",
+						"{{professorId}}",
+						"courses"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get all courses",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test('should successfully get course',()=>{",
+							"    pm.response.to.have.status(200)",
+							"    const resp = pm.response.json()",
+							"    pm.expect(resp.length).to.be.ok; // check if the result is an array",
+							"})",
+							"",
+							"pm.test('should get valid course data if found',()=>{",
+							"    const resp = pm.response.json()",
+							"    resp.forEach(course => {",
+							"        pm.expect(course.id).to.be.ok;",
+							"        pm.expect(course.name).to.be.ok;",
+							"    })",
+							"})"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrl}}/professors/{{professorId}}/courses",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"professors",
+						"{{professorId}}",
+						"courses"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Assign professor to department",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test('should assign professor to department',()=>{",
+							"    pm.response.to.have.status(204)",
+							"})"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"professorId\": \"{{professorId}}\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/departments/{{departmentId}}/professors",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"departments",
+						"{{departmentId}}",
+						"professors"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create new student",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"const studentEmail = `student${Date.now()}@student.com`",
+							"pm.environment.set('studentEmail', studentEmail)"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test('should create student successfully',()=>{",
+							"    pm.response.to.have.status(201)",
+							"})",
+							"",
+							"pm.test('should return valid fields', ()=> {",
+							"    const resp = pm.response.json();",
+							"",
+							"    pm.expect(resp.email).to.be.ok;",
+							"    pm.expect(resp.id).to.be.ok;",
+							"    pm.environment.set('studentId', resp.id);",
+							"    pm.expect(resp.firstName).to.be.ok;",
+							"    pm.expect(resp.lastName).to.be.ok;",
+							"    pm.expect(resp.password).to.be.undefined;",
+							"})"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"year\": 1,\n    \"firstName\": \"student1\",\n    \"lastName\": \"lastName1\",\n    \"email\": \"{{studentEmail}}\",\n    \"password\": \"WhaTeveR_123\",\n    \"departmentId\": \"{{departmentId}}\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/students",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"students"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create new lecture",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"const dateTimeNow = new Date()",
+							"pm.environment.set('lectureStartDate',dateTimeNow)",
+							"let dateTimeAfterHour = new Date(dateTimeNow.getTime())",
+							"dateTimeAfterHour.setHours(dateTimeAfterHour.getHours() + 1)",
+							"pm.environment.set('lectureEndDate',dateTimeAfterHour)",
+							"pm.environment.set('lectureTitle','lecture1')"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test('expect to return a successful response',()=>{",
+							"    pm.response.to.have.status(201)",
+							"})",
+							"",
+							"pm.test('it should have valid fields',()=>{",
+							"    const resp = pm.response.json()",
+							"    pm.expect(resp.title).to.be.ok;",
+							"    pm.expect(resp.startTime).to.be.ok;",
+							"    pm.expect(resp.endTime).to.be.ok;",
+							"    pm.expect(resp.path).to.be.ok;",
+							"    pm.expect(resp.year).to.be.ok;",
+							"    pm.expect(resp.id).to.be.ok;",
+							"    pm.environment.set('lectureId', resp.id);",
+							"})"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "lectureFile",
+							"type": "file",
+							"src": "d.pdf"
+						},
+						{
+							"key": "title",
+							"value": "{{lectureTitle}}",
+							"type": "text"
+						},
+						{
+							"key": "year",
+							"value": "2",
+							"type": "text"
+						},
+						{
+							"key": "startTime",
+							"value": "{{lectureStartDate}}",
+							"type": "text"
+						},
+						{
+							"key": "endTime",
+							"value": "{{lectureEndDate}}",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "{{baseUrl}}/lectures",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"lectures"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Assing course to professor",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test('it should return successfully',()=>{",
+							"    pm.response.to.have.status(200);",
+							"})"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"courseId\": \"{{courseId}}\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/professors/{{professorId}}/courses",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"professors",
+						"{{professorId}}",
+						"courses"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Assign lecture to professor",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test('expect to result success',()=>{",
+							"    pm.response.to.have.status(200)",
+							"})"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"lectureId\": \"{{lectureId}}\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/professors/{{professorId}}/lectures",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"professors",
+						"{{professorId}}",
+						"lectures"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get lectures of a specific professor",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test('should return successfully', ()=>{",
+							"    pm.response.to.have.status(200)",
+							"})",
+							"",
+							"pm.test('should return valid lectures',()=>{",
+							"    const resp = pm.response.json()",
+							"    pm.expect(Array.isArray(resp)).to.be.true;",
+							"    pm.expect(resp[0].id).to.equal(pm.environment.get('lectureId'))",
+							"})"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrl}}/professors/{{professorId}}/lectures",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"professors",
+						"{{professorId}}",
+						"lectures"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Assign lecture to course",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test('it should return successfully',()=>{",
+							"    pm.response.to.have.status(200);",
+							"    const resp = pm.response.json(); ",
+							"    pm.expect(resp.success).to.be.true;",
+							"})"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"lectureId\": \"{{lectureId}}\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/courses/{{courseId}}/lectures",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"courses",
+						"{{courseId}}",
+						"lectures"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Attend Lecture",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test('should return successfully',()=>{",
+							"    pm.response.to.have.status(201);",
+							"    const resp = pm.response.json()",
+							"    pm.expect(resp.success).to.be.true;",
+							"})"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"lectureId\": \"{{lectureId}}\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/students/{{studentId}}/lectures",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"students",
+						"{{studentId}}",
+						"lectures"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get lectures attended by student",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test('it should return successfully',()=>{",
+							"    pm.response.to.have.status(200)",
+							"})",
+							"",
+							"pm.test('it should return valid lectures for a student',()=>{",
+							"    const resp = pm.response.json()",
+							"    pm.expect(Array.isArray(resp)).to.be.true;",
+							"    pm.expect(resp[0].id).to.equal(pm.environment.get('lectureId'))",
+							"})"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrl}}/students/{{studentId}}/lectures",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"students",
+						"{{studentId}}",
+						"lectures"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Add lecture to course",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test('should return successfully',()=>{",
+							"    pm.response.to.have.status(200)",
+							"})"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"lectureId\": \"{{lectureId}}\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/courses/{{courseId}}/lectures",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"courses",
+						"{{courseId}}",
+						"lectures"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get lectures of course",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test('it should return successfully', ()=>{",
+							"    pm.response.to.have.status(200)",
+							"})",
+							"",
+							"pm.test('it should return valid lectures',()=>{",
+							"    const resp = pm.response.json()",
+							"    pm.expect(Array.isArray(resp)).to.be.true;",
+							"    pm.expect(resp[0].id).to.equal(pm.environment.get('lectureId'))",
+							"})"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrl}}/courses/{{courseId}}/lectures",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"courses",
+						"{{courseId}}",
+						"lectures"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Add course to department",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test('it should return successfully',()=>{",
+							"    pm.response.to.have.status(200)",
+							"})"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"courseId\": \"{{courseId}}\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/departments/{{departmentId}}/courses",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"departments",
+						"{{departmentId}}",
+						"courses"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get courses from department",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test('it should return successfully',()=>{",
+							"    pm.response.to.have.status(200)",
+							"})",
+							"",
+							"pm.test('it should return valid courses',()=>{",
+							"    const resp = pm.response.json()",
+							"    pm.expect(Array.isArray(resp)).to.be.true;",
+							"    pm.expect(resp[0].id).to.equal(pm.environment.get('courseId'))",
+							"})"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrl}}/departments/{{departmentId}}/courses",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"departments",
+						"{{departmentId}}",
+						"courses"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get lecture statatistics",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test('it should return successfully',()=>{",
+							"    pm.response.to.have.status(200)",
+							"})",
+							"",
+							"pm.test('it should return valid statistics',()=>{",
+							"    const resp = pm.response.json();",
+							"    pm.expect(",
+							"        resp[pm.environment.get('lectureTitle')]",
+							"    ).to.equal(1);",
+							"})"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrl}}/courses/{{courseId}}/stats",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"courses",
+						"{{courseId}}",
+						"stats"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create exam",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test('expect to return a successful response',()=>{",
+							"    pm.response.to.have.status(201)",
+							"})",
+							"",
+							"pm.test('it should have valid fields',()=>{",
+							"    const resp = pm.response.json()",
+							"    pm.expect(resp.title).to.be.ok;",
+							"    pm.expect(resp.startTime).to.be.ok;",
+							"    pm.expect(resp.endTime).to.be.ok;",
+							"    pm.expect(resp.mark).to.be.ok;",
+							"    pm.expect(resp.year).to.be.ok;",
+							"    pm.expect(resp.id).to.be.ok;",
+							"    pm.environment.set('examId', resp.id);",
+							"})"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"const dateTimeNow = new Date()",
+							"pm.environment.set('examStartTime',dateTimeNow)",
+							"let dateTimeAfterHour = new Date(dateTimeNow.getTime())",
+							"dateTimeAfterHour.setHours(dateTimeAfterHour.getHours() + 1)",
+							"pm.environment.set('examEndTime',dateTimeAfterHour)",
+							"pm.environment.set('examTitle','exam1')"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"title\": \"{{examTitle}}\",\n    \"year\": 1,\n    \"startTime\": \"{{examStartTime}}\",\n    \"endTime\": \"{{examEndTime}}\",\n    \"mark\" : 5\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/exams",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"exams"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create Invalid Exam",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test('it should fail',()=>{",
+							"    pm.response.to.have.status(400)",
+							"})"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"const dateTimeNow = new Date()",
+							"pm.environment.set('examStartTime',dateTimeNow)",
+							"let dateTimeAfterHour = new Date(dateTimeNow.getTime())",
+							"dateTimeAfterHour.setHours(dateTimeAfterHour.getHours() + 1)",
+							"pm.environment.set('examEndDate',dateTimeAfterHour)",
+							"pm.environment.set('examTitle','lecture1')"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"title\": \"{{examTitle}}\",\n    \"year\": 1,\n    \"startTime\": \"{{examStartTime}}\",\n    \"endTime\": \"{{examEndTime}}\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/exams",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"exams"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Assign exam to course",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test('should return successfully',()=>{",
+							"    pm.response.to.have.status(200)",
+							"})"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"examId\": \"{{examId}}\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/courses/{{courseId}}/exams",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"courses",
+						"{{courseId}}",
+						"exams"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get all exams in course",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test('it should return successfully', ()=>{",
+							"    pm.response.to.have.status(200)",
+							"})",
+							"",
+							"pm.test('it should return valid value', ()=>{",
+							"    const resp = pm.response.json()",
+							"    pm.expect(Array.isArray(resp)).to.be.true;",
+							"    pm.expect(resp[0].id).to.equal(",
+							"        pm.environment.get('examId')",
+							"    )",
+							"})"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrl}}/courses/{{courseId}}/exams",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"courses",
+						"{{courseId}}",
+						"exams"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get all events for student",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test('it should return successfully',()=>{",
+							"    pm.response.to.have.status(200)",
+							"})",
+							"",
+							"pm.test('it should return valid fields',()=>{",
+							"    const resp = pm.response.json()",
+							"    pm.expect(Array.isArray(resp)).to.be.true;",
+							"    pm.expect(resp.length).to.equal(2);",
+							"    pm.expect(resp[0].id).to.equal(",
+							"        pm.environment.get('lectureId')",
+							"    );",
+							"    pm.expect(resp[1].id).to.equal(",
+							"        pm.environment.get('examId')",
+							"    );",
+							"    pm.expect(resp[0].eventType).to.equal('lecture');",
+							"    pm.expect(resp[1].eventType).to.equal('exam');",
+							"})"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrl}}/students/{{studentId}}/events?startingFrom=2021-04-10&endingAt=2021-05-10",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"students",
+						"{{studentId}}",
+						"events"
+					],
+					"query": [
+						{
+							"key": "startingFrom",
+							"value": "2021-04-10"
+						},
+						{
+							"key": "endingAt",
+							"value": "2021-05-10"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get student attendance",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test('it should return successfully',()=>{",
+							"    pm.response.to.have.status(200);",
+							"})",
+							"",
+							"pm.test('it should return valid response', ()=>{",
+							"    const resp = pm.response.json();",
+							"    pm.expect(Array.isArray(resp[pm.environment.get('courseName')])).to.be.true;",
+							"    const courseData = resp[pm.environment.get('courseName')]",
+							"    pm.expect(courseData[0]['lectureTitle']).to.equal(pm.environment.get('lectureTitle'));",
+							"    pm.expect(courseData[0]['attended']).to.be.true;",
+							"})"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrl}}/students/{{studentId}}/attendance",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"students",
+						"{{studentId}}",
+						"attendance"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get students for lecture",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test('it should return successfully', ()=>{",
+							"    pm.response.to.have.status(200);",
+							"})",
+							"",
+							"pm.test('it should return valid students', ()=> {",
+							"    const resp = pm.response.json()",
+							"    pm.expect(Array.isArray(resp)).to.be.true;",
+							"    pm.expect(resp[0].id).to.equal(pm.environment.get('studentId'));",
+							"})"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrl}}/lectures/{{lectureId}}/students",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"lectures",
+						"{{lectureId}}",
+						"students"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Delete lecture",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test('it should delete successfully',()=>{",
+							"    pm.response.to.have.status(204)",
+							"})"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrl}}/lectures/{{lectureId}}",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"lectures",
+						"{{lectureId}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get all events for student after deletion",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test('it should return successfully',()=>{",
+							"    pm.response.to.have.status(200)",
+							"})",
+							"",
+							"pm.test('it should return an empty array',()=>{",
+							"    const resp = pm.response.json()",
+							"    pm.expect(Array.isArray(resp)).to.be.true;",
+							"    pm.expect(resp.length).to.equal(1);",
+							"})"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrl}}/students/{{studentId}}/events?startingFrom=2021-04-10&endingAt=2021-05-10",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"students",
+						"{{studentId}}",
+						"events"
+					],
+					"query": [
+						{
+							"key": "startingFrom",
+							"value": "2021-04-10"
+						},
+						{
+							"key": "endingAt",
+							"value": "2021-05-10"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get students for lecture that doesn't exist",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test('it should fail', ()=>{",
+							"    pm.response.to.have.status(400);",
+							"})",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrl}}/lectures/{{lectureId}}/students",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"lectures",
+						"{{lectureId}}",
+						"students"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"auth": {
+		"type": "bearer"
+	},
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	]
+}
