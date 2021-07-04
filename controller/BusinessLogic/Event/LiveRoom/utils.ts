@@ -28,7 +28,7 @@ export async function start_janus_room(
     );
 
     // create audio room
-    _create_room_plugin(
+    await _create_room_plugin(
         roomId,
         jansus_server,
         session_id,
@@ -39,7 +39,7 @@ export async function start_janus_room(
     );
 
     //create data room
-    _create_room_plugin(
+    await _create_room_plugin(
         roomId,
         jansus_server,
         session_id,
@@ -49,11 +49,10 @@ export async function start_janus_room(
         save_location
     );
 
-    destroy_plugin_attach(jansus_server, session_id, attaching_audio_id);
-    destroy_plugin_attach(jansus_server, session_id, attaching_data_id);
+    await destroy_plugin_attach(jansus_server, session_id, attaching_audio_id);
+    await destroy_plugin_attach(jansus_server, session_id, attaching_data_id);
 
-    destroy_session(jansus_server, session_id);
-    console.log(session_id);
+    await destroy_session(jansus_server, session_id);
 }
 
 export async function _create_room_plugin(
