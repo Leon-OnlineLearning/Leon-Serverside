@@ -1,4 +1,4 @@
-import passport, {
+import {
     accessTokenValidationMiddleware,
     BlockedJWTMiddleware,
 } from "@services/Auth";
@@ -12,10 +12,10 @@ import LecturesLogicImpl from "@controller/BusinessLogic/Event/Lecture/lectures-
 import { onlyProfessors } from "@services/Routes/User/AuthorizationMiddleware";
 import simpleFinalMWDecorator from "@services/utils/RequestDecorator";
 import multer from "multer";
-import Lecture from "@models/Events/Lecture/Lecture";
-import UserInputError from "@services/utils/UserInputError";
 import { sendLectureVideo } from "@controller/sending/sendFiles";
 import { promises } from "fs";
+import { userTockenData } from "../event.routes";
+import LiveRoomLogicImpl from "@controller/BusinessLogic/Event/LiveRoom/liveRoom-logic-imp";
 
 const readFile = promises.readFile;
 const router = Router();
@@ -37,11 +37,24 @@ router.use(accessTokenValidationMiddleware);
 
 const parser: BodyParserMiddleware = new LectureParser();
 
+router.get("/enter/:lectureId", async (req, res) => {
+    simpleFinalMWDecorator(res, async () => {
+        const user = req.user as userTockenData;
+
+        const audioRoom = await new LiveRoomLogicImpl().enter_lecture_room(
+            req.params.lectureId,
+            user.role
+        );
+        console.debug(audioRoom);
+        return audioRoom;
+    });
+});
+
 router.get("/:lectureId", async (req, res) => {
     simpleFinalMWDecorator(res, async () => {
         const logic: LecturesLogic = new LecturesLogicImpl();
-        const exam = await logic.getLectureById(req.params.lectureId);
-        return exam;
+        const lecture = await logic.getLectureById(req.params.lectureId);
+        return lecture;
     });
 });
 

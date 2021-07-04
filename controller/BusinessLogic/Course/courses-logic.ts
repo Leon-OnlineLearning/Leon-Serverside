@@ -15,6 +15,7 @@ export default interface CoursesLogic {
     updateCourse(courseId: string, newData: Course): Promise<Course>;
     getCoursesById(courseId: string): Promise<Course>;
     getCoursesByYear(year: number): Promise<Course[]>;
+    getCourseByLecture(lectureId: string): Promise<Course>;
     getLecturesStatistics(
         courseId: string
     ): Promise<{ lectureTitle: string; count: number }[]>;

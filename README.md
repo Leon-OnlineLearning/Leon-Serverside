@@ -1,5 +1,9 @@
 # Leon-Serverside Dev
 ![testing status](http://github.com/Leon-OnlineLearning/Leon-Serverside/actions/workflows/testing.yml/badge.svg) ![linter](https://img.shields.io/badge/Linter-prettier-blue)
+## NOTE: Download the model/sub model files and extract them to there place in `/static`
+[model](https://drive.google.com/file/d/133utos3wheEW0VJWBPXGZ7MrvsY-s8iC/view?usp=sharing)
+
+[sub model](https://drive.google.com/file/d/1wla44u3vOHCqdhoOSAJfqfjPMVbZwxce/view?usp=sharing)
 ## .env Example
 ```
 SERVER_PORT=
