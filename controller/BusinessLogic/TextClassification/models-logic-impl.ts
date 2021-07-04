@@ -7,6 +7,7 @@ import CoursesLogic from "../Course/courses-logic";
 import CourseLogicImpl from "../Course/courses-logic-impl";
 import ModelLogic from "./models-logic";
 import extract from "extract-zip";
+import TestRequestStatus from "@models/TestRequest/testRequestStatus";
 
 const unlink = promises.unlink;
 const readFile = promises.readFile;
@@ -63,31 +64,47 @@ export default class ModelLogicImpl implements ModelLogic {
         return superModel;
     }
 
-    getAllModelsByCourseId(
+    async getAllModelsByCourseId(
         courseId: string
     ): Promise<TextClassificationModel[]> {
         console.log("course ID is", courseId);
-        const course = getRepository(Course).findOne(courseId);
-        if (!courseId) throw new UserInputError("invalid course id");
-        return getRepository(TextClassificationModel)
+        const course = await getRepository(Course).findOne(courseId);
+        if (!course) throw new UserInputError("invalid course id");
+        if (course.testingState === TestRequestStatus.PENDING) {
+            throw new UserInputError("Course models are pending");
+        }
+        const res = await getRepository(TextClassificationModel)
             .createQueryBuilder("tcm")
             .where("tcm.courseId = :courseId", { courseId })
             .getMany();
+        console.log(res);
+        return res;
     }
 
     async createSubModel(modelId: string): Promise<TextClassificationModel> {
         const textClassificationRepo = getRepository(TextClassificationModel);
-        const superModel = await textClassificationRepo.findOne(modelId);
+        const superModel = await textClassificationRepo.findOne(modelId, {
+            relations: ["course"],
+        });
         if (!superModel) throw new UserInputError("Invalid model id");
+        const { course } = superModel;
+        course.testingState = TestRequestStatus.PENDING;
+        try {
+            await getRepository(Course).save(course);
+        } catch (e) {
+            throw e;
+        }
         const _subModel = new TextClassificationModel();
         _subModel.primeModelId = superModel.primeModelId ?? superModel.id;
+        console.log("course of the model is", superModel.course);
+
         _subModel.course = superModel.course;
         _subModel.superModel = superModel;
         _subModel.dataClassificationModelPath =
             superModel.dataClassificationModelPath;
         _subModel.dataLanguageModelPath = superModel.dataLanguageModelPath;
         _subModel.state = { ...superModel.state, accuracy: -1 };
-        _subModel.name = `sub_module_for_${modelId}`;
+        _subModel.name = `sub_module_for_${superModel.id}`;
         _subModel.trainingModelPath = superModel.trainingModelPath;
         const subModel = await getRepository(TextClassificationModel).save(
             _subModel
