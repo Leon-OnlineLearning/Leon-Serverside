@@ -1,5 +1,5 @@
 import Course from "@models/Course";
-import TestRequestStatus from "@models/TestRequest/testRequestStatus";
+import CourseConnectionStatus from "@models/TestRequest/testRequestStatus";
 import TextClassificationFile from "@models/TextClassification/TextClassificationFile";
 import TextClassificationModel from "@models/TextClassification/TextClassificationModel";
 import TextClassificationModelFile from "@models/TextClassification/TextClassificationModelFile";
@@ -130,7 +130,7 @@ export class ModelsFacadeImpl implements ModelsFacade {
     async requestTest(testingQuery: TestingQuery, url: string): Promise<void> {
         // set testing request to pending
         // dependant on the testing query
-        await testingQuery.changeTestingState(TestRequestStatus.PENDING);
+        await testingQuery.changeTestingState(CourseConnectionStatus.PENDING);
         const requestBody = {
             ...(await testingQuery.getCommonFields()),
             ...(await testingQuery.getSpecificFields()),
@@ -145,7 +145,9 @@ export class ModelsFacadeImpl implements ModelsFacade {
             .then(async (data) => {
                 // set testing request to idle
                 await testingQuery.storeTestResult(data);
-                await testingQuery.changeTestingState(TestRequestStatus.IDLE);
+                await testingQuery.changeTestingState(
+                    CourseConnectionStatus.IDLE
+                );
             })
             .catch((err) => console.error(err));
     }
@@ -173,8 +175,12 @@ export class ModelsFacadeImpl implements ModelsFacade {
                 responseType: "arraybuffer",
             })
             .then((res) => res.data)
-            .then((data) => {
+            .then(async (data) => {
                 const modelLogic: ModelLogic = new ModelLogicImpl();
+                // change the state of course to idle
+                const { course } = subModel;
+                course.connectionState = CourseConnectionStatus.IDLE;
+                await getRepository(Course).save(course);
                 modelLogic.receiveModelFiles(subModel.id, data);
             })
             .catch((err) => {

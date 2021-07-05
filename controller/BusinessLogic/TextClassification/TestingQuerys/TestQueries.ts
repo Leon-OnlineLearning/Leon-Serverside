@@ -32,7 +32,7 @@ async function setStateForCourseWide(
     await getConnection()
         .createQueryBuilder()
         .update(Course)
-        .set({ testingState: TestRequestStatus.PENDING })
+        .set({ connectionState: TestRequestStatus.PENDING })
         .where("id = :id", { id: courseId })
         .execute();
 }

@@ -70,7 +70,7 @@ export default class ModelLogicImpl implements ModelLogic {
         console.log("course ID is", courseId);
         const course = await getRepository(Course).findOne(courseId);
         if (!course) throw new UserInputError("invalid course id");
-        if (course.testingState === TestRequestStatus.PENDING) {
+        if (course.connectionState === TestRequestStatus.PENDING) {
             throw new UserInputError("Course models are pending");
         }
         const res = await getRepository(TextClassificationModel)
@@ -88,7 +88,7 @@ export default class ModelLogicImpl implements ModelLogic {
         });
         if (!superModel) throw new UserInputError("Invalid model id");
         const { course } = superModel;
-        course.testingState = TestRequestStatus.PENDING;
+        course.connectionState = TestRequestStatus.PENDING;
         try {
             await getRepository(Course).save(course);
         } catch (e) {
@@ -104,7 +104,7 @@ export default class ModelLogicImpl implements ModelLogic {
             superModel.dataClassificationModelPath;
         _subModel.dataLanguageModelPath = superModel.dataLanguageModelPath;
         _subModel.state = { ...superModel.state, accuracy: -1 };
-        _subModel.name = `sub_module_for_${superModel.id}`;
+        _subModel.name = `sub_module_${Date.now()}_for_${superModel.id}`;
         _subModel.trainingModelPath = superModel.trainingModelPath;
         const subModel = await getRepository(TextClassificationModel).save(
             _subModel

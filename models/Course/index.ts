@@ -39,7 +39,7 @@ export default class Course {
         enum: TestRequestStatus,
         default: TestRequestStatus.EMPTY,
     })
-    testingState: TestRequestStatus;
+    connectionState: TestRequestStatus;
 
     @OneToMany(() => Exam, (exam) => exam.course, { onDelete: "CASCADE" })
     exams: Promise<Exam[]>;
