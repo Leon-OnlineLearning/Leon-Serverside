@@ -22,7 +22,7 @@ describe("get last test results", () => {
         }
     });
 
-    test("should return null if there is no test results", async () => {
+    test("should return the expected test results", async () => {
         try {
             const dummyObject = { ASD: "ASD" };
             const courseLogic: CoursesLogic = new CourseLogicImpl();
