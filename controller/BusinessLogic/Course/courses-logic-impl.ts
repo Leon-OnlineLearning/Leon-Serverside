@@ -58,6 +58,7 @@ export default class CourseLogicImpl implements CoursesLogic {
         const res = await getRepository(Course)
             .createQueryBuilder("course")
             .select(`course."last${resultType}TestResults"`)
+            .where(`course.id=:courseId`, { courseId })
             .getRawOne();
         return res[`last${resultType}TestResults`];
     }
