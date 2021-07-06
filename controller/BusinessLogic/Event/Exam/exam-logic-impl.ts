@@ -14,18 +14,19 @@ import StudentsExams from "@models/JoinTables/StudentExam";
 import Student from "@models/Users/Student";
 import getBaseURL from "@utils/getBaseURL";
 import ModelLogicImpl from "@controller/BusinessLogic/TextClassification/models-logic-impl";
-import { ModelsFacade, ModelsFacadeImpl } from "@controller/BusinessLogic/TextClassification/modelFacade";
+import {
+    ModelsFacade,
+    ModelsFacadeImpl,
+} from "@controller/BusinessLogic/TextClassification/modelFacade";
 import { TestExamVideo } from "@controller/BusinessLogic/TextClassification/TestingQuerys/TestQueries";
 
-let upload_folder = process.env["UPLOADED_RECORDING_PATH"] || "/static/recording";
+let upload_folder =
+    process.env["UPLOADED_RECORDING_PATH"] || "/static/recording";
 export default class ExamsLogicImpl implements ExamsLogic {
-
-	async postExamProcessing(examId: string, studentId: string): Promise<void> {
-		        // get the latest model
+    async postExamProcessing(examId: string, studentId: string): Promise<void> {
+        // get the latest model
         // get course id for exam
-        const courseId = await new ExamsLogicImpl().getCourseId(
-			examId
-        );
+        const courseId = await new ExamsLogicImpl().getCourseId(examId);
         const latestModel = await new ModelLogicImpl().getTheLatestModel(
             courseId
         );
@@ -33,17 +34,13 @@ export default class ExamsLogicImpl implements ExamsLogic {
         // send test request to the server given the course id
         const modelFacade: ModelsFacade = new ModelsFacadeImpl();
         modelFacade.requestTest(
-            new TestExamVideo(
-                latestModel,
-				examId,
-				studentId,
-            ),
+            new TestExamVideo(latestModel, examId, studentId),
             `${
                 process.env["TEXT_CLASSIFICATION_BASE_URL"] ??
                 "/text_classification"
             }/Classify_Exams`
         );
-	}
+    }
 
     async getExamsByCourse(
         courseId: string,

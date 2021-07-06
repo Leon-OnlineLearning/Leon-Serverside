@@ -47,5 +47,5 @@ export default interface ExamsLogic {
     // addQuestion(question: ExamQuestion): Promise<ExamQuestion>;
     // removeQuestion(questionId: string): Promise<void>;
     // updateQuestion(questionId:string, newData: ExamQuestion): Promise<ExamQuestion>;
-	postExamProcessing(examId: string, studentId: string): Promise<void>
+    postExamProcessing(examId: string, studentId: string): Promise<void>;
 }
