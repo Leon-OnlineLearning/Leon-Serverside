@@ -116,7 +116,6 @@ router.put(
                 embedding,
                 report_res
             );
-            // FIXME delete the file
         });
     }
 );

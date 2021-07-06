@@ -11,7 +11,7 @@ const janus_server =
     process.env.janus_server || "http://janus-gateway:8088/janus";
 
 const jansus_reocrd_folder =
-    process.env.janus_record_folder || "/tmp/recordings"
+    process.env.janus_record_folder || "/tmp/recordings";
 
 export default class LiveRoomLogicImpl implements LiveRoomLogic {
     async enter_lecture_room(
