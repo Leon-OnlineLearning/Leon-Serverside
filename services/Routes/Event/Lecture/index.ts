@@ -45,7 +45,7 @@ router.get("/enter/:lectureId", async (req, res) => {
             req.params.lectureId,
             user.role
         );
-        console.debug(audioRoom);
+        console.debug(`sending live room with id ${audioRoom.roomId}`);
         return audioRoom;
     });
 });

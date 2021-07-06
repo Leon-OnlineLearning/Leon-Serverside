@@ -5,10 +5,13 @@ import UserInputError from "@services/utils/UserInputError";
 import { getRepository } from "typeorm";
 import LecturesLogicImpl from "../Lecture/lectures-logic-impl";
 import LiveRoomLogic from "./liveRoom-logic";
-import { start_janus_room } from "./utils";
+import { start_janus_room } from "./liveRoom-utils";
 
 const janus_server =
     process.env.janus_server || "http://janus-gateway:8088/janus";
+
+const jansus_reocrd_folder =
+    process.env.janus_record_folder || "/tmp/recordings";
 
 export default class LiveRoomLogicImpl implements LiveRoomLogic {
     async enter_lecture_room(
@@ -25,6 +28,10 @@ export default class LiveRoomLogicImpl implements LiveRoomLogic {
         const isLectureTime =
             lecture.startTime < new Date() && lecture.endTime > new Date();
         if (!isLectureTime) {
+            console.debug(
+                `start: ${lecture.startTime}, end:${lecture.endTime}`
+            );
+            console.debug(`time now: ${new Date()}`);
             throw new Error("lecture is not now");
         }
 
@@ -32,7 +39,7 @@ export default class LiveRoomLogicImpl implements LiveRoomLogic {
         if (!canStartRoom) {
             throw new Error("wait the professor to start lecture");
         }
-        const file_path = "lecture/req.params.lectureId.wav"; //REVIEW
+        const file_path = `${jansus_reocrd_folder}/lecture/${lectureId}.wav`; //REVIEW
 
         await start_janus_room(
             liveRoom.roomId,
