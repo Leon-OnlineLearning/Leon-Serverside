@@ -200,13 +200,8 @@ export default async function populateDB() {
     fakeLecture.course = sample_course;
     fakeLecture.title = "blah blah";
     fakeLecture.year = 1;
-    const startDate = new Date();
-    fakeLecture.startTime = startDate;
-    const newDate = new Date();
-    newDate.setHours(newDate.getHours() + 3);
-    fakeLecture.endTime = newDate;
-    fakeLecture.startTime = _time_after_now(1);
-    fakeLecture.endTime = _time_after_now(30);
+    fakeLecture.startTime = _time_after_now(0);
+    fakeLecture.endTime = _time_after_now(90);
     fakeLecture.path = "/test.pdf"; // test file available by front end
 
     const lecture = await new LecturesLogicImpl().createLecture(fakeLecture);
