@@ -32,7 +32,10 @@ export default class Course {
      *  use it as a stack add the last test state first
      */
     @Column({ nullable: true, type: "jsonb" })
-    lastTestResults: any;
+    lastSentenceTestResults: any;
+	
+    @Column({ nullable: true, type: "jsonb" })
+    lastFileTestResults: any;
 
     @Column({
         type: "enum",

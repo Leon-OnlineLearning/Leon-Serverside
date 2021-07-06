@@ -82,7 +82,7 @@ export async function get_video_portion(
     });
 }
 
-let upload_folder = process.env["UPLOADED_RECORDING_PATH"] || "recordings";
+let upload_folder = process.env["UPLOADED_RECORDING_PATH"] || "/static/recording";
 
 export function get_video_path(userId: string, examId: string) {
     let video_dir = join(upload_folder, examId);

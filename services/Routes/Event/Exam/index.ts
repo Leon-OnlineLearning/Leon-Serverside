@@ -87,6 +87,13 @@ router.put(
                 fileInfo.chunkIndex
             );
 
+			const studentLogic: StudentLogic = new StudentLogicImpl()
+			await studentLogic.registerLecturePath(
+				req.body["userId"],
+				req.body["examId"],
+				filePath
+			);
+
             const embedding: Embedding = await new StudentLogicImpl().getEmbedding(
                 req.body.userId
             );

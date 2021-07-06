@@ -108,9 +108,9 @@ export default async function populateDB() {
     const created_exam = await new ExamsLogicImpl().createExam(baseExam);
     console.debug(`created exam ${created_exam.id}`);
 
-    const videoPath = `${process.env["BASE_URL"]}static/recording/recording.mp4`;
+    const videoPath = `static/recording/recording.mp4`;
     const studentLogic: StudentLogic = new StudentLogicImpl();
-    const resultStudentExam = await studentLogic.attendExam(
+    const resultStudentExam = await studentLogic.registerLecturePath(
         sample_student.id,
         baseExam.id,
         videoPath
@@ -121,9 +121,7 @@ export default async function populateDB() {
     const fakeTCModel = new TextClassificationModel();
     fakeTCModel.name = "fake tc model";
     fakeTCModel.id = "b03073e0-6f55-4b49-8041-5693d1513923";
-    if (!process.env["BASE_URL"])
-        throw new Error("BASE_URL env var is not found");
-    const baseTextClassificationPath = `${process.env["BASE_URL"]}static/textclassification/`;
+    const baseTextClassificationPath = `static/textclassification/`;
     const modelBaseURL = `${baseTextClassificationPath}models/`;
     fakeTCModel.trainingModelPath = `${modelBaseURL}${fakeTCModel.id}/models/training_model_${fakeTCModel.id}.pth`;
     fakeTCModel.dataClassificationModelPath = `${modelBaseURL}${fakeTCModel.id}/data_classification_model_${fakeTCModel.id}.pkl`;
@@ -227,4 +225,5 @@ export default async function populateDB() {
         return new Date(now.getTime() + minutes * 60000);
     }
     console.debug(`attaching professor ${sample_professor.id} to lecture `);
+
 }

@@ -150,6 +150,7 @@ export async function sendFileHttpMethod(
             headers: fd.getHeaders(),
             data: fd,
             url: url,
+			maxBodyLength: 1024 * 1024 * 50
         });
         // FIXME this will not throw error if server is closed
         await callback(res.data);

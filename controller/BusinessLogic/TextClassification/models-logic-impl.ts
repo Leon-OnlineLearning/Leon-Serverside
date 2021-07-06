@@ -8,6 +8,7 @@ import CourseLogicImpl from "../Course/courses-logic-impl";
 import ModelLogic from "./models-logic";
 import extract from "extract-zip";
 import TestRequestStatus from "@models/TestRequest/testRequestStatus";
+import getBaseURL from "@utils/getBaseURL";
 
 const unlink = promises.unlink;
 const readFile = promises.readFile;
@@ -100,16 +101,19 @@ export default class ModelLogicImpl implements ModelLogic {
 
         _subModel.course = superModel.course;
         _subModel.superModel = superModel;
+        console.log("super model b4 raising", superModel);
+
         _subModel.dataClassificationModelPath =
             superModel.dataClassificationModelPath;
-        _subModel.dataLanguageModelPath = superModel.dataLanguageModelPath;
+        _subModel.dataLanguageModelPath = `${superModel.dataLanguageModelPath}`;
         _subModel.state = { ...superModel.state, accuracy: -1 };
         _subModel.name = `sub_module_${Date.now()}_for_${superModel.id}`;
-        _subModel.trainingModelPath = superModel.trainingModelPath;
+        _subModel.trainingModelPath = `${superModel.trainingModelPath}`;
         const subModel = await getRepository(TextClassificationModel).save(
             _subModel
         );
         await textClassificationRepo.save(superModel);
+
         return subModel;
     }
 
@@ -133,7 +137,6 @@ export default class ModelLogicImpl implements ModelLogic {
             "extract",
             extractionDir
         );
-        const baseUrl = process.env["BASE_URL"] ?? "https://localhost/backend/";
         await writeFile(zipPath, zipFile);
         // extract the zip file to static folder
         try {
@@ -154,7 +157,7 @@ export default class ModelLogicImpl implements ModelLogic {
         const filesPrefix = `${extractionDir}/models/${modelId}`;
         const modelLogic: ModelLogic = new ModelLogicImpl();
         const superModel = await modelLogic.getSuperModel(modelId);
-        const pathPrefix = `${baseUrl}static/textclassification/models/${modelId}`;
+        const pathPrefix = `static/textclassification/models/${modelId}`;
         // if it doesn't have a super model take the files from the zip
         // else take them from the super model
         let state: any = await readFile(
@@ -188,7 +191,7 @@ export default class ModelLogicImpl implements ModelLogic {
         await getRepository(TextClassificationModel).save(model);
         return model;
     }
-    getAllModels(): Promise<TextClassificationModel[]> {
+    async getAllModels(): Promise<TextClassificationModel[]> {
         return getRepository(TextClassificationModel).find();
     }
 
@@ -209,8 +212,7 @@ export default class ModelLogicImpl implements ModelLogic {
             const courseLogic: CoursesLogic = new CourseLogicImpl();
             const course = await courseLogic.getCoursesById(courseId);
             model.course = course;
-            const res = getRepository(TextClassificationModel).save(model);
-            return res;
+            return getRepository(TextClassificationModel).save(model);
         } catch (e) {
             throw e;
         }

@@ -12,6 +12,7 @@ import { get_video_path } from "@services/Routes/Event/Exam/recording_utils";
 import CourseLogicImpl from "@controller/BusinessLogic/Course/courses-logic-impl";
 import StudentsExams from "@models/JoinTables/StudentExam";
 import Student from "@models/Users/Student";
+import getBaseURL from "@utils/getBaseURL";
 
 let upload_folder = process.env["UPLOADED_RECORDING_PATH"] || "recordings";
 export default class ExamsLogicImpl implements ExamsLogic {
@@ -72,7 +73,7 @@ export default class ExamsLogicImpl implements ExamsLogic {
             .andWhere("se.studentId = :studentId", { studentId })
             .getOne();
         if (!studentExam) throw new UserInputError("Invalid Student+Exam ids");
-        return [studentExam.videoPath, studentExam.id];
+        return [`${getBaseURL()}${studentExam.videoPath}`, studentExam.id];
     }
 
     async storeExamTextClassificationResult(
@@ -93,7 +94,9 @@ export default class ExamsLogicImpl implements ExamsLogic {
         if (!studentExam)
             throw new UserInputError("student didn't attend the exam");
         studentExam.examReport = report;
-        return await getRepository(StudentsExams).save(studentExam);
+        const res = await getRepository(StudentsExams).save(studentExam);
+        res.videoPath = `${getBaseURL}${res.videoPath}`;
+        return res;
     }
 
     async getExamById(examId: string): Promise<Exam> {

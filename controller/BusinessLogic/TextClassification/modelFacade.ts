@@ -5,6 +5,7 @@ import TextClassificationModel from "@models/TextClassification/TextClassificati
 import TextClassificationModelFile from "@models/TextClassification/TextClassificationModelFile";
 import { FileType } from "@models/TextClassification/TextClassificationModelFile";
 import UserInputError from "@services/utils/UserInputError";
+import getBaseURL from "@utils/getBaseURL";
 import getFileName from "@utils/getFileName";
 import axios from "axios";
 import {
@@ -156,14 +157,20 @@ export class ModelsFacadeImpl implements ModelsFacade {
         const modelLogic: ModelLogic = new ModelLogicImpl();
         const subModel = await modelLogic.createSubModel(modelId);
         // TODO see what is the format for test
+		console.log("sub model data b4 sending", subModel);
+		
         const subModuleSummary = {
             modelId: subModel.id,
             model_files: {
-                data_language_model: [subModel.dataLanguageModelPath],
-                data_classification_model: [
-                    subModel.dataClassificationModelPath,
+                data_language_model: [
+                    `${getBaseURL()}${subModel.dataLanguageModelPath}`,
                 ],
-                training_model: [subModel.trainingModelPath],
+                data_classification_model: [
+                    `${getBaseURL()}${subModel.dataClassificationModelPath}`,
+                ],
+                training_model: [
+                    `${getBaseURL()}${subModel.trainingModelPath}`,
+                ],
             },
         };
         console.log("data send:", subModuleSummary);
@@ -224,12 +231,7 @@ export class ModelsFacadeImpl implements ModelsFacade {
                 // TODO check if there is a better (dynamic) way to get the base url
                 (path: { filePath: string }) => {
                     console.log("path is", path);
-                    return (
-                        `${
-                            process.env["BASE_URL"] ??
-                            "https://localhost/backend/"
-                        }` + path.filePath
-                    );
+                    return getBaseURL() + path.filePath;
                 }
             );
         }
