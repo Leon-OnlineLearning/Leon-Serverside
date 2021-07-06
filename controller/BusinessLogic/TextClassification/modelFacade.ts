@@ -1,10 +1,11 @@
 import Course from "@models/Course";
-import TestRequestStatus from "@models/TestRequest/testRequestStatus";
+import CourseConnectionStatus from "@models/TestRequest/testRequestStatus";
 import TextClassificationFile from "@models/TextClassification/TextClassificationFile";
 import TextClassificationModel from "@models/TextClassification/TextClassificationModel";
 import TextClassificationModelFile from "@models/TextClassification/TextClassificationModelFile";
 import { FileType } from "@models/TextClassification/TextClassificationModelFile";
 import UserInputError from "@services/utils/UserInputError";
+import getBaseURL from "@utils/getBaseURL";
 import getFileName from "@utils/getFileName";
 import axios from "axios";
 import {
@@ -130,7 +131,7 @@ export class ModelsFacadeImpl implements ModelsFacade {
     async requestTest(testingQuery: TestingQuery, url: string): Promise<void> {
         // set testing request to pending
         // dependant on the testing query
-        await testingQuery.changeTestingState(TestRequestStatus.PENDING);
+        await testingQuery.changeTestingState(CourseConnectionStatus.PENDING);
         const requestBody = {
             ...(await testingQuery.getCommonFields()),
             ...(await testingQuery.getSpecificFields()),
@@ -145,7 +146,9 @@ export class ModelsFacadeImpl implements ModelsFacade {
             .then(async (data) => {
                 // set testing request to idle
                 await testingQuery.storeTestResult(data);
-                await testingQuery.changeTestingState(TestRequestStatus.IDLE);
+                await testingQuery.changeTestingState(
+                    CourseConnectionStatus.IDLE
+                );
             })
             .catch((err) => console.error(err));
     }
@@ -154,14 +157,20 @@ export class ModelsFacadeImpl implements ModelsFacade {
         const modelLogic: ModelLogic = new ModelLogicImpl();
         const subModel = await modelLogic.createSubModel(modelId);
         // TODO see what is the format for test
+        console.log("sub model data b4 sending", subModel);
+
         const subModuleSummary = {
             modelId: subModel.id,
             model_files: {
-                data_language_model: [subModel.dataLanguageModelPath],
-                data_classification_model: [
-                    subModel.dataClassificationModelPath,
+                data_language_model: [
+                    `${getBaseURL()}${subModel.dataLanguageModelPath}`,
                 ],
-                training_model: [subModel.trainingModelPath],
+                data_classification_model: [
+                    `${getBaseURL()}${subModel.dataClassificationModelPath}`,
+                ],
+                training_model: [
+                    `${getBaseURL()}${subModel.trainingModelPath}`,
+                ],
             },
         };
         console.log("data send:", subModuleSummary);
@@ -173,8 +182,12 @@ export class ModelsFacadeImpl implements ModelsFacade {
                 responseType: "arraybuffer",
             })
             .then((res) => res.data)
-            .then((data) => {
+            .then(async (data) => {
                 const modelLogic: ModelLogic = new ModelLogicImpl();
+                // change the state of course to idle
+                const { course } = subModel;
+                course.connectionState = CourseConnectionStatus.IDLE;
+                await getRepository(Course).save(course);
                 modelLogic.receiveModelFiles(subModel.id, data);
             })
             .catch((err) => {
@@ -218,12 +231,7 @@ export class ModelsFacadeImpl implements ModelsFacade {
                 // TODO check if there is a better (dynamic) way to get the base url
                 (path: { filePath: string }) => {
                     console.log("path is", path);
-                    return (
-                        `${
-                            process.env["BASE_URL"] ??
-                            "https://localhost/backend/"
-                        }` + path.filePath
-                    );
+                    return getBaseURL() + path.filePath;
                 }
             );
         }

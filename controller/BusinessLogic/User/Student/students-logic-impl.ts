@@ -215,7 +215,7 @@ export default class StudentLogicImpl implements StudentLogic {
         await getRepository(StudentLectureAttendance).save(sla);
     }
 
-    async attendExam(
+    async registerLecturePath(
         studentId: string,
         examId: string,
         examVideoUrl: string

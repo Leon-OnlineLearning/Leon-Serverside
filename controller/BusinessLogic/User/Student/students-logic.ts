@@ -20,10 +20,10 @@ export default interface StudentLogic {
     ): Promise<any>;
     createStudent(student: Student): Promise<Student>;
     attendLecture(studentId: string, lectureId: string): Promise<void>;
-    attendExam(
+    registerLecturePath(
         studentId: string,
         examId: string,
-        examVideoUrl: string
+        examVideoPath: string
     ): Promise<StudentsExams>;
     getAllCourses(studentId: string): Promise<Course[]>;
     // DISCUSS: is this really needed while you got the courses which in turn has lectures in it

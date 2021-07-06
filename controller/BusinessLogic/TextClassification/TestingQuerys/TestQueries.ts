@@ -1,3 +1,4 @@
+import CourseLogicImpl from "@controller/BusinessLogic/Course/courses-logic-impl";
 import ExamsLogic from "@controller/BusinessLogic/Event/Exam/exam-logic";
 import ExamsLogicImpl from "@controller/BusinessLogic/Event/Exam/exam-logic-impl";
 import Course from "@models/Course";
@@ -8,36 +9,8 @@ import { getConnection, getManager, getRepository } from "typeorm";
 import { ModelsFacade, ModelsFacadeImpl } from "../modelFacade";
 import TestingQuery from "./TestingQuery";
 
-// TODO move it to course logic
-async function storeResultInCourse(modelId: string, data: any) {
-    // TODO add the test results LIFO
-    const { courseId } = await getManager().query(
-        `select "courseId" from text_classification_model
-            where id = $1 
-           `,
-        [modelId]
-    );
-    const course = await getRepository(Course).findOne(courseId);
-    if (!course) throw new Error("Invalid model/course state");
-    course.lastTestResults = data;
-    await getRepository(Course)
-        .save(course)
-        .catch((err) => console.error(err));
-}
-
-async function setStateForCourseWide(
-    state: TestRequestStatus,
-    courseId: string
-) {
-    await getConnection()
-        .createQueryBuilder()
-        .update(Course)
-        .set({ testingState: TestRequestStatus.PENDING })
-        .where("id = :id", { id: courseId })
-        .execute();
-}
-
 export class TestSentence extends TestingQuery {
+    courseLogic: CourseLogicImpl = new CourseLogicImpl();
     constructor(
         model: TextClassificationModel,
         private sentence: string,
@@ -46,7 +19,7 @@ export class TestSentence extends TestingQuery {
         super(model);
     }
     changeTestingState(state: TestRequestStatus): Promise<any> {
-        return setStateForCourseWide(state, this.courseId);
+        return this.courseLogic.setStateForCourseWide(state, this.courseId);
     }
     async getSpecificFields(): Promise<any> {
         return Promise.resolve({
@@ -54,19 +27,23 @@ export class TestSentence extends TestingQuery {
         });
     }
     async storeTestResult(data: any): Promise<any> {
-        await storeResultInCourse(this.model.id, data);
+        await this.courseLogic.storeTestSentenceResultInCourse(
+            this.model.id,
+            data
+        );
     }
 }
 
 export class TestFiles extends TestingQuery {
+    courseLogic: CourseLogicImpl = new CourseLogicImpl();
     constructor(model: TextClassificationModel, private courseId: string) {
         super(model);
     }
     changeTestingState(state: TestRequestStatus): Promise<any> {
-        return setStateForCourseWide(state, this.courseId);
+        return this.courseLogic.setStateForCourseWide(state, this.courseId);
     }
     async storeTestResult(data: any): Promise<any> {
-        await storeResultInCourse(this.model.id, data);
+        await this.courseLogic.storeTestFileResultInCourse(this.model.id, data);
     }
     async getSpecificFields() {
         return {

@@ -32,14 +32,17 @@ export default class Course {
      *  use it as a stack add the last test state first
      */
     @Column({ nullable: true, type: "jsonb" })
-    lastTestResults: any;
+    lastSentenceTestResults: any;
+
+    @Column({ nullable: true, type: "jsonb" })
+    lastFileTestResults: any;
 
     @Column({
         type: "enum",
         enum: TestRequestStatus,
         default: TestRequestStatus.EMPTY,
     })
-    testingState: TestRequestStatus;
+    connectionState: TestRequestStatus;
 
     @OneToMany(() => Exam, (exam) => exam.course, { onDelete: "CASCADE" })
     exams: Promise<Exam[]>;

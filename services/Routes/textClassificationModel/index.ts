@@ -97,28 +97,8 @@ router.post("/test-files", (req, res) => {
 
 router.post("/test-exam", (req, res) => {
     simpleFinalMWDecorator(res, async () => {
-        // get the latest model
-        // get course id for exam
-        const courseId = await new ExamsLogicImpl().getCourseId(
-            req.body["examId"]
-        );
-        const latestModel = await new ModelLogicImpl().getTheLatestModel(
-            courseId
-        );
-        if (!latestModel) throw new Error("error in latest model");
-        // send test request to the server given the course id
-        const modelFacade: ModelsFacade = new ModelsFacadeImpl();
-        modelFacade.requestTest(
-            new TestExamVideo(
-                latestModel,
-                req.body["examId"],
-                req.body["studentId"]
-            ),
-            `${
-                process.env["TEXT_CLASSIFICATION_BASE_URL"] ??
-                "/text_classification"
-            }/Classify_Exams`
-        );
+        console.warn("WARNING: no implementation");
     });
 });
+
 export default router;

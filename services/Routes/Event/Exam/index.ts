@@ -79,13 +79,28 @@ router.put(
                 chunkEndTime: parseInt(req.body.chunkEndTime),
             };
 
+            const examLogic: ExamsLogic = new ExamsLogicImpl();
+
             // save recived chunk
-            const filePath = await new ExamsLogicImpl().saveRecording(
+            const filePath = await examLogic.saveRecording(
                 fileInfo.chunk as Buffer,
                 fileInfo.examId,
                 req.body.userId,
                 fileInfo.chunkIndex
             );
+
+            if (fileInfo.lastChunk) {
+                const studentLogic: StudentLogic = new StudentLogicImpl();
+                await studentLogic.registerLecturePath(
+                    req.body["userId"],
+                    req.body["examId"],
+                    filePath
+                );
+                examLogic.postExamProcessing(
+                    req.body["examId"],
+                    req.body["userId"]
+                );
+            }
 
             const embedding: Embedding = await new StudentLogicImpl().getEmbedding(
                 req.body.userId

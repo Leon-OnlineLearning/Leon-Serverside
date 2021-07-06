@@ -2,11 +2,67 @@ import Course from "@models/Course";
 import Department from "@models/Department";
 import Exam from "@models/Events/Exam";
 import Lecture from "@models/Events/Lecture/Lecture";
+import TestRequestStatus from "@models/TestRequest/testRequestStatus";
 import TextClassificationModel from "@models/TextClassification/TextClassificationModel";
 import UserInputError from "@services/utils/UserInputError";
-import { getRepository } from "typeorm";
-import CoursesLogic from "./courses-logic";
+import { getConnection, getManager, getRepository } from "typeorm";
+import CoursesLogic, { TestResultType } from "./courses-logic";
 export default class CourseLogicImpl implements CoursesLogic {
+    getLastTestSentenceResult(courseId: string): Promise<any> {
+        return this.getLastTestResult(courseId, "Sentence");
+    }
+    getLastTestFileResult(courseId: string): Promise<any> {
+        return this.getLastTestResult(courseId, "File");
+    }
+    async getCourseAssociatedToModel(modelId: string) {
+        const { courseId } = await getManager().query(
+            `select "courseId" from text_classification_model
+			where id = $1 
+		   `,
+            [modelId]
+        );
+        const course = await getRepository(Course).findOne(courseId);
+        if (!course) throw new Error("Invalid model/course state");
+        return course;
+    }
+
+    async storeTestFileResultInCourse(modelId: string, data: any) {
+        const course = await this.getCourseAssociatedToModel(modelId);
+        course.lastFileTestResults = data;
+        await getRepository(Course)
+            .save(course)
+            .catch((err) => console.error(err));
+    }
+
+    async storeTestSentenceResultInCourse(modelId: string, data: any) {
+        const course = await this.getCourseAssociatedToModel(modelId);
+        course.lastSentenceTestResults = data;
+        await getRepository(Course)
+            .save(course)
+            .catch((err) => console.error(err));
+    }
+
+    async setStateForCourseWide(state: TestRequestStatus, courseId: string) {
+        await getConnection()
+            .createQueryBuilder()
+            .update(Course)
+            .set({ connectionState: TestRequestStatus.PENDING })
+            .where("id = :id", { id: courseId })
+            .execute();
+    }
+
+    async getLastTestResult(
+        courseId: string,
+        resultType: TestResultType
+    ): Promise<any> {
+        const res = await getRepository(Course)
+            .createQueryBuilder("course")
+            .select(`course."last${resultType}TestResults"`)
+            .where(`course.id=:courseId`, { courseId })
+            .getRawOne();
+        return res[`last${resultType}TestResults`];
+    }
+
     async getCourseByLecture(lectureId: string): Promise<Course> {
         const lecture = await getRepository(Lecture).findOne(lectureId, {
             relations: ["course"],

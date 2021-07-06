@@ -108,9 +108,9 @@ export default async function populateDB() {
     const created_exam = await new ExamsLogicImpl().createExam(baseExam);
     console.debug(`created exam ${created_exam.id}`);
 
-    const videoPath = `${process.env["BASE_URL"]}static/recording/recording.mp4`;
+    const videoPath = `static/recording/recording.mp4`;
     const studentLogic: StudentLogic = new StudentLogicImpl();
-    const resultStudentExam = await studentLogic.attendExam(
+    const resultStudentExam = await studentLogic.registerLecturePath(
         sample_student.id,
         baseExam.id,
         videoPath
@@ -120,10 +120,8 @@ export default async function populateDB() {
     // create fake models (not suitable for machine learning)
     const fakeTCModel = new TextClassificationModel();
     fakeTCModel.name = "fake tc model";
-    fakeTCModel.id = "8c1d6508-3d53-4024-877d-f4aa5cc9537c";
-    if (!process.env["BASE_URL"])
-        throw new Error("BASE_URL env var is not found");
-    const baseTextClassificationPath = `${process.env["BASE_URL"]}static/textclassification/`;
+    fakeTCModel.id = "b03073e0-6f55-4b49-8041-5693d1513923";
+    const baseTextClassificationPath = `static/textclassification/`;
     const modelBaseURL = `${baseTextClassificationPath}models/`;
     fakeTCModel.trainingModelPath = `${modelBaseURL}${fakeTCModel.id}/models/training_model_${fakeTCModel.id}.pth`;
     fakeTCModel.dataClassificationModelPath = `${modelBaseURL}${fakeTCModel.id}/data_classification_model_${fakeTCModel.id}.pkl`;
@@ -131,7 +129,7 @@ export default async function populateDB() {
     fakeTCModel.predictionModelPath = `${modelBaseURL}${fakeTCModel.id}/prediction_model_${fakeTCModel.id}.pkl`;
 
     let state: any = await readFile(
-        `${__dirname}/../static/textclassification/models/8c1d6508-3d53-4024-877d-f4aa5cc9537c/state_8c1d6508-3d53-4024-877d-f4aa5cc9537c.json`,
+        `${__dirname}/../static/textclassification/models/${fakeTCModel.id}/state_${fakeTCModel.id}.json`,
         {
             encoding: "utf-8",
         }
@@ -172,12 +170,12 @@ export default async function populateDB() {
 
     // create sub model
     const fakeSubModel = new TextClassificationModel();
-    fakeSubModel.id = "064730c1-c17f-42fc-bebd-010d7b0257db";
+    fakeSubModel.id = "34f151ad-cfe7-4679-bb85-249c99273329";
     fakeSubModel.predictionModelPath = `${modelBaseURL}${fakeSubModel.id}/prediction_model_${fakeSubModel.id}.pkl`;
     fakeSubModel.trainingModelPath = `${modelBaseURL}${fakeSubModel.id}/models/training_model_${fakeSubModel.id}.pth`;
 
     let subState: any = await readFile(
-        `${__dirname}/../static/textclassification/models/064730c1-c17f-42fc-bebd-010d7b0257db/state_064730c1-c17f-42fc-bebd-010d7b0257db.json`,
+        `${__dirname}/../static/textclassification/models/${fakeSubModel.id}/state_${fakeSubModel.id}.json`,
         {
             encoding: "utf-8",
         }
@@ -187,7 +185,7 @@ export default async function populateDB() {
     fakeSubModel.state = subState;
     fakeSubModel.superModel = fakeTCModel;
     fakeSubModel.primeModelId = fakeTCModel.id;
-    fakeSubModel.name = "sub module for" + fakeTCModel.name;
+    fakeSubModel.name = "sub_module_" + Date.now() + "_for_" + fakeTCModel.id;
     fakeSubModel.dataClassificationModelPath =
         fakeTCModel.dataClassificationModelPath;
     fakeSubModel.dataLanguageModelPath = fakeTCModel.dataLanguageModelPath;
