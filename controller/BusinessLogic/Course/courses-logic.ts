@@ -23,7 +23,10 @@ export default interface CoursesLogic {
         courseId: string
     ): Promise<{ lectureTitle: string; count: number }[]>;
     getAllTextClassificationModels(courseId: string): Promise<any>;
-    getLastTestResult(courseId: string, resultType: TestResultType): Promise<any>;
+    getLastTestResult(
+        courseId: string,
+        resultType: TestResultType
+    ): Promise<any>;
     getCourseAssociatedToModel(modelId: string): Promise<Course>;
     storeTestFileResultInCourse(modelId: string, data: any): Promise<void>;
     storeTestSentenceResultInCourse(modelId: string, data: any): Promise<void>;
@@ -31,6 +34,6 @@ export default interface CoursesLogic {
         state: TestRequestStatus,
         courseId: string
     ): Promise<void>;
-	getLastTestSentenceResult(courseId: string): Promise<any>;
-	getLastTestFileResult(courseId: string): Promise<any>;
+    getLastTestSentenceResult(courseId: string): Promise<any>;
+    getLastTestFileResult(courseId: string): Promise<any>;
 }

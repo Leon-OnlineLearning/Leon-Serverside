@@ -225,5 +225,4 @@ export default async function populateDB() {
         return new Date(now.getTime() + minutes * 60000);
     }
     console.debug(`attaching professor ${sample_professor.id} to lecture `);
-
 }

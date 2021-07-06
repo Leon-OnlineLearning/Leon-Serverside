@@ -14,7 +14,7 @@ export default function convertModelPathsToUrls(
     _model.modelFile.file.filePath = `${getBaseURL()}${
         _model.modelFile.file.filePath
     }`;
-	_model.stateFilePath = `${getBaseURL()}${_model.stateFilePath}`;
-	_model.trainingModelPath = `${getBaseURL}${_model.trainingModelPath}`;
-	return _model;
+    _model.stateFilePath = `${getBaseURL()}${_model.stateFilePath}`;
+    _model.trainingModelPath = `${getBaseURL}${_model.trainingModelPath}`;
+    return _model;
 }

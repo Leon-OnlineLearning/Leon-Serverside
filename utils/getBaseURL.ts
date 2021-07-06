@@ -1,3 +1,3 @@
 export default function getBaseURL() {
-	return process.env["BASE_URL"];
+    return process.env["BASE_URL"];
 }

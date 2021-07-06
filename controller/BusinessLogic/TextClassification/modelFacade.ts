@@ -157,8 +157,8 @@ export class ModelsFacadeImpl implements ModelsFacade {
         const modelLogic: ModelLogic = new ModelLogicImpl();
         const subModel = await modelLogic.createSubModel(modelId);
         // TODO see what is the format for test
-		console.log("sub model data b4 sending", subModel);
-		
+        console.log("sub model data b4 sending", subModel);
+
         const subModuleSummary = {
             modelId: subModel.id,
             model_files: {

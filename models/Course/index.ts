@@ -33,7 +33,7 @@ export default class Course {
      */
     @Column({ nullable: true, type: "jsonb" })
     lastSentenceTestResults: any;
-	
+
     @Column({ nullable: true, type: "jsonb" })
     lastFileTestResults: any;
 

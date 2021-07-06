@@ -24,19 +24,21 @@ describe("get last test results", () => {
 
     test("should return null if there is no test results", async () => {
         try {
-			const dummyObject = {"ASD": "ASD"}
+            const dummyObject = { ASD: "ASD" };
             const courseLogic: CoursesLogic = new CourseLogicImpl();
             let sample_course = new Course();
             sample_course.name = "dummy course";
             sample_course.year = 2021;
-			sample_course.lastSentenceTestResults = dummyObject
+            sample_course.lastSentenceTestResults = dummyObject;
             sample_course = await new CourseLogicImpl().createCourse(
                 sample_course
             );
-            const res = await courseLogic.getLastTestSentenceResult(sample_course.id);
+            const res = await courseLogic.getLastTestSentenceResult(
+                sample_course.id
+            );
             expect(res).toEqual(dummyObject);
         } catch (e) {
-			throw e;
+            throw e;
         }
     });
 });

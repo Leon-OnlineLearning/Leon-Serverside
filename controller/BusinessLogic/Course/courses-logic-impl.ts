@@ -8,12 +8,12 @@ import UserInputError from "@services/utils/UserInputError";
 import { getConnection, getManager, getRepository } from "typeorm";
 import CoursesLogic, { TestResultType } from "./courses-logic";
 export default class CourseLogicImpl implements CoursesLogic {
-	getLastTestSentenceResult(courseId: string): Promise<any> {
-		return this.getLastTestResult(courseId, "Sentence");
-	}
-	getLastTestFileResult(courseId: string): Promise<any> {
-		return this.getLastTestResult(courseId, "File");
-	}
+    getLastTestSentenceResult(courseId: string): Promise<any> {
+        return this.getLastTestResult(courseId, "Sentence");
+    }
+    getLastTestFileResult(courseId: string): Promise<any> {
+        return this.getLastTestResult(courseId, "File");
+    }
     async getCourseAssociatedToModel(modelId: string) {
         const { courseId } = await getManager().query(
             `select "courseId" from text_classification_model
@@ -51,7 +51,10 @@ export default class CourseLogicImpl implements CoursesLogic {
             .execute();
     }
 
-    async getLastTestResult(courseId: string, resultType: TestResultType): Promise<any> {
+    async getLastTestResult(
+        courseId: string,
+        resultType: TestResultType
+    ): Promise<any> {
         const res = await getRepository(Course)
             .createQueryBuilder("course")
             .select(`course."last${resultType}TestResults"`)

@@ -147,17 +147,17 @@ router.get("/:courseId/models", (req, res) => {
 });
 
 router.get("/:courseId/sentenceTestResult", (req, res) => {
-	simpleFinalMWDecorator(res, async() => {
-		const courseLogic: CoursesLogic = new CourseLogicImpl();
-		return courseLogic.getLastTestSentenceResult(req.params["courseId"]);
-	})
-})
+    simpleFinalMWDecorator(res, async () => {
+        const courseLogic: CoursesLogic = new CourseLogicImpl();
+        return courseLogic.getLastTestSentenceResult(req.params["courseId"]);
+    });
+});
 
 router.get("/:courseId/fileTestResult", (req, res) => {
-	simpleFinalMWDecorator(res, async() => {
-		const courseLogic: CoursesLogic = new CourseLogicImpl();
-		return courseLogic.getLastTestFileResult(req.params["courseId"]);
-	})
-})
+    simpleFinalMWDecorator(res, async () => {
+        const courseLogic: CoursesLogic = new CourseLogicImpl();
+        return courseLogic.getLastTestFileResult(req.params["courseId"]);
+    });
+});
 
 export default router;
