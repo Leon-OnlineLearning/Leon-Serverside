@@ -11,7 +11,7 @@ const janus_server =
     process.env.janus_server || "http://janus-gateway:8088/janus";
 
 const jansus_reocrd_folder =
-    process.env.janus_record_folder || "/tmp/recordings";
+    process.env.janus_record_folder || "/www/recording";
 
 export default class LiveRoomLogicImpl implements LiveRoomLogic {
     async enter_lecture_room(
@@ -39,14 +39,13 @@ export default class LiveRoomLogicImpl implements LiveRoomLogic {
         if (!canStartRoom) {
             throw new Error("wait the professor to start lecture");
         }
-        const file_path = `${jansus_reocrd_folder}/lecture/${lectureId}.wav`; //REVIEW
 
         await start_janus_room(
             liveRoom.roomId,
             janus_server,
             liveRoom.roomSecret,
             "notImplemented",
-            file_path
+            _get_janus_file_path(lectureId)
         );
 
         liveRoom.isAlive = true;
@@ -61,4 +60,8 @@ export default class LiveRoomLogicImpl implements LiveRoomLogic {
         if (lecture) return lecture.liveRoom;
         else throw new UserInputError("Invalid lecture id");
     }
+}
+
+export function _get_janus_file_path(lectureId: string) {
+    return `${jansus_reocrd_folder}/${lectureId}.wav`;
 }
