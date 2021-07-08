@@ -12,3 +12,6 @@ test/unit/SendVideo/videoTstC.webm
 env:Zone.Identifier
 static/
 zip_state.txt
+.devcontainer/docker-compose.yml
+.devcontainer/devcontainer.json
+main_trash.ts
