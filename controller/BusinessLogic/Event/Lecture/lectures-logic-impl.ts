@@ -48,6 +48,16 @@ export default class LecturesLogicImpl implements LecturesLogic {
             throw new Error("cannot delete file");
         }
     }
+    /**
+     * download -> delete -> save path to db
+     */
+    async transferRemoteRecording(lectureId: string) {
+        const path = await this.getRemoteRecording(lectureId)
+        // TODO save to db
+
+        await this.clearRemoteRecording(lectureId)
+        return path
+    }
     async storeLectureTranscript(
         lectureId: string,
         content: any
