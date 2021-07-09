@@ -7,10 +7,57 @@ import { getRepository } from "typeorm";
 import LecturesLogic from "./lectures-logic";
 import { promises } from "fs";
 import AudioRoom from "@models/Events/AudioRoom";
+import axios from "axios";
+import { join } from "path";
+import { mkdir } from "fs/promises";
 
 const writeFile = promises.writeFile;
 
+const fileFormat = "wav";
+const record_dir = process.env["UPLOADED_LECTURES_PATH"] || "lectures";
+const remote_server_url =
+    process.env["LIVEROOM_SERVER"] || "http://janus-gateway:6111";
+
 export default class LecturesLogicImpl implements LecturesLogic {
+    async listRemoteRecordings(): Promise<string[]> {
+        const res = await axios.get(`${remote_server_url}/lecture/all`);
+        return res.data;
+    }
+
+    async getRemoteRecording(lectureId: string): Promise<string> {
+        const res = await axios.get(
+            `${remote_server_url}/lecture/${lectureId}.${fileFormat}`,
+            {
+                responseType: "arraybuffer",
+            }
+        );
+
+        const recording_path = getLectureRecordPath(lectureId);
+
+        // make sure folder exist then save the recording
+        await mkdir(record_dir, { recursive: true });
+        await writeFile(recording_path, res.data);
+
+        return recording_path;
+    }
+    async clearRemoteRecording(lectureId: string): Promise<void> {
+        const res = await axios.delete(
+            `${remote_server_url}/lecture/${lectureId}`
+        );
+        if (res.status != 200) {
+            throw new Error("cannot delete file");
+        }
+    }
+    /**
+     * download -> delete -> save path to db
+     */
+    async transferRemoteRecording(lectureId: string) {
+        const path = await this.getRemoteRecording(lectureId);
+        // TODO save to db
+
+        await this.clearRemoteRecording(lectureId);
+        return path;
+    }
     async storeLectureTranscript(
         lectureId: string,
         content: any
@@ -95,4 +142,8 @@ export default class LecturesLogicImpl implements LecturesLogic {
             })
             .getMany();
     }
+}
+
+export function getLectureRecordPath(lectureId: string) {
+    return join(record_dir, `${lectureId}.wav`);
 }

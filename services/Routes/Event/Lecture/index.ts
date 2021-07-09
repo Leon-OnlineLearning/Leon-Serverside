@@ -50,6 +50,16 @@ router.get("/enter/:lectureId", async (req, res) => {
     });
 });
 
+router.get("/end/:lectureId", onlyProfessors, async (req, res) => {
+    simpleFinalMWDecorator(res, async () => {
+        const lectureLogic = new LecturesLogicImpl();
+        const lectureId = req.body.lectureId;
+        //REVIEW it may be required to wait a little until the recording is saved
+        const recordingPath = lectureLogic.transferRemoteRecording(lectureId);
+
+        return "OK";
+    });
+});
 router.get("/:lectureId", async (req, res) => {
     simpleFinalMWDecorator(res, async () => {
         const logic: LecturesLogic = new LecturesLogicImpl();

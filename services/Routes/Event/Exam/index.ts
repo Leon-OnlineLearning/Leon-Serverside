@@ -159,7 +159,7 @@ type PartSpecType = {
     examId: string;
 };
 
-// FIXME resrtict access to [student with same ip, professor of exam, admin]
+// FIXME restrict access to [student with same id, professor of exam, admin]
 router.get("/video", async (req, res) => {
     const partSpec: PartSpecType = {
         startingTime: parseInt(req.query.startingTime as string),
