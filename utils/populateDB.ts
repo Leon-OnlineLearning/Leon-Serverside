@@ -108,14 +108,14 @@ export default async function populateDB() {
     const created_exam = await new ExamsLogicImpl().createExam(baseExam);
     console.debug(`created exam ${created_exam.id}`);
 
-    const videoPath = `static/recording/recording.mp4`;
-    const studentLogic: StudentLogic = new StudentLogicImpl();
-    const resultStudentExam = await studentLogic.registerExamPath(
-        sample_student.id,
-        baseExam.id,
-        videoPath
-    );
-    console.debug(`student + exam relation created ${resultStudentExam.id}`);
+    // const videoPath = `static/recording/recording.mp4`;
+    // const studentLogic: StudentLogic = new StudentLogicImpl();
+    // const resultStudentExam = await studentLogic.registerExamPath(
+    //     sample_student.id,
+    //     baseExam.id,
+    //     videoPath
+    // );
+    // console.debug(`student + exam relation created ${resultStudentExam.id}`);
 
     // create fake models (not suitable for machine learning)
     const fakeTCModel = new TextClassificationModel();
