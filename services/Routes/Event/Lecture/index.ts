@@ -9,13 +9,14 @@ import LectureParser, {
 } from "@services/Routes/BodyParserMiddleware/LectureParser";
 import LecturesLogic from "@controller/BusinessLogic/Event/Lecture/lectures-logic";
 import LecturesLogicImpl from "@controller/BusinessLogic/Event/Lecture/lectures-logic-impl";
-import { onlyProfessors } from "@services/Routes/User/AuthorizationMiddleware";
+import { onlyProfessors, onlyStudentOrProfessor } from "@services/Routes/User/AuthorizationMiddleware";
 import simpleFinalMWDecorator from "@services/utils/RequestDecorator";
 import multer from "multer";
 import { sendLectureVideo } from "@controller/sending/sendFiles";
 import { promises } from "fs";
 import { userTockenData } from "../event.routes";
 import LiveRoomLogicImpl from "@controller/BusinessLogic/Event/LiveRoom/liveRoom-logic-imp";
+import UserTypes from "@models/Users/UserTypes";
 
 const readFile = promises.readFile;
 const router = Router();
@@ -37,13 +38,14 @@ router.use(accessTokenValidationMiddleware);
 
 const parser: BodyParserMiddleware = new LectureParser();
 
-router.get("/enter/:lectureId", async (req, res) => {
+router.get("/enter/:lectureId", onlyStudentOrProfessor, async (req, res) => {
+
     simpleFinalMWDecorator(res, async () => {
         const user = req.user as userTockenData;
 
         const audioRoom = await new LiveRoomLogicImpl().enter_lecture_room(
             req.params.lectureId,
-            user.role
+            user.role as UserTypes.STUDENT | UserTypes.PROFESSOR
         );
         console.debug(`sending live room with id ${audioRoom.roomId}`);
         return audioRoom;

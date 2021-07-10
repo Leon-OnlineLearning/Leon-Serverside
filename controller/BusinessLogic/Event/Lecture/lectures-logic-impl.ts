@@ -51,12 +51,18 @@ export default class LecturesLogicImpl implements LecturesLogic {
     /**
      * download -> delete -> save path to db
      */
-    async transferRemoteRecording(lectureId: string) {
-        const path = await this.getRemoteRecording(lectureId);
-        // TODO save to db
+    async transferRemoteRecording(lectureId: string): Promise<void> {
+        try {
+            const path = await this.getRemoteRecording(lectureId);
+            console.debug(`recording saved successfully at ${path}`)
+            // TODO save to db
 
-        await this.clearRemoteRecording(lectureId);
-        return path;
+            await this.clearRemoteRecording(lectureId);
+
+        } catch (error) {
+            console.error(error)
+        }
+
     }
     async storeLectureTranscript(
         lectureId: string,
