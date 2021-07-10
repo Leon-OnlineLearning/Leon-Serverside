@@ -53,9 +53,18 @@ router.get("/enter/:lectureId", async (req, res) => {
 router.get("/end/:lectureId", onlyProfessors, async (req, res) => {
     simpleFinalMWDecorator(res, async () => {
         const lectureLogic = new LecturesLogicImpl();
-        const lectureId = req.body.lectureId;
+        const lectureId = req.params.lectureId;
+
+        try {
+            await new LiveRoomLogicImpl().close_lecture_room(lectureId);
+        } catch (error) {
+            console.debug(error)
+            throw new Error("cannot close room");
+        }
         //REVIEW it may be required to wait a little until the recording is saved
-        const recordingPath = lectureLogic.transferRemoteRecording(lectureId);
+        await lectureLogic.transferRemoteRecording(lectureId);
+
+
 
         return "OK";
     });

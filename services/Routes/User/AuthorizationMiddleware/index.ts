@@ -52,6 +52,7 @@ export function onlyStudents(req: Request, res: Response, next: NextFunction) {
     }
 }
 
+// WARN this doesn't work as intended and admin will pass
 export function onlyStudentOrProfessor(
     req: Request,
     res: Response,
