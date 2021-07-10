@@ -2,12 +2,10 @@ import axios from "axios";
 
 export enum supportedPlugins {
     audio = "audiobridge",
-    data = "textroom"
+    data = "textroom",
 }
 
 export default class JanusConnection {
-
-
     private _session_id: number | undefined;
     public get session_id(): number | undefined {
         return this._session_id;
@@ -18,20 +16,18 @@ export default class JanusConnection {
         return this._handler_id;
     }
 
-
     private get pluginLink(): string {
-        return `${this.janus_server}/${this._session_id}/${this._handler_id}`
+        return `${this.janus_server}/${this._session_id}/${this._handler_id}`;
     }
 
-    constructor(public janus_server: string, public plugin: supportedPlugins) {
-
-    }
+    constructor(public janus_server: string, public plugin: supportedPlugins) {}
 
     async initialize() {
-        this._session_id = await this.create_session(this.janus_server)
+        this._session_id = await this.create_session(this.janus_server);
 
-        this._handler_id = await this.attach_plugin(`janus.plugin.${this.plugin}`)
-
+        this._handler_id = await this.attach_plugin(
+            `janus.plugin.${this.plugin}`
+        );
     }
 
     async create_room(
@@ -61,34 +57,30 @@ export default class JanusConnection {
         if (res.data.janus != "success") {
             throw new Error("cannot create room");
         }
-        const is_audio_already_exist = res.data.plugindata.error_code == 486 &&
-            res.data.audiobridge
+        const is_audio_already_exist =
+            res.data.plugindata.error_code == 486 && res.data.audiobridge;
 
-        const is_data_already_exist = res.data.plugindata.error_code == 418 &&
-            res.data.textroom
+        const is_data_already_exist =
+            res.data.plugindata.error_code == 418 && res.data.textroom;
 
         if (is_audio_already_exist || is_data_already_exist) {
             console.info(`room already exist with id ${roomId}`);
-            return
+            return;
         }
-
 
         console.info(`room created successfully with id ${roomId}`);
     }
 
-
-    async end_room(
-        roomId: number,
-        room_secret: string) {
+    async end_room(roomId: number, room_secret: string) {
         const destroy_room_request = {
             janus: "message",
             transaction: random_string(12),
             body: {
-                "request": "destroy",
-                "room": roomId,
-                "secret": room_secret,
-            }
-        }
+                request: "destroy",
+                room: roomId,
+                secret: room_secret,
+            },
+        };
         const res = await axios({
             method: "POST",
             url: this.pluginLink,
@@ -98,22 +90,21 @@ export default class JanusConnection {
             throw new Error("cannot destroy room");
         }
         if (res.data.plugindata?.error_code) {
-            throw new Error(`plugin throw error ${res.data.plugindata?.error_code}`);
+            throw new Error(
+                `plugin throw error ${res.data.plugindata?.error_code}`
+            );
         }
 
-        console.info(`room destroyed with id ${roomId}`)
+        console.info(`room destroyed with id ${roomId}`);
     }
 
     async destroy(): Promise<void> {
+        await this.destroy_plugin_attach();
+        this._handler_id = undefined;
 
-        await this.destroy_plugin_attach()
-        this._handler_id = undefined
-
-        await this.destroy_session()
-        this._session_id = undefined
-
+        await this.destroy_session();
+        this._session_id = undefined;
     }
-
 
     async getJanusInfo(janus_server: string) {
         let res = await axios({
@@ -143,9 +134,7 @@ export default class JanusConnection {
         return session_id;
     }
 
-    private async attach_plugin(
-        plugin_name: string
-    ) {
+    private async attach_plugin(plugin_name: string) {
         const attach_msg = {
             janus: "attach",
             plugin: plugin_name,
@@ -161,7 +150,9 @@ export default class JanusConnection {
         }
 
         const attachment_id = res.data.data.id;
-        console.debug(`attach to plugin ${plugin_name} with id ${attachment_id}`);
+        console.debug(
+            `attach to plugin ${plugin_name} with id ${attachment_id}`
+        );
         return attachment_id;
     }
 

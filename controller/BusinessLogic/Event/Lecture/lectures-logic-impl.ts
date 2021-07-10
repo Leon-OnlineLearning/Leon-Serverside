@@ -54,15 +54,13 @@ export default class LecturesLogicImpl implements LecturesLogic {
     async transferRemoteRecording(lectureId: string): Promise<void> {
         try {
             const path = await this.getRemoteRecording(lectureId);
-            console.debug(`recording saved successfully at ${path}`)
+            console.debug(`recording saved successfully at ${path}`);
             // TODO save to db
 
             await this.clearRemoteRecording(lectureId);
-
         } catch (error) {
-            console.error(error)
+            console.error(error);
         }
-
     }
     async storeLectureTranscript(
         lectureId: string,

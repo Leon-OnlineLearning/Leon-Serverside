@@ -10,8 +10,7 @@ import { end_janus_room, start_janus_room } from "./liveRoom-utils";
 const janus_server =
     process.env.janus_server || "http://janus-gateway:8088/janus";
 
-const janus_record_folder =
-    process.env.janus_record_folder || "/www/recording";
+const janus_record_folder = process.env.janus_record_folder || "/www/recording";
 
 export default class LiveRoomLogicImpl implements LiveRoomLogic {
     async close_lecture_room(lectureId: string): Promise<void> {
@@ -20,13 +19,12 @@ export default class LiveRoomLogicImpl implements LiveRoomLogic {
         await end_janus_room(
             liveRoom.roomId,
             janus_server,
-            liveRoom.roomSecret,
+            liveRoom.roomSecret
         );
 
         liveRoom.isAlive = false;
         await getRepository(AudioRoom).save(liveRoom);
     }
-
 
     /**
      * Enters lecture room and create if needed and professor

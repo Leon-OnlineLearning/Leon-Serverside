@@ -9,7 +9,10 @@ import LectureParser, {
 } from "@services/Routes/BodyParserMiddleware/LectureParser";
 import LecturesLogic from "@controller/BusinessLogic/Event/Lecture/lectures-logic";
 import LecturesLogicImpl from "@controller/BusinessLogic/Event/Lecture/lectures-logic-impl";
-import { onlyProfessors, onlyStudentOrProfessor } from "@services/Routes/User/AuthorizationMiddleware";
+import {
+    onlyProfessors,
+    onlyStudentOrProfessor,
+} from "@services/Routes/User/AuthorizationMiddleware";
 import simpleFinalMWDecorator from "@services/utils/RequestDecorator";
 import multer from "multer";
 import { sendLectureVideo } from "@controller/sending/sendFiles";
@@ -39,7 +42,6 @@ router.use(accessTokenValidationMiddleware);
 const parser: BodyParserMiddleware = new LectureParser();
 
 router.get("/enter/:lectureId", onlyStudentOrProfessor, async (req, res) => {
-
     simpleFinalMWDecorator(res, async () => {
         const user = req.user as userTockenData;
 
@@ -60,13 +62,11 @@ router.get("/end/:lectureId", onlyProfessors, async (req, res) => {
         try {
             await new LiveRoomLogicImpl().close_lecture_room(lectureId);
         } catch (error) {
-            console.debug(error)
+            console.debug(error);
             throw new Error("cannot close room");
         }
         //REVIEW it may be required to wait a little until the recording is saved
         await lectureLogic.transferRemoteRecording(lectureId);
-
-
 
         return "OK";
     });
