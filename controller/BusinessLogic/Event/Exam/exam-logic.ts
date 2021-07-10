@@ -37,7 +37,10 @@ export default interface ExamsLogic {
         examId: string
     ): Promise<[string, string]>;
     getCourseId(examId: string): Promise<string>;
-    getStudentExam(studentId: string, examId: string): Promise<StudentsExamData>;
+    getStudentExam(
+        studentId: string,
+        examId: string
+    ): Promise<StudentsExamData>;
     getExamsByCourse(
         courseId: string,
         startingFrom: string,
