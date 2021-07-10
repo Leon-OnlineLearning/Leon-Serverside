@@ -1,5 +1,5 @@
 import Exam from "@models/Events/Exam";
-import StudentsExam from "@models/JoinTables/StudentExam";
+import StudentsExamData from "@models/JoinTables/StudentExam";
 // import ExamQuestion from "@models/Events/ExamQuestions";
 
 export default interface ExamsLogic {
@@ -37,7 +37,7 @@ export default interface ExamsLogic {
         examId: string
     ): Promise<[string, string]>;
     getCourseId(examId: string): Promise<string>;
-    getStudentExam(studentId: string, examId: string): Promise<StudentsExam>;
+    getStudentExam(studentId: string, examId: string): Promise<StudentsExamData>;
     getExamsByCourse(
         courseId: string,
         startingFrom: string,

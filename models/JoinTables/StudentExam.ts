@@ -4,7 +4,7 @@ import Student from "@models/Users/Student";
 import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
 
 @Entity()
-export default class StudentsExam {
+export default class StudentsExamData {
     @PrimaryGeneratedColumn("uuid")
     id: string;
 

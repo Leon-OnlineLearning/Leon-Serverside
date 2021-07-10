@@ -10,7 +10,7 @@ import {
 } from "typeorm";
 import Event from "@models/Events/Event";
 import Course from "@models/Course";
-import StudentsExam from "@models/JoinTables/StudentExam";
+import StudentsExamData from "@models/JoinTables/StudentExam";
 import Department from "@models/Department";
 import Professor from "@models/Users/Professor";
 import Report from "@models/Report";
@@ -24,8 +24,8 @@ export default class Exam extends Event {
     @ManyToOne(() => Course, (course) => course.exams)
     course: Course;
 
-    @OneToMany(() => StudentsExam, (se) => se.exam, { onDelete: "CASCADE" })
-    studentExam!: StudentsExam[];
+    @OneToMany(() => StudentsExamData, (se) => se.exam, { onDelete: "CASCADE" })
+    studentExam!: StudentsExamData[];
 
     @ManyToMany(() => Department, (department) => department.exams)
     departments!: Department[];

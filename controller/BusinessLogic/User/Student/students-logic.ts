@@ -1,7 +1,7 @@
 import Course from "@models/Course";
 import Exam from "@models/Events/Exam";
 import Lecture from "@models/Events/Lecture/Lecture";
-import StudentsExam from "@models/JoinTables/StudentExam";
+import StudentsExamData from "@models/JoinTables/StudentExam";
 import Embedding from "@models/Users/Embedding";
 import Student from "@models/Users/Student";
 
@@ -24,7 +24,7 @@ export default interface StudentLogic {
         studentId: string,
         examId: string,
         examVideoPath: string
-    ): Promise<StudentsExam>;
+    ): Promise<StudentsExamData>;
     getAllCourses(studentId: string): Promise<Course[]>;
     // DISCUSS: is this really needed while you got the courses which in turn has lectures in it
     getAllLectures(studentId: string): Promise<Lecture[]>;

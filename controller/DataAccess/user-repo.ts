@@ -1,4 +1,4 @@
-import StudentsExam from "@models/JoinTables/StudentExam";
+import StudentsExamData from "@models/JoinTables/StudentExam";
 import Admin from "@models/Users/Admin";
 import Professor from "@models/Users/Professor";
 import Student from "@models/Users/Student";
