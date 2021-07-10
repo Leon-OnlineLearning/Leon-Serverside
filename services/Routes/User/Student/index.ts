@@ -181,7 +181,7 @@ router.post("/:studentId/exams", studentWithNoEmbedding, async (req, res) => {
         async () => {
             const logic: StudentLogic = new StudentLogicImpl();
             const videoId = "get video id for student"; // TODO
-            await logic.registerLecturePath(
+            await logic.registerExamPath(
                 req.params.studentId,
                 req.body.examId,
                 videoId

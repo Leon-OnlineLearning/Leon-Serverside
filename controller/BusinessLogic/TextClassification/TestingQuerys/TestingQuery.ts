@@ -1,5 +1,6 @@
 import TestRequestStatus from "@models/TestRequest/testRequestStatus";
 import TextClassificationModel from "@models/TextClassification/TextClassificationModel";
+import getBaseURL from "@utils/getBaseURL";
 import { ModelsFacade, ModelsFacadeImpl } from "../modelFacade";
 
 // export default interface TestingQuery {
@@ -20,7 +21,7 @@ export default abstract class TestingQuery {
         const relations = await modelFacade.getRelations(this.model.id);
         return {
             modelId: this.model.id,
-            prediction_model_path: this.model.predictionModelPath,
+            prediction_model_path: `${getBaseURL()}${this.model.predictionModelPath}`,
             dictionary_classes: this.model.state.Classes,
             relations,
         };

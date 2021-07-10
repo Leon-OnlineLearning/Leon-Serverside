@@ -2,7 +2,7 @@ import CourseLogicImpl from "@controller/BusinessLogic/Course/courses-logic-impl
 import ExamsLogic from "@controller/BusinessLogic/Event/Exam/exam-logic";
 import ExamsLogicImpl from "@controller/BusinessLogic/Event/Exam/exam-logic-impl";
 import Course from "@models/Course";
-import StudentsExams from "@models/JoinTables/StudentExam";
+import StudentsExam from "@models/JoinTables/StudentExam";
 import TestRequestStatus from "@models/TestRequest/testRequestStatus";
 import TextClassificationModel from "@models/TextClassification/TextClassificationModel";
 import { getConnection, getManager, getRepository } from "typeorm";
@@ -71,7 +71,7 @@ export class TestExamVideo extends TestingQuery {
         );
         // testing state into it
         studentExam.testingStatus = state;
-        await getRepository(StudentsExams).save(studentExam);
+        await getRepository(StudentsExam).save(studentExam);
     }
     storeTestResult(result: any): Promise<any> {
         const studentExamLogic: ExamsLogic = new ExamsLogicImpl();

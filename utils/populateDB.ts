@@ -110,7 +110,7 @@ export default async function populateDB() {
 
     const videoPath = `static/recording/recording.mp4`;
     const studentLogic: StudentLogic = new StudentLogicImpl();
-    const resultStudentExam = await studentLogic.registerLecturePath(
+    const resultStudentExam = await studentLogic.registerExamPath(
         sample_student.id,
         baseExam.id,
         videoPath

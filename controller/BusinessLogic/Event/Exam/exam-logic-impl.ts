@@ -10,7 +10,7 @@ import { join } from "path";
 import StudentLogicImpl from "@controller/BusinessLogic/User/Student/students-logic-impl";
 import { get_video_path } from "@services/Routes/Event/Exam/recording_utils";
 import CourseLogicImpl from "@controller/BusinessLogic/Course/courses-logic-impl";
-import StudentsExams from "@models/JoinTables/StudentExam";
+import StudentsExam from "@models/JoinTables/StudentExam";
 import Student from "@models/Users/Student";
 import getBaseURL from "@utils/getBaseURL";
 import ModelLogicImpl from "@controller/BusinessLogic/TextClassification/models-logic-impl";
@@ -62,12 +62,12 @@ export default class ExamsLogicImpl implements ExamsLogic {
     async getStudentExam(
         studentId: string,
         examId: string
-    ): Promise<StudentsExams> {
+    ): Promise<StudentsExam> {
         const student = await getRepository(Student).findOne(studentId);
         if (!student) throw new UserInputError("Invalid student id");
         const exam = await getRepository(Exam).findOne(examId);
         if (!exam) throw new UserInputError("Invalid student id");
-        const studentExam = await getRepository(StudentsExams).findOne({
+        const studentExam = await getRepository(StudentsExam).findOne({
             where: {
                 student,
                 exam,
@@ -75,9 +75,6 @@ export default class ExamsLogicImpl implements ExamsLogic {
         });
         if (!studentExam) throw new UserInputError("User didn't attend exam");
         return studentExam;
-    }
-    async getStudentExamId(studentId: string, examId: string): Promise<string> {
-        return (await this.getStudentExam(studentId, examId)).id;
     }
     async getCourseId(examId: string): Promise<string> {
         const [{ courseId }] = await getManager().query(
@@ -93,7 +90,7 @@ export default class ExamsLogicImpl implements ExamsLogic {
         studentId: string,
         examId: string
     ): Promise<[string, string]> {
-        const studentExam = await getRepository(StudentsExams)
+        const studentExam = await getRepository(StudentsExam)
             .createQueryBuilder("se")
             .where("se.examId = :examId", { examId })
             .andWhere("se.studentId = :studentId", { studentId })
@@ -111,7 +108,7 @@ export default class ExamsLogicImpl implements ExamsLogic {
         if (!exam) throw new UserInputError("Invalid exam id");
         const student = await getRepository(Student).findOne(studentId);
         if (!student) throw new UserInputError("Invalid student id");
-        const studentExam = await getRepository(StudentsExams).findOne({
+        const studentExam = await getRepository(StudentsExam).findOne({
             where: {
                 student,
                 exam,
@@ -120,7 +117,7 @@ export default class ExamsLogicImpl implements ExamsLogic {
         if (!studentExam)
             throw new UserInputError("student didn't attend the exam");
         studentExam.examReport = report;
-        const res = await getRepository(StudentsExams).save(studentExam);
+        const res = await getRepository(StudentsExam).save(studentExam);
         res.videoPath = `${getBaseURL}${res.videoPath}`;
         return res;
     }

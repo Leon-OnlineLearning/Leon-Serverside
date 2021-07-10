@@ -1,6 +1,6 @@
 import Course from "@models/Course";
 import Department from "@models/Department";
-import StudentsExams from "@models/JoinTables/StudentExam";
+import StudentsExam from "@models/JoinTables/StudentExam";
 import StudentLectureAttendance from "@models/JoinTables/StudentLectureAttended";
 import Report from "@models/Report";
 import { Min } from "class-validator";
@@ -34,11 +34,11 @@ export default class Student extends User {
         this.year = student.year;
     }
 
-    @OneToMany(() => StudentsExams, (se) => se.student, {
+    @OneToMany(() => StudentsExam, (se) => se.student, {
         cascade: true,
         onDelete: "CASCADE",
     })
-    studentExam!: StudentsExams[];
+    studentExam!: StudentsExam[];
 
     @OneToMany(() => StudentLectureAttendance, (se) => se.student, {
         onDelete: "CASCADE",

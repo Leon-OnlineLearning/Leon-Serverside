@@ -1,7 +1,7 @@
 import Course from "@models/Course";
 import Exam from "@models/Events/Exam";
 import Lecture from "@models/Events/Lecture/Lecture";
-import StudentsExams from "@models/JoinTables/StudentExam";
+import StudentsExam from "@models/JoinTables/StudentExam";
 import Student from "@models/Users/Student";
 import { hashPassword } from "@utils/passwords";
 import { getRepository } from "typeorm";
@@ -215,11 +215,11 @@ export default class StudentLogicImpl implements StudentLogic {
         await getRepository(StudentLectureAttendance).save(sla);
     }
 
-    async registerLecturePath(
+    async registerExamPath(
         studentId: string,
         examId: string,
         examVideoUrl: string
-    ): Promise<StudentsExams> {
+    ): Promise<StudentsExam> {
         const student = await getRepository(Student).findOne(studentId);
         if (!student) {
             throw new UserInputError("Student is not found");
@@ -228,10 +228,10 @@ export default class StudentLogicImpl implements StudentLogic {
         if (!exam) {
             throw new UserInputError("Exam is not found");
         }
-        const studentExam = new StudentsExams();
+        const studentExam = new StudentsExam();
         studentExam.exam = Promise.resolve(exam);
         studentExam.student = student;
         studentExam.videoPath = examVideoUrl;
-        return await getRepository(StudentsExams).save(studentExam);
+        return await getRepository(StudentsExam).save(studentExam);
     }
 }

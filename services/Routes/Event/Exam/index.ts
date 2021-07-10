@@ -91,7 +91,7 @@ router.put(
 
             if (fileInfo.lastChunk) {
                 const studentLogic: StudentLogic = new StudentLogicImpl();
-                await studentLogic.registerLecturePath(
+                await studentLogic.registerExamPath(
                     req.body["userId"],
                     req.body["examId"],
                     filePath
