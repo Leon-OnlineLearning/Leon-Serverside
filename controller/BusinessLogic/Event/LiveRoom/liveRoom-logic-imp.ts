@@ -10,13 +10,13 @@ import { start_janus_room } from "./liveRoom-utils";
 const janus_server =
     process.env.janus_server || "http://janus-gateway:8088/janus";
 
-const jansus_reocrd_folder =
+const janus_record_folder =
     process.env.janus_record_folder || "/www/recording";
 
 export default class LiveRoomLogicImpl implements LiveRoomLogic {
     async enter_lecture_room(
         lectureId: string,
-        userRole: UserTypes
+        userRole: UserTypes.PROFESSOR | UserTypes.STUDENT
     ): Promise<AudioRoom> {
         let lecture = await new LecturesLogicImpl().getLectureById(lectureId);
         let liveRoom = await this.getRoomByLectureId(lectureId);
@@ -63,5 +63,5 @@ export default class LiveRoomLogicImpl implements LiveRoomLogic {
 }
 
 export function _get_janus_file_path(lectureId: string) {
-    return `${jansus_reocrd_folder}/${lectureId}.wav`;
+    return `${janus_record_folder}/${lectureId}.wav`;
 }
