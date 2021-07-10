@@ -154,7 +154,7 @@ export default async function populateDB() {
         _file0.id,
         fakeTCModel.id,
         FileType.NON_RELATED,
-        "hamada"
+        "asd"
     );
     console.debug(`created test file linked to the model`, _file0.id);
 
@@ -164,7 +164,7 @@ export default async function populateDB() {
         _file1.id,
         fakeTCModel.id,
         FileType.RELATED,
-        "a relevant class"
+        "asdasd"
     );
     console.debug(`created test file linked to the model`, _file1.id);
 
