@@ -25,6 +25,9 @@ export default class Lecture extends Event {
     @Max(2048)
     path: string; // stored file associated with lecture
 
+    @Column({ nullable: true })
+    recording_path: string
+
     @ManyToOne(() => Course, (course) => course.lectures)
     course: Course;
 

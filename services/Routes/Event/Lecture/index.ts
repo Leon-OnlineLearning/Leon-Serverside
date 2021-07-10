@@ -66,7 +66,29 @@ router.get("/end/:lectureId", onlyProfessors, async (req, res) => {
             throw new Error("cannot close room");
         }
         //REVIEW it may be required to wait a little until the recording is saved
-        await lectureLogic.transferRemoteRecording(lectureId);
+        lectureLogic.transferRemoteRecording(lectureId).then(
+            async filePath => {
+                try {
+                    if (!filePath) {
+                        throw new Error("lecture recoding not available")
+                    }
+                    sendLectureVideo(
+                        await readFile(filePath),
+                        req.params["lectureId"],
+                        async (data) => {
+                            await new LecturesLogicImpl().storeLectureTranscript(
+                                req.params["lectureId"],
+                                data
+                            );
+                        },
+                        `${process.env["LECTURES_VIDEO_SERVER_BASE_URL"]}/lecture/video` ??
+                        "http://text-classification:9000/lecture/video"
+                    );
+                } catch (error) {
+                    console.error(error)
+                }
+            }
+        );
 
         return "OK";
     });
