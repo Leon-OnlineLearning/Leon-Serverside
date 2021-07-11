@@ -96,7 +96,6 @@ export async function sendLectureVideo(
             video,
             { lectureId }
         );
-
     } catch (error) {
         console.error(error);
     }

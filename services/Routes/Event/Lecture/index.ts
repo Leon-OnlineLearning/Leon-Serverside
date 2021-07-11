@@ -66,11 +66,12 @@ router.get("/end/:lectureId", onlyProfessors, async (req, res) => {
             throw new Error("cannot close room");
         }
         //REVIEW it may be required to wait a little until the recording is saved
-        lectureLogic.transferRemoteRecording(lectureId).then(
-            async filePath => {
+        lectureLogic
+            .transferRemoteRecording(lectureId)
+            .then(async (filePath) => {
                 try {
                     if (!filePath) {
-                        throw new Error("lecture recoding not available")
+                        throw new Error("lecture recoding not available");
                     }
                     sendLectureVideo(
                         await readFile(filePath),
@@ -82,13 +83,12 @@ router.get("/end/:lectureId", onlyProfessors, async (req, res) => {
                             );
                         },
                         `${process.env["LECTURES_VIDEO_SERVER_BASE_URL"]}/lecture/video` ??
-                        "http://text-classification:9000/lecture/video"
+                            "http://text-classification:9000/lecture/video"
                     );
                 } catch (error) {
-                    console.error(error)
+                    console.error(error);
                 }
-            }
-        );
+            });
 
         return "OK";
     });
