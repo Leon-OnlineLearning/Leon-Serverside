@@ -87,14 +87,18 @@ export async function sendLectureVideo(
     callback: (res: any) => Promise<any>,
     url: string
 ) {
-    await sendFileHttpMethod(
-        `lectureVideo-${lectureId}.webm`,
-        "lecture_video",
-        url,
-        callback,
-        video,
-        { lectureId }
-    );
+    try {
+        await sendFileHttpMethod(
+            `lectureVideo-${lectureId}.webm`,
+            "lecture_video",
+            url,
+            callback,
+            video,
+            { lectureId }
+        );
+    } catch (error) {
+        console.error(error);
+    }
 }
 
 export async function sendInitialVideo(

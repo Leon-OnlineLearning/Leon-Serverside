@@ -7,5 +7,6 @@ export default interface LiveRoomLogic {
         userRole: UserTypes
     ): Promise<AudioRoom>;
 
+    close_lecture_room(lectureId: string): Promise<void>;
     getRoomByLectureId(lectureId: string): Promise<AudioRoom>;
 }

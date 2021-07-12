@@ -14,7 +14,8 @@ import { mkdir } from "fs/promises";
 const writeFile = promises.writeFile;
 
 const fileFormat = "wav";
-const record_dir = process.env["UPLOADED_LECTURES_PATH"] || "lectures";
+const record_dir =
+    process.env["UPLOADED_LECTURES_PATH"] || "static/recording/lectures";
 const remote_server_url =
     process.env["LIVEROOM_SERVER"] || "http://janus-gateway:6111";
 
@@ -51,12 +52,26 @@ export default class LecturesLogicImpl implements LecturesLogic {
     /**
      * download -> delete -> save path to db
      */
-    async transferRemoteRecording(lectureId: string) {
-        const path = await this.getRemoteRecording(lectureId);
-        // TODO save to db
+    async transferRemoteRecording(
+        lectureId: string
+    ): Promise<string | undefined> {
+        try {
+            const lecture = await this.getLectureById(lectureId);
 
-        await this.clearRemoteRecording(lectureId);
-        return path;
+            lecture.recording_path = await this.getRemoteRecording(lectureId);
+            console.debug(
+                `recording saved successfully at ${lecture.recording_path}`
+            );
+
+            await getRepository(Lecture).save(lecture);
+
+            await this.clearRemoteRecording(lectureId);
+
+            return lecture.recording_path;
+        } catch (error) {
+            console.error(error);
+            return undefined;
+        }
     }
     async storeLectureTranscript(
         lectureId: string,

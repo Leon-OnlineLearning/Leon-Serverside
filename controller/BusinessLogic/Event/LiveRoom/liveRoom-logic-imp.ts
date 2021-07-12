@@ -5,18 +5,36 @@ import UserInputError from "@services/utils/UserInputError";
 import { getRepository } from "typeorm";
 import LecturesLogicImpl from "../Lecture/lectures-logic-impl";
 import LiveRoomLogic from "./liveRoom-logic";
-import { start_janus_room } from "./liveRoom-utils";
+import { end_janus_room, start_janus_room } from "./liveRoom-utils";
 
 const janus_server =
     process.env.janus_server || "http://janus-gateway:8088/janus";
 
-const jansus_reocrd_folder =
-    process.env.janus_record_folder || "/www/recording";
+const janus_record_folder = process.env.janus_record_folder || "/www/recording";
 
 export default class LiveRoomLogicImpl implements LiveRoomLogic {
+    async close_lecture_room(lectureId: string): Promise<void> {
+        let liveRoom = await this.getRoomByLectureId(lectureId);
+
+        await end_janus_room(
+            liveRoom.roomId,
+            janus_server,
+            liveRoom.roomSecret
+        );
+
+        liveRoom.isAlive = false;
+        await getRepository(AudioRoom).save(liveRoom);
+    }
+
+    /**
+     * Enters lecture room and create if needed and professor
+     * @param lectureId
+     * @param userRole
+     * @returns lecture room
+     */
     async enter_lecture_room(
         lectureId: string,
-        userRole: UserTypes
+        userRole: UserTypes.PROFESSOR | UserTypes.STUDENT
     ): Promise<AudioRoom> {
         let lecture = await new LecturesLogicImpl().getLectureById(lectureId);
         let liveRoom = await this.getRoomByLectureId(lectureId);
@@ -63,5 +81,5 @@ export default class LiveRoomLogicImpl implements LiveRoomLogic {
 }
 
 export function _get_janus_file_path(lectureId: string) {
-    return `${jansus_reocrd_folder}/${lectureId}.wav`;
+    return `${janus_record_folder}/${lectureId}.wav`;
 }

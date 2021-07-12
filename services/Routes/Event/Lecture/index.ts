@@ -9,13 +9,17 @@ import LectureParser, {
 } from "@services/Routes/BodyParserMiddleware/LectureParser";
 import LecturesLogic from "@controller/BusinessLogic/Event/Lecture/lectures-logic";
 import LecturesLogicImpl from "@controller/BusinessLogic/Event/Lecture/lectures-logic-impl";
-import { onlyProfessors } from "@services/Routes/User/AuthorizationMiddleware";
+import {
+    onlyProfessors,
+    onlyStudentOrProfessor,
+} from "@services/Routes/User/AuthorizationMiddleware";
 import simpleFinalMWDecorator from "@services/utils/RequestDecorator";
 import multer from "multer";
 import { sendLectureVideo } from "@controller/sending/sendFiles";
 import { promises } from "fs";
 import { userTockenData } from "../event.routes";
 import LiveRoomLogicImpl from "@controller/BusinessLogic/Event/LiveRoom/liveRoom-logic-imp";
+import UserTypes from "@models/Users/UserTypes";
 
 const readFile = promises.readFile;
 const router = Router();
@@ -37,13 +41,13 @@ router.use(accessTokenValidationMiddleware);
 
 const parser: BodyParserMiddleware = new LectureParser();
 
-router.get("/enter/:lectureId", async (req, res) => {
+router.get("/enter/:lectureId", onlyStudentOrProfessor, async (req, res) => {
     simpleFinalMWDecorator(res, async () => {
         const user = req.user as userTockenData;
 
         const audioRoom = await new LiveRoomLogicImpl().enter_lecture_room(
             req.params.lectureId,
-            user.role
+            user.role as UserTypes.STUDENT | UserTypes.PROFESSOR
         );
         console.debug(`sending live room with id ${audioRoom.roomId}`);
         return audioRoom;
@@ -53,9 +57,38 @@ router.get("/enter/:lectureId", async (req, res) => {
 router.get("/end/:lectureId", onlyProfessors, async (req, res) => {
     simpleFinalMWDecorator(res, async () => {
         const lectureLogic = new LecturesLogicImpl();
-        const lectureId = req.body.lectureId;
+        const lectureId = req.params.lectureId;
+
+        try {
+            await new LiveRoomLogicImpl().close_lecture_room(lectureId);
+        } catch (error) {
+            console.debug(error);
+            throw new Error("cannot close room");
+        }
         //REVIEW it may be required to wait a little until the recording is saved
-        const recordingPath = lectureLogic.transferRemoteRecording(lectureId);
+        lectureLogic
+            .transferRemoteRecording(lectureId)
+            .then(async (filePath) => {
+                try {
+                    if (!filePath) {
+                        throw new Error("lecture recoding not available");
+                    }
+                    sendLectureVideo(
+                        await readFile(filePath),
+                        req.params["lectureId"],
+                        async (data) => {
+                            await new LecturesLogicImpl().storeLectureTranscript(
+                                req.params["lectureId"],
+                                data
+                            );
+                        },
+                        `${process.env["LECTURES_VIDEO_SERVER_BASE_URL"]}/lecture/video` ??
+                            "http://text-classification:9000/lecture/video"
+                    );
+                } catch (error) {
+                    console.error(error);
+                }
+            });
 
         return "OK";
     });
