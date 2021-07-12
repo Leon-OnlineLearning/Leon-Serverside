@@ -26,7 +26,7 @@ export interface ExamChunkResultCallback {
     (
         studentId: string,
         examId: string,
-        result: string,
+        result: string | string[],
         start: number,
         end: number
     ): Promise<any>;

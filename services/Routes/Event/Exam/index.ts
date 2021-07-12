@@ -26,7 +26,8 @@ import { ReportLogicImpl } from "@controller/BusinessLogic/Report/report-logic-i
 import {
     get_video_path,
     get_video_portion,
-    report_res,
+    report_res_face_auth,
+    report_res_forbidden_objects
 } from "./recording_utils";
 
 import fs from "fs";
@@ -52,7 +53,9 @@ const parser: BodyParserMiddleware = new ExamParser();
 var storage = multer.memoryStorage();
 var upload = multer({ storage: storage });
 
-const serverBaseUrl = `${process.env.ML_SO_IO_SERVER_BASE_D}:${process.env.ML_SO_IO_SERVER_PORT}`;
+const face_auth_serverBaseUrl = `${process.env.ML_SO_IO_SERVER_BASE_D}:${process.env.ML_SO_IO_SERVER_PORT}`;
+const fo_serverBaseUrl = `${process.env.ML_forbidden_objectURL}`; //fo:forbidden object
+
 
 /**
  * save exam recording
@@ -116,20 +119,29 @@ router.put(
                 fileInfo.chunkStartTime,
                 duration,
             ];
-            const cliped_path = await get_video_portion(...portion_args);
+            const clipped_path = await get_video_portion(...portion_args);
 
             // save the path in cache
             // witch will delete it after certain time
-            videoCache.set(cacheKey(...portion_args), cliped_path);
+            videoCache.set(cacheKey(...portion_args), clipped_path);
 
             // send to face_auth ML server
-            await sendExamFile(
+            sendExamFile(
                 req.body.userId,
-                serverBaseUrl,
+                face_auth_serverBaseUrl,
                 fileInfo,
-                cliped_path,
+                clipped_path,
                 embedding,
-                report_res
+                report_res_face_auth
+            );
+            // send to forbidden object ML
+            sendExamFile(
+                req.body.userId,
+                fo_serverBaseUrl,
+                fileInfo,
+                clipped_path,
+                embedding,
+                report_res_forbidden_objects
             );
         });
     }

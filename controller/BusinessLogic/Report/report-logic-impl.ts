@@ -1,5 +1,5 @@
 import Exam from "@models/Events/Exam";
-import Report from "@models/Report";
+import Report, { IncidentType } from "@models/Report";
 import Student from "@models/Users/Student";
 import UserInputError from "@services/utils/UserInputError";
 import { getRepository } from "typeorm";
@@ -10,7 +10,8 @@ export class ReportLogicImpl implements ReportLogic {
         studentId: string,
         examId: string,
         startTime: number,
-        interval: number
+        interval: number,
+        incident_type: IncidentType
     ): Promise<Report> {
         const student = await getRepository(Student).findOne(studentId);
         if (!student) throw new UserInputError("Invalid user id");
@@ -24,8 +25,8 @@ export class ReportLogicImpl implements ReportLogic {
             exam: exam,
         });
 
-        let report;
-        if (prevReport) {
+        let report: Report;
+        if (prevReport?.incident_type == incident_type) {
             report = prevReport;
         } else {
             report = new Report();
@@ -34,6 +35,7 @@ export class ReportLogicImpl implements ReportLogic {
             report.exam = exam;
         }
 
+        report.incident_type = incident_type
         // it will always be assigned to the new ending interval
         report.endingAt = startTime + interval;
 
