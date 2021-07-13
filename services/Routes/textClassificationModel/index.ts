@@ -20,6 +20,8 @@ import getExtension from "@utils/extensionExtractor";
 import { Router } from "express";
 import { onlyProfessors } from "../User/AuthorizationMiddleware";
 import diskStorageBuilder from "../utils/dataStorageBuilder";
+import CourseLogicImpl from "@controller/BusinessLogic/Course/courses-logic-impl";
+import CoursesLogic from "@controller/BusinessLogic/Course/courses-logic";
 
 const router = Router();
 
@@ -99,6 +101,28 @@ router.post("/test-exam", (req, res) => {
     simpleFinalMWDecorator(res, async () => {
         console.warn("WARNING: no implementation");
     });
+});
+
+router.get("/result/sentence", (req, res) => {
+    simpleFinalMWDecorator(res, async () => {
+		const courseId = req.body["courseId"];
+		if (!courseId) {
+			throw new UserInputError("Request body doesn't contain \"courseId\"");
+		}
+		const coursesLogic : CoursesLogic = new CourseLogicImpl();
+		return coursesLogic.getLastTestSentenceResult(courseId);
+	});
+});
+
+router.get("/result/file", (req, res) => {
+    simpleFinalMWDecorator(res, async () => {
+		const courseId = req.body["courseId"];
+		if (!courseId) {
+			throw new UserInputError("Request body doesn't contain \"courseId\"");
+		}
+		const coursesLogic : CoursesLogic = new CourseLogicImpl();
+		return coursesLogic.getLastTestFileResult(courseId);
+	});
 });
 
 export default router;
