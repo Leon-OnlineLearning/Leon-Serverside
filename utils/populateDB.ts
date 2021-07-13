@@ -108,14 +108,14 @@ export default async function populateDB() {
     const created_exam = await new ExamsLogicImpl().createExam(baseExam);
     console.debug(`created exam ${created_exam.id}`);
 
-    const videoPath = `static/recording/recording.mp4`;
-    const studentLogic: StudentLogic = new StudentLogicImpl();
-    const resultStudentExam = await studentLogic.registerLecturePath(
-        sample_student.id,
-        baseExam.id,
-        videoPath
-    );
-    console.debug(`student + exam relation created ${resultStudentExam.id}`);
+    // const videoPath = `static/recording/recording.mp4`;
+    // const studentLogic: StudentLogic = new StudentLogicImpl();
+    // const resultStudentExam = await studentLogic.registerExamPath(
+    //     sample_student.id,
+    //     baseExam.id,
+    //     videoPath
+    // );
+    // console.debug(`student + exam relation created ${resultStudentExam.id}`);
 
     // create fake models (not suitable for machine learning)
     const fakeTCModel = new TextClassificationModel();
@@ -154,7 +154,7 @@ export default async function populateDB() {
         _file0.id,
         fakeTCModel.id,
         FileType.NON_RELATED,
-        "hamada"
+        "asd"
     );
     console.debug(`created test file linked to the model`, _file0.id);
 
@@ -164,7 +164,7 @@ export default async function populateDB() {
         _file1.id,
         fakeTCModel.id,
         FileType.RELATED,
-        "a relevant class"
+        "asdasd"
     );
     console.debug(`created test file linked to the model`, _file1.id);
 
