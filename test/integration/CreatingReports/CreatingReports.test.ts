@@ -5,6 +5,7 @@ import { ReportLogicImpl } from "@controller/BusinessLogic/Report/report-logic-i
 import StudentLogic from "@controller/BusinessLogic/User/Student/students-logic";
 import StudentLogicImpl from "@controller/BusinessLogic/User/Student/students-logic-impl";
 import Exam from "@models/Events/Exam";
+import { IncidentType } from "@models/Report";
 import Student from "@models/Users/Student";
 import {
     destructDBMSConnection,
@@ -59,11 +60,11 @@ describe("Creating reports", () => {
             // create report logic
             const logic: ReportLogic = new ReportLogicImpl();
             // add report to exam and student starting at interval * 0
-            await logic.addToReport(student.id, exam.id, startTime1, interval);
+            await logic.addToReport(student.id, exam.id, startTime1, interval, IncidentType.different_face);
             // add report to exam starting at interval * 1
-            await logic.addToReport(student.id, exam.id, startTime2, interval);
+            await logic.addToReport(student.id, exam.id, startTime2, interval, IncidentType.different_face);
             // add report to exam at random far interval
-            await logic.addToReport(student.id, exam.id, 40, interval);
+            await logic.addToReport(student.id, exam.id, 40, interval, IncidentType.different_face);
             // get report and check if the intervals where merged
             const finalReport = await logic.getReport(student.id, exam.id);
 
