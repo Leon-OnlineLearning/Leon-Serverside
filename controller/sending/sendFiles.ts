@@ -57,11 +57,11 @@ export const sendExamFile = async (
             filePath,
             "chunk",
             `${receiverBaseUrl}/exams/${userId}`,
-            async (res) => {
+            async (data) => {
                 await resultCallback(
                     userId,
                     fileInfo.examId,
-                    res.matched,
+                    data,
                     fileInfo.chunkStartTime,
                     fileInfo.chunkEndTime
                 );

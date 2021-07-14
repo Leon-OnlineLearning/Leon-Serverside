@@ -20,11 +20,11 @@ ffmpeg.setFfmpegPath(ffmpegPath);
 export const report_res_face_auth: ExamChunkResultCallback = async (
     userId: string,
     examId: string,
-    res: string | string[],
+    res: any,
     chunkStartTime: number,
     chunkEndTime: number
 ) => {
-    const matching = res;
+    const matching = res.matched;
     console.debug(
         `face auth form ${chunkStartTime}s to ${chunkEndTime} result is ${
             matching ? "same face" : "diffrent face"
@@ -60,15 +60,15 @@ export const report_res_face_auth: ExamChunkResultCallback = async (
 export const report_res_forbidden_objects: ExamChunkResultCallback = async (
     userId: string,
     examId: string,
-    res: string | string[],
+    res: any,
     chunkStartTime: number,
     chunkEndTime: number
 ) => {
-    const fo_list = res
-    console.debug(`forbidden object form ${chunkStartTime}s to ${chunkEndTime} result is ${fo_list.length == 0 ? "no forbidden" : "found forbidden object"}`)
+    const fo_list = res.forbidden_objects;
 
-    // TODO remove me
-    console.debug(fo_list)
+
+    console.debug(`forbidden object form ${chunkStartTime}s to ${chunkEndTime
+        } result is ${fo_list.length == 0 ? "no forbidden" : "found forbidden object"}`)
 
     if (fo_list.length > 0) {
         const report_logic: ReportLogic = new ReportLogicImpl();
