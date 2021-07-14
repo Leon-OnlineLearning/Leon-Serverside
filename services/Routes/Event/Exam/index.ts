@@ -84,7 +84,7 @@ router.put(
 
             const examLogic: ExamsLogic = new ExamsLogicImpl();
 
-            // save recived chunk
+            // save received chunk
             const filePath = await examLogic.saveRecording(
                 fileInfo.chunk as Buffer,
                 fileInfo.examId,
@@ -105,14 +105,7 @@ router.put(
                 );
             }
 
-            const embedding: Embedding = await new StudentLogicImpl().getEmbedding(
-                req.body.userId
-            );
-            if (!embedding?.vector) {
-                throw new Error("no embedding for student");
-            }
-
-            // get playaple buffer of recieved chunk
+            // get playable buffer of received chunk
             const duration = fileInfo.chunkEndTime - fileInfo.chunkStartTime;
             const portion_args: [string, number, number] = [
                 filePath,
@@ -126,6 +119,11 @@ router.put(
             videoCache.set(cacheKey(...portion_args), clipped_path);
 
             // send to face_auth ML server
+
+            const embedding: Embedding = await new StudentLogicImpl().getEmbedding(
+                req.body.userId
+            );
+            if (embedding?.vector) {
                 sendExamFile(
                     req.body.userId,
                     face_auth_serverBaseUrl,
@@ -133,7 +131,11 @@ router.put(
                     clipped_path,
                     report_res_face_auth,
                     embedding,
-            );
+                );
+            } else {
+                console.error("no embedding for student");
+            }
+
             // send to forbidden object ML
             sendExamFile(
                 req.body.userId,
