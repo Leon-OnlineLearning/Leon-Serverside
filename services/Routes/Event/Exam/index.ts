@@ -27,7 +27,7 @@ import {
     get_video_path,
     get_video_portion,
     report_res_face_auth,
-    report_res_forbidden_objects
+    report_res_forbidden_objects,
 } from "./recording_utils";
 
 import fs from "fs";
@@ -55,7 +55,6 @@ var upload = multer({ storage: storage });
 
 const face_auth_serverBaseUrl = `${process.env.ML_SO_IO_SERVER_BASE_D}:${process.env.ML_SO_IO_SERVER_PORT}`;
 const fo_serverBaseUrl = `${process.env.ML_forbidden_objectURL}`; //fo:forbidden object
-
 
 /**
  * save exam recording
@@ -130,7 +129,7 @@ router.put(
                     fileInfo,
                     clipped_path,
                     report_res_face_auth,
-                    embedding,
+                    embedding
                 );
             } else {
                 console.error("no embedding for student");

@@ -48,7 +48,6 @@ export const report_res_face_auth: ExamChunkResultCallback = async (
     }
 };
 
-
 /**
  * call back funcntion for ML file sender that process response and dicide wither it should save it in db or not
  * @param userId
@@ -66,9 +65,11 @@ export const report_res_forbidden_objects: ExamChunkResultCallback = async (
 ) => {
     const fo_list = res.forbidden_objects;
 
-
-    console.debug(`forbidden object form ${chunkStartTime}s to ${chunkEndTime
-        } result is ${fo_list.length == 0 ? "no forbidden" : "found forbidden object"}`)
+    console.debug(
+        `forbidden object form ${chunkStartTime}s to ${chunkEndTime} result is ${
+            fo_list.length == 0 ? "no forbidden" : "found forbidden object"
+        }`
+    );
 
     if (fo_list.length > 0) {
         const report_logic: ReportLogic = new ReportLogicImpl();
@@ -84,7 +85,7 @@ export const report_res_forbidden_objects: ExamChunkResultCallback = async (
                 console.debug(`report saved for user ${userId}`);
             });
     }
-}
+};
 /**
  * clip video to smaller part
  * @param fullVideo path to full vedio

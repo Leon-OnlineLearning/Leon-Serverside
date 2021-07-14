@@ -35,7 +35,7 @@ export class ReportLogicImpl implements ReportLogic {
             report.exam = exam;
         }
 
-        report.incident_type = incident_type
+        report.incident_type = incident_type;
         // it will always be assigned to the new ending interval
         report.endingAt = startTime + interval;
 

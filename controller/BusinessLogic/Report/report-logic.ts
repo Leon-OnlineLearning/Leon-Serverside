@@ -6,7 +6,7 @@ export default interface ReportLogic {
         examId: string,
         startTime: number,
         interval: number,
-        incidentType: IncidentType,
+        incidentType: IncidentType
     ): Promise<Report>;
     getReport(
         studentId: string,

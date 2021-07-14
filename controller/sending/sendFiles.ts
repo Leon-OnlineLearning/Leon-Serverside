@@ -48,28 +48,28 @@ export const sendExamFile = async (
     fileInfo: ExamFileInfo,
     filePath: string,
     resultCallback: ExamChunkResultCallback,
-    embedding?: Embedding,
+    embedding?: Embedding
 ) => {
-    if (fileInfo.chunkIndex % 2 == 0) {
-        // const fileName = `${fileInfo.examId}-${userId}-${fileInfo.chunkIndex}.webm`;
+    // if (fileInfo.chunkIndex % 2 == 0) {
+    // const fileName = `${fileInfo.examId}-${userId}-${fileInfo.chunkIndex}.webm`;
 
-        await sendFileHttpMethod(
-            filePath,
-            "chunk",
-            `${receiverBaseUrl}/exams/${userId}`,
-            async (data) => {
-                await resultCallback(
-                    userId,
-                    fileInfo.examId,
-                    data,
-                    fileInfo.chunkStartTime,
-                    fileInfo.chunkEndTime
-                );
-            },
-            undefined,
-            embedding?.vector
-        );
-    }
+    await sendFileHttpMethod(
+        filePath,
+        "chunk",
+        `${receiverBaseUrl}/exams/${userId}`,
+        async (data) => {
+            await resultCallback(
+                userId,
+                fileInfo.examId,
+                data,
+                fileInfo.chunkStartTime,
+                fileInfo.chunkEndTime
+            );
+        },
+        undefined,
+        embedding?.vector
+    );
+    // }
 };
 
 // this adapter get the lecture id as an input and return
@@ -172,7 +172,7 @@ export async function sendFileHttpMethod(
             console.log(error.request);
         } else {
             // Something happened in setting up the request that triggered an Error
-            console.log('Error', error.message);
+            console.log("Error", error.message);
         }
     } finally {
         try {
