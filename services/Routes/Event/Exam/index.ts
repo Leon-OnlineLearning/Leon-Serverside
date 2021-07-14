@@ -126,13 +126,13 @@ router.put(
             videoCache.set(cacheKey(...portion_args), clipped_path);
 
             // send to face_auth ML server
-            sendExamFile(
-                req.body.userId,
-                face_auth_serverBaseUrl,
-                fileInfo,
-                clipped_path,
-                embedding,
-                report_res_face_auth
+                sendExamFile(
+                    req.body.userId,
+                    face_auth_serverBaseUrl,
+                    fileInfo,
+                    clipped_path,
+                    report_res_face_auth,
+                    embedding,
             );
             // send to forbidden object ML
             sendExamFile(
@@ -140,7 +140,6 @@ router.put(
                 fo_serverBaseUrl,
                 fileInfo,
                 clipped_path,
-                embedding,
                 report_res_forbidden_objects
             );
         });

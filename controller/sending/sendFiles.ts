@@ -47,8 +47,8 @@ export const sendExamFile = async (
     receiverBaseUrl: string,
     fileInfo: ExamFileInfo,
     filePath: string,
-    embedding: Embedding,
-    resultCallback: ExamChunkResultCallback
+    resultCallback: ExamChunkResultCallback,
+    embedding?: Embedding,
 ) => {
     if (fileInfo.chunkIndex % 2 == 0) {
         // const fileName = `${fileInfo.examId}-${userId}-${fileInfo.chunkIndex}.webm`;
