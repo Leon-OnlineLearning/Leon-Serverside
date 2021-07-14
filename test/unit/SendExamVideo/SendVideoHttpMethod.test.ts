@@ -46,7 +46,7 @@ describe("Sending video with http POST method", () => {
             startDate,
             endDate
         ) => {
-            expect(result)
+            expect(result);
             done();
         };
 
@@ -71,7 +71,7 @@ describe("Sending video with http POST method", () => {
             },
             __dirname + "/videoTst.webm",
             resultCallback,
-            new Embedding(),
+            new Embedding()
         );
 
         sendExamFile(
@@ -87,7 +87,7 @@ describe("Sending video with http POST method", () => {
             },
             __dirname + "/videoTst.webm",
             resultCallback,
-            new Embedding(),
+            new Embedding()
         );
     });
 });
