@@ -27,10 +27,10 @@ export class TestSentence extends TestingQuery {
         });
     }
     async storeTestResult(data: any): Promise<any> {
-        await this.courseLogic.storeTestSentenceResultInCourse(
-            this.model.id,
-            data
-        );
+        await this.courseLogic.storeTestSentenceResultInCourse(this.model.id, {
+            ...data,
+            sentence: this.sentence,
+        });
     }
 }
 
