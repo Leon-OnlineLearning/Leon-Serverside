@@ -71,8 +71,8 @@ describe("Sending video with http POST method", () => {
                 lastChunk: false,
             },
             __dirname + "/videoTst.webm",
+            resultCallback,
             new Embedding(),
-            resultCallback
         );
 
         sendExamFile(
@@ -87,8 +87,8 @@ describe("Sending video with http POST method", () => {
                 lastChunk: false,
             },
             __dirname + "/videoTst.webm",
+            resultCallback,
             new Embedding(),
-            resultCallback
         );
     });
 });
