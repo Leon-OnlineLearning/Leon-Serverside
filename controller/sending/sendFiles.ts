@@ -67,7 +67,7 @@ export const sendExamFile = async (
                 );
             },
             undefined,
-            embedding.vector
+            embedding?.vector
         );
     }
 };
