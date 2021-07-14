@@ -78,25 +78,6 @@ router.post("/test-sentence", (req, res) => {
     });
 });
 
-router.post("/test-files", (req, res) => {
-    simpleFinalMWDecorator(res, async () => {
-        // get the latest model
-        const latestModel = await new ModelLogicImpl().getTheLatestModel(
-            req.body["courseId"]
-        );
-        if (!latestModel) throw new Error("error in latest model");
-        // send test request to the server given the course id
-        const modelFacade: ModelsFacade = new ModelsFacadeImpl();
-        await modelFacade.requestTest(
-            new TestFiles(latestModel, req.body["courseId"]),
-            `${
-                process.env["TEXT_CLASSIFICATION_BASE_URL"] ??
-                "/text_classification"
-            }/test_files`
-        );
-    });
-});
-
 router.post("/test-exam", (req, res) => {
     simpleFinalMWDecorator(res, async () => {
         console.warn("WARNING: no implementation");
