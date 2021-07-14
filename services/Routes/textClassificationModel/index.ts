@@ -103,30 +103,4 @@ router.post("/test-exam", (req, res) => {
     });
 });
 
-router.get("/result/sentence", (req, res) => {
-    simpleFinalMWDecorator(res, async () => {
-        const courseId = req.body["courseId"];
-        if (!courseId) {
-            throw new UserInputError(
-                'Request body doesn\'t contain "courseId"'
-            );
-        }
-        const coursesLogic: CoursesLogic = new CourseLogicImpl();
-        return coursesLogic.getLastTestSentenceResult(courseId);
-    });
-});
-
-router.get("/result/file", (req, res) => {
-    simpleFinalMWDecorator(res, async () => {
-        const courseId = req.body["courseId"];
-        if (!courseId) {
-            throw new UserInputError(
-                'Request body doesn\'t contain "courseId"'
-            );
-        }
-        const coursesLogic: CoursesLogic = new CourseLogicImpl();
-        return coursesLogic.getLastTestFileResult(courseId);
-    });
-});
-
 export default router;

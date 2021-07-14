@@ -107,7 +107,7 @@ export default class ModelLogicImpl implements ModelLogic {
             superModel.dataClassificationModelPath;
         _subModel.dataLanguageModelPath = `${superModel.dataLanguageModelPath}`;
         _subModel.state = { ...superModel.state, accuracy: -1 };
-        _subModel.name = `sub_module_${Date.now()}_for_${superModel.id}`;
+        _subModel.name = `sub_module_${Date.now()}_for_${superModel.name}`;
         _subModel.trainingModelPath = `${superModel.trainingModelPath}`;
         const subModel = await getRepository(TextClassificationModel).save(
             _subModel

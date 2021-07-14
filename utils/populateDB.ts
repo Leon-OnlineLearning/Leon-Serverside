@@ -185,7 +185,7 @@ export default async function populateDB() {
     fakeSubModel.state = subState;
     fakeSubModel.superModel = fakeTCModel;
     fakeSubModel.primeModelId = fakeTCModel.id;
-    fakeSubModel.name = "sub_module_" + Date.now() + "_for_" + fakeTCModel.id;
+    fakeSubModel.name = "sub_module_" + Date.now() + "_for_" + fakeTCModel.name;
     fakeSubModel.dataClassificationModelPath =
         fakeTCModel.dataClassificationModelPath;
     fakeSubModel.dataLanguageModelPath = fakeTCModel.dataLanguageModelPath;

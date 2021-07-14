@@ -12,6 +12,7 @@ import simpleFinalMWDecorator from "@services/utils/RequestDecorator";
 import { accessTokenValidationMiddleware } from "@services/Auth";
 import ModelLogic from "@controller/BusinessLogic/TextClassification/models-logic";
 import ModelLogicImpl from "@controller/BusinessLogic/TextClassification/models-logic-impl";
+import UserInputError from "@services/utils/UserInputError";
 
 const router = Router();
 
@@ -146,17 +147,31 @@ router.get("/:courseId/models", (req, res) => {
     });
 });
 
-router.get("/:courseId/sentenceTestResult", (req, res) => {
+router.get("/:courseId/result/sentence", (req, res) => {
     simpleFinalMWDecorator(res, async () => {
-        const courseLogic: CoursesLogic = new CourseLogicImpl();
-        return courseLogic.getLastTestSentenceResult(req.params["courseId"]);
+        const courseId = req.params["courseId"];
+        if (!courseId) {
+            throw new UserInputError(
+                'Request body doesn\'t contain "courseId"'
+            );
+        }
+        const coursesLogic: CoursesLogic = new CourseLogicImpl();
+		const res = await coursesLogic.getLastTestSentenceResult(courseId);
+        return res ? {success: true, content: res} :{success: true, content: "Tests are not ready/made yet"};
     });
 });
 
-router.get("/:courseId/fileTestResult", (req, res) => {
+router.get("/:courseId/result/file", (req, res) => {
     simpleFinalMWDecorator(res, async () => {
-        const courseLogic: CoursesLogic = new CourseLogicImpl();
-        return courseLogic.getLastTestFileResult(req.params["courseId"]);
+        const courseId = req.params["courseId"];
+        if (!courseId) {
+            throw new UserInputError(
+                'Request body doesn\'t contain "courseId"'
+            );
+        }
+        const coursesLogic: CoursesLogic = new CourseLogicImpl();
+        res = await coursesLogic.getLastTestFileResult(courseId);
+        return res ? {success: true, content: res} :{success: true, content: "Tests are not ready/made yet"};
     });
 });
 
