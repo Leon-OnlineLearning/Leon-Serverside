@@ -42,11 +42,11 @@ describe("Sending video with http POST method", () => {
         const resultCallback: ExamChunkResultCallback = async (
             usrId,
             examId,
-            result,
+            data,
             startDate,
             endDate
         ) => {
-            expect(result);
+            expect(data).toBeTruthy();
             done();
         };
 
