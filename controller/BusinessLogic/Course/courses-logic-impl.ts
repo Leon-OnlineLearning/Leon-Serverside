@@ -46,7 +46,7 @@ export default class CourseLogicImpl implements CoursesLogic {
         await getConnection()
             .createQueryBuilder()
             .update(Course)
-            .set({ connectionState: TestRequestStatus.PENDING })
+            .set({ connectionState: state })
             .where("id = :id", { id: courseId })
             .execute();
     }

@@ -27,10 +27,10 @@ export class TestSentence extends TestingQuery {
         });
     }
     async storeTestResult(data: any): Promise<any> {
-        await this.courseLogic.storeTestSentenceResultInCourse(
-            this.model.id,
-            data
-        );
+        await this.courseLogic.storeTestSentenceResultInCourse(this.model.id, {
+            ...data,
+            sentence: this.sentence,
+        });
     }
 }
 
@@ -46,10 +46,18 @@ export class TestFiles extends TestingQuery {
         await this.courseLogic.storeTestFileResultInCourse(this.model.id, data);
     }
     async getSpecificFields() {
+        const testFiles = await new ModelsFacadeImpl().getTestingFiles(
+            this.model
+        );
+        let testFilesWithBaseUrl = {};
+        Object.keys(testFiles).forEach((key) => {
+            testFilesWithBaseUrl = {
+                ...testFilesWithBaseUrl,
+                [key]: `${process.env.BASE_URL}${testFiles[key]}`,
+            };
+        });
         return {
-            test_files_dictionary: await new ModelsFacadeImpl().getTestingFiles(
-                this.model
-            ),
+            test_files_dictionary: testFilesWithBaseUrl,
         };
     }
 }

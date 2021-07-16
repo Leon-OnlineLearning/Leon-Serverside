@@ -24,6 +24,7 @@ import getExtension from "@utils/extensionExtractor";
 import axios from "axios";
 import fs from "fs";
 import extract from "extract-zip";
+import { TestFiles } from "@controller/BusinessLogic/TextClassification/TestingQuerys/TestQueries";
 
 const router = Router();
 
@@ -209,11 +210,25 @@ router.post("/finish", async (req, res) => {
             `${process.env["TEXT_CLASSIFICATION_BASE_URL"]}/train` ??
                 "/text_classification/train"
         )
-        .then((res) => {
+        .then(async (res) => {
             console.log("files received");
 
             const modelLogic: ModelLogic = new ModelLogicImpl();
-            modelLogic.receiveModelFiles(sessionId, res);
+            const latestModel = await modelLogic.receiveModelFiles(
+                sessionId,
+                res
+            );
+            console.log("latest model is", latestModel);
+            if (!latestModel) throw new Error("error in latest model");
+            // send test request to the server given the course id
+            const modelFacade: ModelsFacade = new ModelsFacadeImpl();
+            modelFacade.requestTest(
+                new TestFiles(latestModel, req.body["courseId"]),
+                `${
+                    process.env["TEXT_CLASSIFICATION_BASE_URL"] ??
+                    "/text_classification"
+                }/test_files`
+            );
         })
         .catch((error) => {
             console.error("ML error", error.message);
