@@ -47,7 +47,6 @@ describe("Creating reports", () => {
             const examLogic: ExamsLogic = new ExamsLogicImpl();
             let exam = new Exam();
             exam.title = "asdjalkj";
-            exam.year = 4;
             exam.startTime = new Date();
             const endTime = new Date(exam.startTime);
             endTime.setHours(endTime.getHours() + 3);
