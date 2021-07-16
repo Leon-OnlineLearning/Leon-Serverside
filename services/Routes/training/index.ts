@@ -214,8 +214,11 @@ router.post("/finish", async (req, res) => {
             console.log("files received");
 
             const modelLogic: ModelLogic = new ModelLogicImpl();
-            const latestModel = await modelLogic.receiveModelFiles(sessionId, res);
-			console.log("latest model is",latestModel)
+            const latestModel = await modelLogic.receiveModelFiles(
+                sessionId,
+                res
+            );
+            console.log("latest model is", latestModel);
             if (!latestModel) throw new Error("error in latest model");
             // send test request to the server given the course id
             const modelFacade: ModelsFacade = new ModelsFacadeImpl();

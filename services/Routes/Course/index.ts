@@ -156,8 +156,10 @@ router.get("/:courseId/result/sentence", (req, res) => {
             );
         }
         const coursesLogic: CoursesLogic = new CourseLogicImpl();
-		const res = await coursesLogic.getLastTestSentenceResult(courseId);
-        return res ? {success: true, content: res} :{success: true, content: "Tests are not ready/made yet"};
+        const res = await coursesLogic.getLastTestSentenceResult(courseId);
+        return res
+            ? { success: true, content: res }
+            : { success: true, content: "Tests are not ready/made yet" };
     });
 });
 
@@ -171,7 +173,9 @@ router.get("/:courseId/result/file", (req, res) => {
         }
         const coursesLogic: CoursesLogic = new CourseLogicImpl();
         res = await coursesLogic.getLastTestFileResult(courseId);
-        return res ? {success: true, content: res} :{success: true, content: "Tests are not ready/made yet"};
+        return res
+            ? { success: true, content: res }
+            : { success: true, content: "Tests are not ready/made yet" };
     });
 });
 
