@@ -1,11 +1,12 @@
-import Report from "@models/Report";
+import Report, { IncidentType } from "@models/Report";
 
 export default interface ReportLogic {
     addToReport(
         studentId: string,
         examId: string,
         startTime: number,
-        interval: number
+        interval: number,
+        incidentType: IncidentType
     ): Promise<Report>;
     getReport(
         studentId: string,

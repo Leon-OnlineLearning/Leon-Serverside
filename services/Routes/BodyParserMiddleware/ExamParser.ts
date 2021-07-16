@@ -29,7 +29,7 @@ export default class ExamParser implements BodyParserMiddleware {
                 await validatorSchema.validateAsync(exam);
                 next();
                 return;
-            } catch (e) {
+            } catch (e: any) {
                 res.status(400).send({ success: false, message: e.message });
             }
         };

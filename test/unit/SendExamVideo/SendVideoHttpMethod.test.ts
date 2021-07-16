@@ -42,12 +42,11 @@ describe("Sending video with http POST method", () => {
         const resultCallback: ExamChunkResultCallback = async (
             usrId,
             examId,
-            result,
+            data,
             startDate,
             endDate
         ) => {
-            expect(result).toEqual(1);
-            expect(numberCalled).toEqual(1);
+            expect(data).toBeTruthy();
             done();
         };
 
@@ -71,8 +70,8 @@ describe("Sending video with http POST method", () => {
                 lastChunk: false,
             },
             __dirname + "/videoTst.webm",
-            new Embedding(),
-            resultCallback
+            resultCallback,
+            new Embedding()
         );
 
         sendExamFile(
@@ -87,8 +86,8 @@ describe("Sending video with http POST method", () => {
                 lastChunk: false,
             },
             __dirname + "/videoTst.webm",
-            new Embedding(),
-            resultCallback
+            resultCallback,
+            new Embedding()
         );
     });
 });

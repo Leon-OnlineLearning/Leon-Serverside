@@ -8,6 +8,11 @@ import {
     PrimaryGeneratedColumn,
 } from "typeorm";
 
+export enum IncidentType {
+    different_face = "different_face",
+    forbidden_object = "forbidden_object",
+}
+
 /**
  * A model describing the state of the student in exam between `startingFrom` and `endingAt`
  */
@@ -24,6 +29,13 @@ export default class Report {
 
     @Column({ comment: "time in seconds from begging" })
     endingAt: number;
+
+    @Column({ comment: "type of incident", type: "enum", enum: IncidentType })
+    incident_type: IncidentType;
+
+    // REVIEW is there any use of this
+    // @Column({ comment: "list of forbidding objects",  array: true, nullable: true })
+    // forbidding_objects: string[]
 
     @ManyToOne(() => Exam, (e) => e.reports, { cascade: true })
     exam: Exam;

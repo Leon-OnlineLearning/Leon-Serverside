@@ -1,6 +1,7 @@
 import ReportLogic from "@controller/BusinessLogic/Report/report-logic";
 import { ReportLogicImpl } from "@controller/BusinessLogic/Report/report-logic-impl";
 import { ExamChunkResultCallback } from "@controller/sending/sendFiles";
+import { IncidentType } from "@models/Report";
 import { randomInt } from "crypto";
 import { join } from "path";
 
@@ -16,14 +17,14 @@ ffmpeg.setFfmpegPath(ffmpegPath);
  * @param chunkStartTime the incident start time in secs relative to video start
  * @param chunkEndTime incident end time in secs
  */
-export const report_res: ExamChunkResultCallback = async (
+export const report_res_face_auth: ExamChunkResultCallback = async (
     userId: string,
     examId: string,
-    res: string,
+    res: any,
     chunkStartTime: number,
     chunkEndTime: number
 ) => {
-    const matching = res;
+    const matching = res.matched;
     console.debug(
         `face auth form ${chunkStartTime}s to ${chunkEndTime} result is ${
             matching ? "same face" : "diffrent face"
@@ -38,7 +39,8 @@ export const report_res: ExamChunkResultCallback = async (
                 userId,
                 examId,
                 chunkStartTime,
-                chunkEndTime - chunkStartTime
+                chunkEndTime - chunkStartTime,
+                IncidentType.different_face
             )
             .then((_) => {
                 console.debug(`report saved for user ${userId}`);
@@ -46,6 +48,44 @@ export const report_res: ExamChunkResultCallback = async (
     }
 };
 
+/**
+ * call back funcntion for ML file sender that process response and dicide wither it should save it in db or not
+ * @param userId
+ * @param examId
+ * @param res response from ML server either the face match user of not
+ * @param chunkStartTime the incident start time in secs relative to video start
+ * @param chunkEndTime incident end time in secs
+ */
+export const report_res_forbidden_objects: ExamChunkResultCallback = async (
+    userId: string,
+    examId: string,
+    res: any,
+    chunkStartTime: number,
+    chunkEndTime: number
+) => {
+    const fo_list = res.forbidden_objects;
+
+    console.debug(
+        `forbidden object form ${chunkStartTime}s to ${chunkEndTime} result is ${
+            fo_list.length == 0 ? "no forbidden" : "found forbidden object"
+        }`
+    );
+
+    if (fo_list.length > 0) {
+        const report_logic: ReportLogic = new ReportLogicImpl();
+        report_logic
+            .addToReport(
+                userId,
+                examId,
+                chunkStartTime,
+                chunkEndTime - chunkStartTime,
+                IncidentType.forbidden_object
+            )
+            .then((_) => {
+                console.debug(`report saved for user ${userId}`);
+            });
+    }
+};
 /**
  * clip video to smaller part
  * @param fullVideo path to full vedio
