@@ -33,10 +33,4 @@ export default class Department {
 
     @OneToMany(() => Student, (student) => student.department)
     students!: Student[];
-
-    @ManyToOne(() => Lecture, (l) => l.departments)
-    lectures!: Lecture[];
-
-    @ManyToOne(() => Exam, (exam) => exam.departments)
-    exams!: Exam[];
 }

@@ -18,9 +18,6 @@ export default abstract class Event {
     title: string;
 
     @Column()
-    year: number;
-
-    @Column()
     startTime: Date;
 
     @Column()

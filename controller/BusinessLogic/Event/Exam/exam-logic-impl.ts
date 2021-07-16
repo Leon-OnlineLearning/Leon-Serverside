@@ -141,6 +141,7 @@ export default class ExamsLogicImpl implements ExamsLogic {
     }
 
     async getExamsByYear(year: number): Promise<Exam[]> {
+        // TODO : get year from course
         return await getRepository(Exam)
             .createQueryBuilder()
             .where({ year: year })
