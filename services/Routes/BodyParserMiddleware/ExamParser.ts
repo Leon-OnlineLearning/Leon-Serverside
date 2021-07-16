@@ -1,16 +1,14 @@
 import Joi from "joi";
 import BodyParserMiddleware from "./BodyParserMiddleware";
 import { Request, Response, NextFunction } from "express";
-import {
-    LecturePartialValidatorSchema,
-    LectureValidatorSchema,
-} from "@models/Events/validators/LectureValidator";
 import Lecture from "@models/Events/Lecture/Lecture";
 import Exam from "@models/Events/Exam";
 import {
     ExamPartialValidatorSchema,
     ExamValidatorSchema,
 } from "@models/Events/validators/ExamValidtor";
+import CourseLogicImpl from "@controller/BusinessLogic/Course/courses-logic-impl";
+import ProfessorLogicImpl from "@controller/BusinessLogic/User/Professor/professors-logic-impl";
 
 export default class ExamParser implements BodyParserMiddleware {
     parserClosure(validatorSchema: Joi.ObjectSchema) {
@@ -20,8 +18,14 @@ export default class ExamParser implements BodyParserMiddleware {
             exam.endTime = new Date(req.body.endTime);
             exam.mark = req.body.mark;
             exam.title = req.body.title;
-            exam.year = req.body.year;
-            exam.mark = req.body.mark;
+            const professor = await new ProfessorLogicImpl().getProfessorById(
+                req.body.professorId
+            );
+            const course = await new CourseLogicImpl().getCoursesById(
+                req.body.courseId
+            );
+            exam.professor = professor;
+            exam.course = course;
             const examReq = req as ExamRequest;
             examReq.exam = exam;
             try {
@@ -30,6 +34,7 @@ export default class ExamParser implements BodyParserMiddleware {
                 return;
             } catch (e: any) {
                 res.status(400).send({ success: false, message: e.message });
+                console.debug(`req was ${req.body}`);
             }
         };
     }

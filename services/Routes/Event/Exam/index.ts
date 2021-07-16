@@ -267,6 +267,7 @@ router.post("/", parser.completeParser, async (req, res) => {
             const logic: ExamsLogic = new ExamsLogicImpl();
             const examReq = req as ExamRequest;
             const exam = await logic.createExam(examReq.exam);
+            console.debug(`created exam ${exam.id}`);
             return exam;
         },
         201
