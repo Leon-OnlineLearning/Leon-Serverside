@@ -187,7 +187,6 @@ export default class StudentLogicImpl implements StudentLogic {
 
         const studentCourses = await this.getAllCourses(student.id);
 
-
         const lectureCourse = await lecture.course;
         if (!studentCourses.length)
             throw new UserInputError(

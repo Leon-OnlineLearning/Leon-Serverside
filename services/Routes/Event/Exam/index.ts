@@ -90,7 +90,7 @@ router.put(
             );
 
             if (fileInfo.lastChunk) {
-							  console.debug("has last chuck?", fileInfo.lastChunk)
+                console.debug("has last chuck?", fileInfo.lastChunk);
                 const studentLogic: StudentLogic = new StudentLogicImpl();
                 await studentLogic.registerExamPath(
                     req.body["userId"],
