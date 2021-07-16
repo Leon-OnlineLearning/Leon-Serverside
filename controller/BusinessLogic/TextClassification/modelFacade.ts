@@ -71,12 +71,10 @@ export class ModelsFacadeImpl implements ModelsFacade {
         );
         if (!model) throw new UserInputError("invalid model id");
         const primeModelId = model.primeModelId ?? model.id;
-        console.log("model id", modelId, "prime id", primeModelId);
         const tcmfs = await getRepository(TextClassificationModelFile)
             .createQueryBuilder("tcmf")
             .where("tcmf.model_id = :mid", { mid: primeModelId })
             .getMany();
-        console.log("text classification model file results", tcmfs);
         const res: ClassRelation = {
             related: [],
             "non-related": [],
@@ -88,7 +86,6 @@ export class ModelsFacadeImpl implements ModelsFacade {
                 } else {
                     res[tcm.fileRelation] = [tcm.className];
                 }
-                console.log("res will be", res);
             }
         });
         return res;
@@ -113,7 +110,6 @@ export class ModelsFacadeImpl implements ModelsFacade {
             .andWhere('tcmf."className" = :c', { c: "testing" })
             .getMany();
         // const files = await getManager().query(query, [model.id]);
-        console.log("files are", files);
         let res: any = {};
         files.forEach((file: any) => {
             res[getFileName(file.filePath)] = file.filePath;
@@ -157,8 +153,6 @@ export class ModelsFacadeImpl implements ModelsFacade {
         const modelLogic: ModelLogic = new ModelLogicImpl();
         const subModel = await modelLogic.createSubModel(modelId);
         // TODO see what is the format for test
-        console.log("sub model data b4 sending", subModel);
-
         const subModuleSummary = {
             modelId: subModel.id,
             model_files: {
@@ -173,7 +167,6 @@ export class ModelsFacadeImpl implements ModelsFacade {
                 ],
             },
         };
-        console.log("data send:", subModuleSummary);
         return axios
             .post(to, subModuleSummary, {
                 headers: {
@@ -220,7 +213,6 @@ export class ModelsFacadeImpl implements ModelsFacade {
                 "Invalid number of classes; it must be 2 or more"
             );
         }
-        console.log("class names", classNames);
         // get all files that has the exact class name
         let res: any = { modelId, dictionary_classes: {} };
         for (let className of classNames) {
@@ -230,19 +222,16 @@ export class ModelsFacadeImpl implements ModelsFacade {
             res["dictionary_classes"][className.className] = paths.map(
                 // TODO check if there is a better (dynamic) way to get the base url
                 (path: { filePath: string }) => {
-                    console.log("path is", path);
                     return getBaseURL() + path.filePath;
                 }
             );
         }
-        console.log("result is", res);
         return res;
     }
 
     async sendModelFiles(modelId: string, to: string): Promise<any> {
         // const report = await this.getFileInfoReport(modelId);
         const res = await this.getFileInfoForTraining(modelId);
-        console.log("report is", res);
         return axios
             .post(to, res, {
                 headers: {

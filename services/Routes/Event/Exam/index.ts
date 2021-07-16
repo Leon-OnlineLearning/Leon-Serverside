@@ -75,7 +75,7 @@ router.put(
             const fileInfo: ExamFileInfo = {
                 examId: req.body.examId,
                 chunkIndex: parseInt(req.body.chunckIndex),
-                lastChunk: req.body.lastChunk,
+                lastChunk: req.body.lastChunk == "true",
                 chunk: req.file.buffer,
                 chunkStartTime: parseInt(req.body.chunkStartTime),
                 chunkEndTime: parseInt(req.body.chunkEndTime),
@@ -92,6 +92,7 @@ router.put(
             );
 
             if (fileInfo.lastChunk) {
+                console.debug("has last chuck?", fileInfo.lastChunk);
                 const studentLogic: StudentLogic = new StudentLogicImpl();
                 await studentLogic.registerExamPath(
                     req.body["userId"],

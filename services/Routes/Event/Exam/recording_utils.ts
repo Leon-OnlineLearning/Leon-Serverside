@@ -32,7 +32,6 @@ export const report_res_face_auth: ExamChunkResultCallback = async (
     );
 
     if (!matching) {
-        console.log("will save");
         const reportlogic: ReportLogic = new ReportLogicImpl();
         reportlogic
             .addToReport(
@@ -115,7 +114,6 @@ export async function get_video_portion(
                 resolve(tempPath);
             })
             .on("error", function (err: any) {
-                console.log("error: ", err);
                 rejects(err);
             })
             .run();

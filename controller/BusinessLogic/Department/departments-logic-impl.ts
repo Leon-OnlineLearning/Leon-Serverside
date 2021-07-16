@@ -103,7 +103,6 @@ export default class DepartmentsLogicImpl implements DepartmentsLogic {
         newData: Department
     ): Promise<Department> {
         const { id, ...newDepData } = newData;
-        console.log("dep id", departmentId);
         return await getRepository(Department).save({
             id: departmentId,
             ...newDepData,

@@ -128,7 +128,6 @@ export const accessTokenValidationMiddleware = (
             req.user = user;
             return next();
         }
-        console.log(user);
     })(req, res, next);
 };
 
