@@ -82,8 +82,6 @@ export default class ExamsLogicImpl implements ExamsLogic {
             where id = $1`,
             [examId]
         );
-        console.log("course id is", courseId);
-
         return courseId;
     }
     async getExamVideoData(

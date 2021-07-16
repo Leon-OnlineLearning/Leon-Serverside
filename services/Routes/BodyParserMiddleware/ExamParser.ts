@@ -17,7 +17,6 @@ export default class ExamParser implements BodyParserMiddleware {
         return async (req: Request, res: Response, next: NextFunction) => {
             const exam = new Exam();
             exam.startTime = new Date(req.body.startTime);
-            console.log(req.body);
             exam.endTime = new Date(req.body.endTime);
             exam.mark = req.body.mark;
             exam.title = req.body.title;

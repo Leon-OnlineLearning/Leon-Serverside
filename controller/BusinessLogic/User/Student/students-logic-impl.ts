@@ -45,9 +45,7 @@ export default class StudentLogicImpl implements StudentLogic {
         // TODO room for optimization
         for (let course of courses) {
             const qb = getRepository(Lecture).createQueryBuilder("lec");
-            console.log(course.id);
             const courseLectures = await course.lectures;
-            console.log("course lectures", courseLectures);
 
             const attendedLectures = await qb
                 .where("lec.courseId = :courseId", { courseId: course.id })
@@ -63,13 +61,11 @@ export default class StudentLogicImpl implements StudentLogic {
                             .getQuery()
                 )
                 .getMany();
-            console.log(attendedLectures);
 
             let _res: Array<any> = [];
             const attendedLecturesTitle = attendedLectures.map(
                 (al) => al.title
             );
-            console.log(courseLectures);
 
             for (let lec of courseLectures) {
                 _res.push({
@@ -191,7 +187,6 @@ export default class StudentLogicImpl implements StudentLogic {
 
         const studentCourses = await this.getAllCourses(student.id);
 
-        console.log("courses: ", studentCourses);
 
         const lectureCourse = await lecture.course;
         if (!studentCourses.length)

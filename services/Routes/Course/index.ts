@@ -118,7 +118,6 @@ router.get("/:courseId/lectures", async (req, res) => {
 router.post("/:courseId/exams", onlyProfessors, async (req, res) => {
     simpleFinalMWDecorator(res, async () => {
         const logic: CoursesLogic = new CourseLogicImpl();
-        console.log("cid, eid", req.params.courseId, req.body.examId);
 
         await logic.addExamToCourse(req.params.courseId, req.body.examId);
     });
@@ -141,7 +140,6 @@ router.get("/", async (_, res) => {
 router.get("/:courseId/models", (req, res) => {
     simpleFinalMWDecorator(res, async () => {
         const modelLogic: ModelLogic = new ModelLogicImpl();
-        console.log("course id received:", req.params["courseId"]);
 
         return await modelLogic.getAllModelsByCourseId(req.params["courseId"]);
     });

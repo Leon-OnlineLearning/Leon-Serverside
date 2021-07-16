@@ -111,7 +111,6 @@ export default class JanusConnection {
             method: "get",
             url: `${janus_server}/info`,
         });
-        console.log(res.data);
         if (res.data.janus != "success") {
             throw new Error("cannot create room");
         }
