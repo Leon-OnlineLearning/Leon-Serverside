@@ -26,6 +26,8 @@ export default class ExamParser implements BodyParserMiddleware {
             );
             exam.professor = professor;
             exam.course = course;
+            exam.questions = req.body.questions;
+
             const examReq = req as ExamRequest;
             examReq.exam = exam;
             try {
