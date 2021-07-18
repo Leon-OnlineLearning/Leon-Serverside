@@ -93,10 +93,10 @@ export default async function populateDB() {
     const baseExam = new Exam();
 
     baseExam.title = test_exam.title;
-    baseExam.year = parseInt(test_exam.year);
     baseExam.startTime = new Date();
-    const exam_open_time = 30; //minutes
-    baseExam.endTime = _time_after_now(exam_open_time);
+    const exam_open_time = 1; //minutes
+    baseExam.duration = exam_open_time;
+    baseExam.endTime = _time_after_now(exam_open_time + 30);
     baseExam.mark = 120;
     baseExam.course = sample_course;
 
@@ -199,8 +199,8 @@ export default async function populateDB() {
     const fakeLecture = new Lecture();
     fakeLecture.course = sample_course;
     fakeLecture.title = "blah blah";
-    fakeLecture.year = 1;
     fakeLecture.startTime = _time_after_now(0);
+    fakeLecture.duration = 60;
     fakeLecture.endTime = _time_after_now(90);
     fakeLecture.path = "/test.pdf"; // test file available by front end
 

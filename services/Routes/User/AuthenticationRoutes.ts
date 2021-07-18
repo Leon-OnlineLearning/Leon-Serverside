@@ -86,15 +86,23 @@ router.post(
         // if so send new token with payload generated from user call from the id
         // otherwise send 400 bad request
 
-        if (validAndExpired) {
-            const user = await getUserFromJWT(
-                req.cookies["jwt"] || req.body["jwt"]
-            );
-            const token = await generateAccessToken(user, true);
-            res.cookie("jwt", token, { httpOnly: true, path: "/" });
-            res.send({ success: true, token, message: "new token generated" });
-        } else {
-            res.status(400).send("Invalid old token state");
+        try {
+            if (validAndExpired) {
+                const user = await getUserFromJWT(
+                    req.cookies["jwt"] || req.body["jwt"]
+                );
+                const token = await generateAccessToken(user, true);
+                res.cookie("jwt", token, { httpOnly: true, path: "/" });
+                res.send({
+                    success: true,
+                    token,
+                    message: "new token generated",
+                });
+            } else {
+                throw new Error("Invalid old token state");
+            }
+        } catch (error: any) {
+            res.status(400).send(error.message);
         }
     }
 );
@@ -107,7 +115,7 @@ router.post("/logout", async (req, res) => {
         await blockId(user["id"]);
         res.clearCookie("jwt");
         res.status(205).send("logged out!");
-    } catch (e) {
+    } catch (e: any) {
         res.status(401).send(e.message);
     }
 });

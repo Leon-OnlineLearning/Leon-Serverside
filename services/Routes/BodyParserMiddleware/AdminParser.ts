@@ -21,7 +21,7 @@ export class AdminParser implements BodyParserMiddleware {
                 adminReq.account = admin;
                 next();
                 return;
-            } catch (e) {
+            } catch (e: any) {
                 res.status(400).send({ message: e.message, success: false });
             }
         };

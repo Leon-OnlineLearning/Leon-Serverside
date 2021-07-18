@@ -27,9 +27,6 @@ export default class Exam extends Event {
     @OneToMany(() => StudentsExamData, (se) => se.exam, { onDelete: "CASCADE" })
     studentExam!: StudentsExamData[];
 
-    @ManyToMany(() => Department, (department) => department.exams)
-    departments!: Department[];
-
     @ManyToOne(() => Professor, (p) => p.exams)
     professor!: Professor;
 

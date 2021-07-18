@@ -5,7 +5,11 @@ import passport, {
 import { Router } from "express";
 import BodyParserMiddleware from "@services/Routes/BodyParserMiddleware/BodyParserMiddleware";
 import ExamParser, {
+    answerParser,
     ExamRequest,
+    getQuestionParser,
+    NextQuestionRequest,
+    QuestionRequest,
 } from "@services/Routes/BodyParserMiddleware/ExamParser";
 import ExamsLogic from "@controller/BusinessLogic/Event/Exam/exam-logic";
 import ExamsLogicImpl from "@controller/BusinessLogic/Event/Exam/exam-logic-impl";
@@ -32,6 +36,7 @@ import {
 
 import fs from "fs";
 import NodeCache from "node-cache";
+import QuestionLogicImpl from "@controller/BusinessLogic/Event/Exam/question-logic-impl";
 
 const videoCache = new NodeCache({ stdTTL: 60 * 60 });
 videoCache.on("del", (key, val) => {
@@ -249,6 +254,59 @@ router.get("/:examId", async (req, res) => {
     });
 });
 
+router.post(
+    "/questions/current",
+    onlyStudents,
+    getQuestionParser,
+    async (req, res) => {
+        simpleFinalMWDecorator(res, async () => {
+            const nextQReq = req as QuestionRequest;
+
+            const q_index = nextQReq.studentExam.currentQuestionIndex;
+
+            // if first visit return first question
+            if (q_index == -1) {
+                return await new QuestionLogicImpl().getNextQuestion(
+                    nextQReq?.studentExam
+                );
+            }
+
+            // if last question return done
+            if (q_index === nextQReq.exam.questions?.length - 1) {
+                return "done";
+            }
+
+            // return current index
+            return await new QuestionLogicImpl().getQuestionByIndex(
+                nextQReq.exam.id,
+                q_index
+            );
+        });
+    }
+);
+
+router.post("/questions/next", onlyStudents, answerParser, async (req, res) => {
+    simpleFinalMWDecorator(res, async () => {
+        const nextQReq = req as NextQuestionRequest;
+
+        // save the answer data in the db
+        await new QuestionLogicImpl().saveAnswer(nextQReq.answer);
+
+        // if last request return done
+        if (
+            nextQReq.studentExam.currentQuestionIndex ===
+            nextQReq.exam.questions?.length - 1
+        ) {
+            return "done";
+        }
+
+        // return next question
+        return await new QuestionLogicImpl().getNextQuestion(
+            nextQReq?.studentExam
+        );
+    });
+});
+
 router.get("/", async (req, res) => {
     const year = req.body.year;
     if (!year || !parseInt(year))
@@ -261,12 +319,14 @@ router.get("/", async (req, res) => {
 });
 
 router.post("/", parser.completeParser, async (req, res) => {
+    // TODO prevent editing exam while students are taking it
     simpleFinalMWDecorator(
         res,
         async () => {
             const logic: ExamsLogic = new ExamsLogicImpl();
             const examReq = req as ExamRequest;
             const exam = await logic.createExam(examReq.exam);
+            console.debug(`created exam ${exam.id}`);
             return exam;
         },
         201

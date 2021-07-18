@@ -15,14 +15,13 @@ export default class LectureParser implements BodyParserMiddleware {
             lecture.endTime = new Date(req.body.endTime);
             lecture.path = `${process.env["SERVER_BASE_DOMAIN"]}:${process.env["SERVER_PORT"]}/lectruesFiles/${req.file.filename}`;
             lecture.title = req.body.title;
-            lecture.year = req.body.year;
             const lectureReq = req as LectureRequest;
             try {
                 await validatorSchema.validateAsync(lecture);
                 lectureReq.lecture = lecture;
                 next();
                 return;
-            } catch (e) {
+            } catch (e: any) {
                 res.status(400).send({ success: false, message: e.message });
             }
         };

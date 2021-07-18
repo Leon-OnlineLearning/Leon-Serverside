@@ -40,9 +40,6 @@ export default class Lecture extends Event {
     @JoinColumn()
     professor: Professor;
 
-    @ManyToMany(() => Department, (department) => department.lectures)
-    departments!: Department[];
-
     @OneToOne(() => LectureTranscript, (lt) => lt.lecture)
     @JoinColumn()
     transcript: LectureTranscript;
