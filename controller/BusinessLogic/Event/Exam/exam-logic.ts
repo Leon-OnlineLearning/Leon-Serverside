@@ -1,6 +1,6 @@
 import Exam from "@models/Events/Exam";
 import StudentsExamData from "@models/JoinTables/StudentExam";
-// import ExamQuestion from "@models/Events/ExamQuestions";
+import ExamQuestion from "@models/Events/ExamQuestions";
 
 export default interface ExamsLogic {
     createExam(exam: Exam): Promise<Exam>;
@@ -46,8 +46,5 @@ export default interface ExamsLogic {
         startingFrom: string,
         endingAt: string
     ): Promise<Exam[]>;
-    // addQuestion(question: ExamQuestion): Promise<ExamQuestion>;
-    // removeQuestion(questionId: string): Promise<void>;
-    // updateQuestion(questionId:string, newData: ExamQuestion): Promise<ExamQuestion>;
     postExamProcessing(examId: string, studentId: string): Promise<void>;
 }
