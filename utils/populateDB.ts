@@ -95,7 +95,7 @@ export default async function populateDB() {
     baseExam.title = test_exam.title;
     baseExam.startTime = new Date();
     const exam_open_time = 1; //minutes
-    baseExam.duration = exam_open_time
+    baseExam.duration = exam_open_time;
     baseExam.endTime = _time_after_now(exam_open_time + 30);
     baseExam.mark = 120;
     baseExam.course = sample_course;

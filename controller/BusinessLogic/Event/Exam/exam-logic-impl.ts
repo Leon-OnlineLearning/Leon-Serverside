@@ -121,6 +121,12 @@ export default class ExamsLogicImpl implements ExamsLogic {
     }
 
     async getExamById(examId: string): Promise<Exam> {
+        const res = await getRepository(Exam).findOne(examId);
+        if (res) return res;
+        else throw new UserInputError("Invalid exam id");
+    }
+
+    async getFullExamById(examId: string): Promise<Exam> {
         const res = await getRepository(Exam).findOne(examId, {
             relations: ["questions"],
         });

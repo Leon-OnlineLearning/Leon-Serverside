@@ -18,8 +18,11 @@ export default abstract class Event {
     title: string;
 
     @Column()
-    startTime: Date;
+    startTime: Date; // start access to event
 
     @Column()
-    endTime: Date;
+    duration: number; //duration in minutes
+
+    @Column()
+    endTime: Date; // time to stop access to event
 }

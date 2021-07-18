@@ -55,7 +55,7 @@ export interface ExamRequest extends Request {
 
 export interface QuestionRequest extends Request {
     exam: Exam;
-    studentExam: StudentsExamData
+    studentExam: StudentsExamData;
 }
 
 export interface NextQuestionRequest extends QuestionRequest {
@@ -72,38 +72,48 @@ const AnswerSchema = Joi.object().keys({
 const getQuestionSchema = Joi.object().keys({
     examId: Joi.string().required(),
     studentId: Joi.string().required(),
-})
+});
 
 const QuestionNextSchema = getQuestionSchema.keys({
     answer: AnswerSchema.required(),
-})
-
+});
 
 /**
  * parse get Question request: will start exam if student not in one
- * @param req 
- * @param res 
- * @param next 
+ * @param req
+ * @param res
+ * @param next
  */
-export async function getQuestionParser(req: Request, res: Response, next: NextFunction) {
+export async function getQuestionParser(
+    req: Request,
+    res: Response,
+    next: NextFunction
+) {
     await getQuestionSchema.validateAsync({
         studentId: req.body.studentId,
-        examId: req.body.examId
+        examId: req.body.examId,
     });
 
     const questionReq = req as QuestionRequest;
 
     const exam = await new ExamsLogicImpl().getFullExamById(req.body.examId);
-    if (!exam) { throw new UserInputError("Invalid exam id") }
+    if (!exam) {
+        throw new UserInputError("Invalid exam id");
+    }
     questionReq.exam = exam;
 
-    let studentExam: StudentsExamData
+    let studentExam: StudentsExamData;
     try {
         studentExam = await new ExamsLogicImpl().getStudentExam(
-            req.body.studentId, req.body.examId);
+            req.body.studentId,
+            req.body.examId
+        );
     } catch (error: any) {
         if (error.message === "User didn't attend exam") {
-            studentExam = await new QuestionLogicImpl().startExam(req.body.examId, req.body.studentId)
+            studentExam = await new QuestionLogicImpl().startExam(
+                req.body.examId,
+                req.body.studentId
+            );
         } else {
             console.error(error);
             res.status(400).send({ success: false, message: error.message });
@@ -117,44 +127,60 @@ export async function getQuestionParser(req: Request, res: Response, next: NextF
     next();
 }
 
-
-
-
-export async function answerParser(req: Request, res: Response, next: NextFunction) {
+export async function answerParser(
+    req: Request,
+    res: Response,
+    next: NextFunction
+) {
     try {
         await QuestionNextSchema.validateAsync({
             answer: req.body.answer,
             studentId: req.body.studentId,
-            examId: req.body.examId
+            examId: req.body.examId,
         });
 
         const questionReq = req as NextQuestionRequest;
 
-        const exam = await new ExamsLogicImpl().getFullExamById(req.body.examId);
-        if (!exam) { throw new UserInputError("Invalid exam id") }
+        const exam = await new ExamsLogicImpl().getFullExamById(
+            req.body.examId
+        );
+        if (!exam) {
+            throw new UserInputError("Invalid exam id");
+        }
         questionReq.exam = exam;
 
         const studentExam = await new ExamsLogicImpl().getStudentExam(
-            req.body.studentId, req.body.examId);
-        if (!studentExam) throw new UserInputError("invalid studentExam id")
+            req.body.studentId,
+            req.body.examId
+        );
+        if (!studentExam) throw new UserInputError("invalid studentExam id");
         questionReq.studentExam = studentExam;
 
         const answer = new QuestionSolution();
         answer.StudentsExamData = studentExam;
         answer.solutionText = req.body.answer?.solutionText;
         answer.solutionChoices = req.body.answer?.solutionChoices;
-        const question = await new QuestionLogicImpl().getQuestionById(req.body.answer.questionId);
-        if (!question) { throw new Error("Invalid question id") }
+        const question = await new QuestionLogicImpl().getQuestionById(
+            req.body.answer.questionId
+        );
+        if (!question) {
+            throw new Error("Invalid question id");
+        }
         answer.question = question;
 
         // make sure the answer is for current question
-        if (answer.question.id !== exam.questions[studentExam.currentQuestionIndex].id) {
-
-            console.error(question)
+        if (
+            answer.question.id !==
+            exam.questions[studentExam.currentQuestionIndex].id
+        ) {
+            console.error(question);
             console.debug(`questionId : ${req.body.answer.questionId}`);
             console.debug(`answer.question.id: ${answer.question.id}`);
-            console.debug(`index ${studentExam.currentQuestionIndex
-                },id: ${exam.questions[studentExam.currentQuestionIndex].id}`);
+            console.debug(
+                `index ${studentExam.currentQuestionIndex},id: ${
+                    exam.questions[studentExam.currentQuestionIndex].id
+                }`
+            );
             throw new Error("you cannot answer different question");
         }
 
@@ -163,12 +189,10 @@ export async function answerParser(req: Request, res: Response, next: NextFuncti
         next();
         return;
     } catch (e: any) {
-
         res.status(400).send({ success: false, message: e.message });
-        console.error(e)
-        console.error(e.message)
+        console.error(e);
+        console.error(e.message);
         console.debug(`req was `);
-        console.debug(req.body)
+        console.debug(req.body);
     }
 }
-

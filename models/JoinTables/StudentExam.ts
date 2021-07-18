@@ -1,7 +1,13 @@
 import Exam from "@models/Events/Exam";
 import TestRequestStatus from "@models/TestRequest/testRequestStatus";
 import Student from "@models/Users/Student";
-import { Column, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn } from "typeorm";
+import {
+    Column,
+    Entity,
+    ManyToOne,
+    OneToMany,
+    PrimaryGeneratedColumn,
+} from "typeorm";
 import QuestionSolution from "./QuestionSolution";
 
 @Entity()
@@ -32,8 +38,8 @@ export default class StudentsExamData {
     videoPath: string;
 
     @Column({ default: -1 })
-    currentQuestionIndex: number;  // question index currently being solved
+    currentQuestionIndex: number; // question index currently being solved
 
     @OneToMany(() => QuestionSolution, (A) => A.StudentsExamData)
-    questionSolutions: QuestionSolution[];  // question solutions
+    questionSolutions: QuestionSolution[]; // question solutions
 }

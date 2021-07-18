@@ -254,27 +254,36 @@ router.get("/:examId", async (req, res) => {
     });
 });
 
-router.post("/questions/current", onlyStudents, getQuestionParser, async (req, res) => {
-    simpleFinalMWDecorator(res, async () => {
-        const nextQReq = req as QuestionRequest;
+router.post(
+    "/questions/current",
+    onlyStudents,
+    getQuestionParser,
+    async (req, res) => {
+        simpleFinalMWDecorator(res, async () => {
+            const nextQReq = req as QuestionRequest;
 
-        const q_index = nextQReq.studentExam.currentQuestionIndex
+            const q_index = nextQReq.studentExam.currentQuestionIndex;
 
-        // if first visit return first question
-        if (q_index == -1) {
-            return await new QuestionLogicImpl().getNextQuestion(nextQReq?.studentExam);
-        }
+            // if first visit return first question
+            if (q_index == -1) {
+                return await new QuestionLogicImpl().getNextQuestion(
+                    nextQReq?.studentExam
+                );
+            }
 
-        // if last question return done        
-        if (q_index === nextQReq.exam.questions?.length - 1) {
-            return "done";
-        }
+            // if last question return done
+            if (q_index === nextQReq.exam.questions?.length - 1) {
+                return "done";
+            }
 
-        // return current index
-        return await new QuestionLogicImpl().getQuestionByIndex(nextQReq.exam.id, q_index);
-    });
-});
-
+            // return current index
+            return await new QuestionLogicImpl().getQuestionByIndex(
+                nextQReq.exam.id,
+                q_index
+            );
+        });
+    }
+);
 
 router.post("/questions/next", onlyStudents, answerParser, async (req, res) => {
     simpleFinalMWDecorator(res, async () => {
@@ -283,13 +292,18 @@ router.post("/questions/next", onlyStudents, answerParser, async (req, res) => {
         // save the answer data in the db
         await new QuestionLogicImpl().saveAnswer(nextQReq.answer);
 
-        // if last request return done        
-        if (nextQReq.studentExam.currentQuestionIndex === nextQReq.exam.questions?.length - 1) {
+        // if last request return done
+        if (
+            nextQReq.studentExam.currentQuestionIndex ===
+            nextQReq.exam.questions?.length - 1
+        ) {
             return "done";
         }
 
         // return next question
-        return await new QuestionLogicImpl().getNextQuestion(nextQReq?.studentExam);
+        return await new QuestionLogicImpl().getNextQuestion(
+            nextQReq?.studentExam
+        );
     });
 });
 

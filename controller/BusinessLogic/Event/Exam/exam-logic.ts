@@ -1,6 +1,5 @@
 import Exam from "@models/Events/Exam";
 import StudentsExamData from "@models/JoinTables/StudentExam";
-import ExamQuestion from "@models/Events/ExamQuestions";
 
 export default interface ExamsLogic {
     createExam(exam: Exam): Promise<Exam>;

@@ -8,43 +8,50 @@ import { getRepository, Index } from "typeorm";
 import ExamsLogicImpl from "./exam-logic-impl";
 import QuestionLogic from "./question-logic";
 
-
 export default class QuestionLogicImpl implements QuestionLogic {
-    async startExam(examId: string, studentId: string): Promise<StudentsExamData> {
+    async startExam(
+        examId: string,
+        studentId: string
+    ): Promise<StudentsExamData> {
         let studentExam = new StudentsExamData();
 
-        const student = await new StudentLogicImpl().getStudentById(studentId)
-        if (!student) { throw new Error("Invalid student id") }
+        const student = await new StudentLogicImpl().getStudentById(studentId);
+        if (!student) {
+            throw new Error("Invalid student id");
+        }
         studentExam.student = student;
 
         const exam = await new ExamsLogicImpl().getExamById(examId);
-        if (!exam) { throw new Error("Invalid exam id") }
+        if (!exam) {
+            throw new Error("Invalid exam id");
+        }
         studentExam.exam = Promise.resolve(exam);
 
         studentExam = await getRepository(StudentsExamData).save(studentExam);
         console.debug(`student${studentId} started exam ${examId}`);
-        return studentExam
+        return studentExam;
     }
 
+    async getNextQuestion(
+        studentExam: StudentsExamData
+    ): Promise<ExamQuestions> {
+        let exam = await studentExam.exam;
 
-    async getNextQuestion(studentExam: StudentsExamData): Promise<ExamQuestions> {
+        if (!exam) throw new Error("Invalid exam id");
 
-        let exam = await studentExam.exam
-
-        if (!exam) throw new Error("Invalid exam id")
-
-        const nextIndex = studentExam.currentQuestionIndex + 1
+        const nextIndex = studentExam.currentQuestionIndex + 1;
 
         const question = await this.getQuestionByIndex(exam.id, nextIndex);
         if (question.id) {
             studentExam.currentQuestionIndex = nextIndex;
             await getRepository(StudentsExamData).save(studentExam);
             return question;
-        } else { throw new Error("Invalid id") }
+        } else {
+            throw new Error("Invalid id");
+        }
     }
     async saveAnswer(answer: QuestionSolution): Promise<void> {
         await getRepository(QuestionSolution).save(answer);
-
     }
     async getQuestionById(id: string): Promise<ExamQuestion> {
         const res = await getRepository(ExamQuestion).findOne(id);
@@ -52,7 +59,10 @@ export default class QuestionLogicImpl implements QuestionLogic {
         return res;
     }
 
-    async getQuestionByIndex(examId: string, Index: number): Promise<ExamQuestions> {
+    async getQuestionByIndex(
+        examId: string,
+        Index: number
+    ): Promise<ExamQuestions> {
         const exam = await new ExamsLogicImpl().getFullExamById(examId);
         if (exam.questions.length <= Index)
             throw new UserInputError("Invalid question index");
