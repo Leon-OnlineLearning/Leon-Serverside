@@ -19,6 +19,14 @@ export default abstract class TestingQuery {
     }> {
         const modelFacade: ModelsFacade = new ModelsFacadeImpl();
         const relations = await modelFacade.getRelations(this.model.id);
+        console.log("request sent", {
+            modelId: this.model.id,
+            prediction_model_path: `${getBaseURL()}${
+                this.model.predictionModelPath
+            }`,
+            dictionary_classes: this.model.state.Classes,
+            relations,
+        });
         return {
             modelId: this.model.id,
             prediction_model_path: `${getBaseURL()}${

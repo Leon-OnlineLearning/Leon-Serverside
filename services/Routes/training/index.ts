@@ -61,7 +61,7 @@ const testFileStorageUploader = diskStorageBuilder(
         "static/textclassification/testing",
     (file: Express.Multer.File) => {
         return (
-            `${file.originalname.replaceAll(" ", "_").split(".")[0]}` +
+            `${file.originalname.replaceAll(" ", "_").split(".")[0].toLowerCase()}` +
             "-" +
             "related" +
             Date.now() +
