@@ -132,6 +132,7 @@ export class ModelsFacadeImpl implements ModelsFacade {
             ...(await testingQuery.getCommonFields()),
             ...(await testingQuery.getSpecificFields()),
         };
+        console.log("sent request body is", requestBody);
         return await axios
             .post(url, requestBody, {
                 headers: {
@@ -216,15 +217,20 @@ export class ModelsFacadeImpl implements ModelsFacade {
         // get all files that has the exact class name
         let res: any = { modelId, dictionary_classes: {} };
         for (let className of classNames) {
-            const paths = await this.getFilePathsByClassName(
-                className.className
-            );
-            res["dictionary_classes"][className.className] = paths.map(
-                // TODO check if there is a better (dynamic) way to get the base url
-                (path: { filePath: string }) => {
-                    return getBaseURL() + path.filePath;
-                }
-            );
+            if (className.className !== "testing") {
+                const paths = await this.getFilePathsByClassName(
+                    className.className
+                );
+                res["dictionary_classes"][className.className] = paths.map(
+                    // TODO check if there is a better (dynamic) way to get the base url
+                    (path: { filePath: string }) => {
+                        return getBaseURL() + path.filePath;
+                    }
+                );
+            }
+        }
+        if (res["dictionary_classes"].length < 2) {
+            throw new UserInputError("Classes must be more than 2");
         }
         return res;
     }
