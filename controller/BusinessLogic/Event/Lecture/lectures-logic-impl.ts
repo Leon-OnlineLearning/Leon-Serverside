@@ -10,6 +10,8 @@ import AudioRoom from "@models/Events/AudioRoom";
 import axios from "axios";
 import { join } from "path";
 import { mkdir } from "fs/promises";
+import CoursesLogic from "@controller/BusinessLogic/Course/courses-logic";
+import CourseLogicImpl from "@controller/BusinessLogic/Course/courses-logic-impl";
 
 const writeFile = promises.writeFile;
 
@@ -20,6 +22,33 @@ const remote_server_url =
     process.env["LIVEROOM_SERVER"] || "http://janus-gateway:6111";
 
 export default class LecturesLogicImpl implements LecturesLogic {
+    async getLecturesTranscriptByCourseId(
+        courseId: string
+    ): Promise<LectureTranscript[]> {
+        const courseLogic: CoursesLogic = new CourseLogicImpl();
+        // get lectures for course
+        const lectures = await courseLogic.getLecturesForCourse(courseId);
+        const transcriptsPromises = lectures.map(async (lec) => {
+            return await this.getLectureTranscriptByLectureId(lec.id);
+        });
+        const transcripts = [];
+        for (const tscp of transcriptsPromises) {
+            transcripts.push(await tscp);
+        }
+        return transcripts;
+    }
+    async getLectureTranscriptByLectureId(
+        lectureId: string
+    ): Promise<LectureTranscript> {
+        const lts = await getRepository(LectureTranscript)
+            .createQueryBuilder("lts")
+            .where("lts.lectureId = :lectureId", { lectureId })
+            .getOne();
+        if (!lts) {
+            throw new UserInputError("lecture has no transcript");
+        }
+        return lts;
+    }
     async listRemoteRecordings(): Promise<string[]> {
         const res = await axios.get(`${remote_server_url}/lecture/all`);
         return res.data;
