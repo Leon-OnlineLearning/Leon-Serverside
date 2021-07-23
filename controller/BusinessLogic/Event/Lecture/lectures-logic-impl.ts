@@ -29,25 +29,29 @@ export default class LecturesLogicImpl implements LecturesLogic {
         // get lectures for course
         const lectures = await courseLogic.getLecturesForCourse(courseId);
         const transcriptsPromises = lectures.map(async (lec) => {
-            return await this.getLectureTranscriptByLectureId(lec.id);
+            const transcriptP = this.getLectureTranscriptByLectureId(lec.id);
+            console.log("transcript is", transcriptP);
+            return transcriptP;
         });
         const transcripts = [];
         for (const tscp of transcriptsPromises) {
-            transcripts.push(await tscp);
+            const _transcript = await tscp;
+            console.log("transcript is");
+            if (_transcript) transcripts.push(_transcript);
         }
         return transcripts;
     }
     async getLectureTranscriptByLectureId(
         lectureId: string
     ): Promise<LectureTranscript> {
-        const lts = await getRepository(LectureTranscript)
-            .createQueryBuilder("lts")
-            .where("lts.lectureId = :lectureId", { lectureId })
-            .getOne();
-        if (!lts) {
+        const lecture = await getRepository(Lecture).findOne(lectureId, {
+            relations: ["transcript"],
+        });
+        if (!lecture) {
             throw new UserInputError("lecture has no transcript");
         }
-        return lts;
+        console.log("lecture is", lecture);
+        return lecture.transcript;
     }
     async listRemoteRecordings(): Promise<string[]> {
         const res = await axios.get(`${remote_server_url}/lecture/all`);
