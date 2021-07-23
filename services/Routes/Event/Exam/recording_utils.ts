@@ -18,11 +18,10 @@ export const report_not_live: ExamChunkResultCallback = async (
 ) => {
     // TODO add to report
     console.log(`report_not_live:`);
-    console.debug(result)
-    console.debug(`start= ${start}`)
-    console.debug(`end= ${end}`)
-}
-
+    console.debug(result);
+    console.debug(`start= ${start}`);
+    console.debug(`end= ${end}`);
+};
 
 /**
  * call back funcntion for ML file sender that process response and dicide wither it should save it in db or not

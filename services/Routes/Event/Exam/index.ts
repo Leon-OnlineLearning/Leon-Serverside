@@ -151,7 +151,6 @@ router.put(
                 report_res_forbidden_objects
             );
 
-
             // send to gesture recognition
             sendExamFile(
                 req.body.userId,
