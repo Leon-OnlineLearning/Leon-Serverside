@@ -338,6 +338,7 @@ router.post("/", parser.completeParser, async (req, res) => {
             const exam = await logic.createExam(examReq.exam);
             console.debug(`created exam ${exam.id}`);
             return exam;
+            // TODO attach to professor and course
         },
         201
     );
