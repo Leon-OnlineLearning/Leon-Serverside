@@ -174,7 +174,7 @@ export async function sendFileHttpMethod(
         //     // Something happened in setting up the request that triggered an Error
         //     console.error("Error", error.message);
         // }
-        console.error("cannot send file to ML");
+        console.error(`cannot send file to ML server ${url}`);
     } finally {
         try {
             if (buffer) await fsPromises.unlink(`${fileName}`);
