@@ -30,6 +30,7 @@ import { ReportLogicImpl } from "@controller/BusinessLogic/Report/report-logic-i
 import {
     get_video_path,
     get_video_portion,
+    report_not_live,
     report_res_face_auth,
     report_res_forbidden_objects,
 } from "./recording_utils";
@@ -60,7 +61,7 @@ var upload = multer({ storage: storage });
 
 const face_auth_serverBaseUrl = `${process.env.ML_SO_IO_SERVER_BASE_D}:${process.env.ML_SO_IO_SERVER_PORT}`;
 const fo_serverBaseUrl = `${process.env.ML_forbidden_objectURL}`; //fo:forbidden object
-
+const gesture_serverBaseUrl = `${process.env.ML_gestureURL}`; //gesture:gesture}
 /**
  * save exam recording
  * 
@@ -148,6 +149,16 @@ router.put(
                 fileInfo,
                 clipped_path,
                 report_res_forbidden_objects
+            );
+
+
+            // send to gesture recognition
+            sendExamFile(
+                req.body.userId,
+                gesture_serverBaseUrl,
+                fileInfo,
+                clipped_path,
+                report_not_live
             );
         });
     }
