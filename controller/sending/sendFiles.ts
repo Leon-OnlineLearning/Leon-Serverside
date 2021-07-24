@@ -11,8 +11,8 @@ const FormData = require("form-data");
 
 export interface ExamFileInfo {
     examId: string;
-    chunkIndex: number;
-    lastChunk: boolean;
+    chunkIndex?: number;
+    lastChunk?: boolean;
     chunk?: Buffer;
     chunkStartTime: number;
     chunkEndTime: number;
