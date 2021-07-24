@@ -221,8 +221,7 @@ export default async function populateDB() {
     }
     console.debug(`attaching professor ${sample_professor.id} to lecture `);
 
-    console.log("----------------------------------")
+    console.log("----------------------------------");
     console.log("population done");
-    console.log("----------------------------------")
-
+    console.log("----------------------------------");
 }

@@ -158,11 +158,12 @@ router.put(
 router.get("/report", async (req, res) => {
     simpleFinalMWDecorator(res, async () => {
         // sanity check
-        if (!req.query.userId) throw new UserInputError("request must contain userId");
-        if (!req.query.examId) throw new UserInputError("request must contain examId");
+        if (!req.query.userId)
+            throw new UserInputError("request must contain userId");
+        if (!req.query.examId)
+            throw new UserInputError("request must contain examId");
 
         const logic: ReportLogic = new ReportLogicImpl();
-
 
         const studentId = req.query.userId as string;
         const examId = req.query.examId as string;
@@ -183,11 +184,13 @@ type PartSpecType = {
 /**
  * mark portion of the vedio as life check and report it to ML service
  */
-router.put('/liveness', async (req, res) => {
+router.put("/liveness", async (req, res) => {
     simpleFinalMWDecorator(res, async () => {
         // sanity check
-        if (!req.body.userId) throw new UserInputError("request must contain userId");
-        if (!req.body.examId) throw new UserInputError("request must contain examId");
+        if (!req.body.userId)
+            throw new UserInputError("request must contain userId");
+        if (!req.body.examId)
+            throw new UserInputError("request must contain examId");
 
         const studentId = req.body.userId as string;
         const examId = req.body.examId as string;
@@ -220,7 +223,6 @@ router.put('/liveness', async (req, res) => {
                 clipped_path,
                 report_not_live
             );
-
         }, duration * 1000);
 
         // const report = await logic.reportLifeCheck(partSpec);
