@@ -30,6 +30,7 @@ import { ReportLogicImpl } from "@controller/BusinessLogic/Report/report-logic-i
 import {
     get_video_path,
     get_video_portion,
+    report_not_live,
     report_res_face_auth,
     report_res_forbidden_objects,
 } from "./recording_utils";
@@ -37,6 +38,7 @@ import {
 import fs from "fs";
 import NodeCache from "node-cache";
 import QuestionLogicImpl from "@controller/BusinessLogic/Event/Exam/question-logic-impl";
+import UserInputError from "@services/utils/UserInputError";
 
 const videoCache = new NodeCache({ stdTTL: 60 * 60 });
 videoCache.on("del", (key, val) => {
@@ -60,7 +62,7 @@ var upload = multer({ storage: storage });
 
 const face_auth_serverBaseUrl = `${process.env.ML_SO_IO_SERVER_BASE_D}:${process.env.ML_SO_IO_SERVER_PORT}`;
 const fo_serverBaseUrl = `${process.env.ML_forbidden_objectURL}`; //fo:forbidden object
-
+const gesture_serverBaseUrl = `${process.env.ML_gestureURL}`; //gesture:gesture}
 /**
  * save exam recording
  * 
@@ -93,7 +95,7 @@ router.put(
                 fileInfo.chunk as Buffer,
                 fileInfo.examId,
                 req.body.userId,
-                fileInfo.chunkIndex
+                fileInfo.chunkIndex as number
             );
 
             if (fileInfo.lastChunk) {
@@ -155,11 +157,13 @@ router.put(
 
 router.get("/report", async (req, res) => {
     simpleFinalMWDecorator(res, async () => {
-        const logic: ReportLogic = new ReportLogicImpl();
-
         // sanity check
-        if (!req.query.userId) throw new Error("request must contain userId");
-        if (!req.query.examId) throw new Error("request must contain examId");
+        if (!req.query.userId)
+            throw new UserInputError("request must contain userId");
+        if (!req.query.examId)
+            throw new UserInputError("request must contain examId");
+
+        const logic: ReportLogic = new ReportLogicImpl();
 
         const studentId = req.query.userId as string;
         const examId = req.query.examId as string;
@@ -177,8 +181,57 @@ type PartSpecType = {
     examId: string;
 };
 
-// FIXME restrict access to [student with same id, professor of exam, admin]
-router.get("/video", async (req, res) => {
+/**
+ * mark portion of the vedio as life check and report it to ML service
+ */
+router.put("/liveness", async (req, res) => {
+    simpleFinalMWDecorator(res, async () => {
+        // sanity check
+        if (!req.body.userId)
+            throw new UserInputError("request must contain userId");
+        if (!req.body.examId)
+            throw new UserInputError("request must contain examId");
+
+        const studentId = req.body.userId as string;
+        const examId = req.body.examId as string;
+        const fileInfo: ExamFileInfo = {
+            chunkStartTime: parseInt(req.body.startingTime),
+            chunkEndTime: parseInt(req.body.endingTime),
+            examId,
+        };
+
+        const filePath = get_video_path(studentId, examId);
+
+        const duration = fileInfo.chunkEndTime - fileInfo.chunkStartTime;
+        const portion_args: [string, number, number] = [
+            filePath,
+            fileInfo.chunkStartTime,
+            duration,
+        ];
+        setTimeout(async () => {
+            const clipped_path = await get_video_portion(...portion_args);
+
+            // save the path in cache
+            // witch will delete it after certain time
+            videoCache.set(cacheKey(...portion_args), clipped_path);
+
+            // send to gesture recognition
+            sendExamFile(
+                studentId,
+                gesture_serverBaseUrl,
+                fileInfo,
+                clipped_path,
+                report_not_live
+            );
+        }, duration * 1000);
+
+        // const report = await logic.reportLifeCheck(partSpec);
+        // console.debug(`sending ${report.length} reports`);
+    });
+});
+
+// FIXME restrict access to [student with same id]
+router.get("/video", onlyStudents, async (req, res) => {
     const partSpec: PartSpecType = {
         startingTime: parseInt(req.query.startingTime as string),
         duration: parseInt(req.query.duration as string),
@@ -328,6 +381,7 @@ router.post("/", parser.completeParser, async (req, res) => {
             const exam = await logic.createExam(examReq.exam);
             console.debug(`created exam ${exam.id}`);
             return exam;
+            // TODO attach to professor and course
         },
         201
     );
