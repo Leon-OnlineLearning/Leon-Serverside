@@ -146,7 +146,7 @@ export class ModelsFacadeImpl implements ModelsFacade {
                 await testingQuery.changeTestingState(
                     CourseConnectionStatus.IDLE
                 );
-								return data;
+                return data;
             })
             .catch((err) => console.error(err));
     }
