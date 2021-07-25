@@ -9,6 +9,20 @@ const ffmpegPath = require("@ffmpeg-installer/ffmpeg").path;
 const ffmpeg = require("fluent-ffmpeg");
 ffmpeg.setFfmpegPath(ffmpegPath);
 
+export const report_not_live: ExamChunkResultCallback = async (
+    studentId: string,
+    examId: string,
+    result: string | string[],
+    start: number,
+    end: number
+) => {
+    // TODO add to report
+    console.log(`report_not_live:`);
+    console.debug(result);
+    console.debug(`start= ${start}`);
+    console.debug(`end= ${end}`);
+};
+
 /**
  * call back funcntion for ML file sender that process response and dicide wither it should save it in db or not
  * @param userId
@@ -110,7 +124,11 @@ export async function get_video_portion(
             .on("end", async (stdout: string, stderr: string) => {
                 // console.debug(`stdout ${stdout}`);
                 // console.debug(`error ${stderr}`);
-                console.debug("conversion end");
+                console.debug(
+                    `conversion end from ${startTime}s to ${
+                        startTime + duration
+                    }s`
+                );
                 resolve(tempPath);
             })
             .on("error", function (err: any) {

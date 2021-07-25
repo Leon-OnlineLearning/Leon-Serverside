@@ -9,9 +9,9 @@ import { promises } from "fs";
 import AudioRoom from "@models/Events/AudioRoom";
 import axios from "axios";
 import { join } from "path";
-import { mkdir } from "fs/promises";
 import CoursesLogic from "@controller/BusinessLogic/Course/courses-logic";
 import CourseLogicImpl from "@controller/BusinessLogic/Course/courses-logic-impl";
+const mkdir = promises.mkdir;
 
 const writeFile = promises.writeFile;
 
@@ -112,9 +112,10 @@ export default class LecturesLogicImpl implements LecturesLogic {
     ): Promise<LectureTranscript> {
         const lecture = await getRepository(Lecture).findOne(lectureId);
         if (!lecture) throw new UserInputError("Invalid lecture id");
-        const path = `${
-            process.env["LECTURES_TRANSCRIPT_STORAGE"] ?? "static/lectureText/"
-        }${lectureId}.txt`;
+        const dir =
+            process.env["LECTURES_TRANSCRIPT_STORAGE"] ?? "static/lectureText/";
+        mkdir(dir, { recursive: true });
+        const path = `${dir}${lectureId}.txt`;
 
         await writeFile(path, content);
         const transcriptFile = new LectureTranscript();
