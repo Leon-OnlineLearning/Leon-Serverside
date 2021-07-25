@@ -20,6 +20,8 @@ import { promises } from "fs";
 import { userTockenData } from "../event.routes";
 import LiveRoomLogicImpl from "@controller/BusinessLogic/Event/LiveRoom/liveRoom-logic-imp";
 import UserTypes from "@models/Users/UserTypes";
+import StudentLogicImpl from "@controller/BusinessLogic/User/Student/students-logic-impl";
+import StudentLogic from "@controller/BusinessLogic/User/Student/students-logic";
 
 const readFile = promises.readFile;
 const router = Router();
@@ -50,6 +52,10 @@ router.get("/enter/:lectureId", onlyStudentOrProfessor, async (req, res) => {
             user.role as UserTypes.STUDENT | UserTypes.PROFESSOR
         );
         console.debug(`sending live room with id ${audioRoom.roomId}`);
+        // attend lecture
+        const studentLogic: StudentLogic = new StudentLogicImpl();
+        await studentLogic.attendLecture(user.id, req.params.lectureId);
+
         return audioRoom;
     });
 });
