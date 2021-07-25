@@ -53,8 +53,10 @@ router.get("/enter/:lectureId", onlyStudentOrProfessor, async (req, res) => {
         );
         console.debug(`sending live room with id ${audioRoom.roomId}`);
         // attend lecture
-        const studentLogic: StudentLogic = new StudentLogicImpl();
-        await studentLogic.attendLecture(user.id, req.params.lectureId);
+        if (user.role === UserTypes.STUDENT) {
+            const studentLogic: StudentLogic = new StudentLogicImpl();
+            await studentLogic.attendLecture(user.id, req.params.lectureId);
+        }
 
         return audioRoom;
     });
