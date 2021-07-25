@@ -183,7 +183,6 @@ router.put(
             studentExam.last_record_primary = new Date();
             examLogic.saveStudentExam(studentExam);
 
-
             if (fileInfo.lastChunk) {
                 console.debug("has last chuck?", fileInfo.lastChunk);
                 const studentLogic: StudentLogic = new StudentLogicImpl();
