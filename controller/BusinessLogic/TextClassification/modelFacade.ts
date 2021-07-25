@@ -21,6 +21,8 @@ import TextClassificationFilesLogic from "./files-logic";
 import ModelLogic from "./models-logic";
 import ModelLogicImpl from "./models-logic-impl";
 import TestingQuery from "./TestingQuerys/TestingQuery";
+import LecturesLogic from "../Event/Lecture/lectures-logic";
+import LecturesLogicImpl from "../Event/Lecture/lectures-logic-impl";
 
 export interface UploadResult {
     success: boolean;
@@ -230,10 +232,43 @@ export class ModelsFacadeImpl implements ModelsFacade {
                 );
             }
         }
-        if (res["dictionary_classes"].length < 2) {
-            throw new UserInputError("Classes must be more than 2");
+        let leastNumberOfClasses = 2;
+        // get the course for the model
+        const course = await this.getCourseForModel(modelId);
+        const lectureLogic: LecturesLogic = new LecturesLogicImpl();
+        // add lectures transcript here
+        const lectureTranscripts = await lectureLogic.getLecturesTranscriptByCourseId(
+            course.id
+        );
+        // if, for some reason there is no lectures
+        // no need to add transcript files
+        if (lectureTranscripts.length) {
+            leastNumberOfClasses++;
+            res["dictionary_classes"]["lectures"] = lectureTranscripts.map(
+                (lts) => {
+                    return `${getBaseURL()}${lts.filePath}`;
+                }
+            );
+        }
+        if (
+            Object.keys(res["dictionary_classes"]).length < leastNumberOfClasses
+        ) {
+            throw new UserInputError("Classes cannot be less that 2"); // this is 2 because these are the number of classes added by the user
         }
         return res;
+    }
+
+    async getCourseForModel(modelId: string): Promise<Course> {
+        const model = await getRepository(TextClassificationModel).findOne(
+            modelId,
+            {
+                relations: ["course"],
+            }
+        );
+        if (!model) {
+            throw new UserInputError("model id is not correct");
+        }
+        return model.course;
     }
 
     async sendModelFiles(modelId: string, to: string): Promise<any> {

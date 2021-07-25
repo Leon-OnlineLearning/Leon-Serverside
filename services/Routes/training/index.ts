@@ -235,6 +235,7 @@ router.post("/finish", async (req, res) => {
         })
         .catch((error) => {
             console.error("ML error", error.message);
+            console.error(error.response.data);
         });
     // send response to the client
     res.send({ success: true });
