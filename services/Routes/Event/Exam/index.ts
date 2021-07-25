@@ -402,6 +402,19 @@ router.get("/:examId", async (req, res) => {
     });
 });
 
+router.get("/:examId/:userId/isLive", async (req, res) => {
+    simpleFinalMWDecorator(res, async () => {
+        const examLogic: ExamsLogic = new ExamsLogicImpl();
+        const studentExam = await examLogic.getStudentExam(
+            req.params.userId,
+            req.params.examId
+        );
+        if (!studentExam) throw new UserInputError("exam wasn't initialized");
+
+        return examLogic.isRecordLive(studentExam);
+    });
+});
+
 router.post(
     "/questions/current",
     onlyStudents,
