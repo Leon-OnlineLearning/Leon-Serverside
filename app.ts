@@ -31,7 +31,7 @@ app.use(express.json());
 app.use(cookieParser());
 app.use(passport.initialize());
 app.use("/auth", authRouter);
-app.use("/users", userRouter);
+// app.use("/users", userRouter);
 app.use("/students", studentRouter);
 app.use("/professors", professorRouter);
 app.use("/admins", adminRouter);

@@ -105,7 +105,7 @@ export default class CourseLogicImpl implements CoursesLogic {
         courseRepo.save(course);
     }
 
-    async getLecturesForCourse(courseId: string) {
+    async getLecturesForCourse(courseId: string): Promise<Lecture[]> {
         const course = await getRepository(Course).findOne(courseId, {
             relations: ["lectures"],
         });
