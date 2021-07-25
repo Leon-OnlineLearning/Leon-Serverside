@@ -54,6 +54,7 @@ const cacheKey = (filePath: string, StartTime: number, duration: number) =>
     `key-${filePath}-${StartTime}-${duration}`;
 
 const router = Router();
+const open_router_secondary = Router();
 
 router.use(BlockedJWTMiddleware);
 // router.use(passport.authenticate("access-token", { session: false }));
@@ -63,6 +64,7 @@ const parser: BodyParserMiddleware = new ExamParser();
 
 var storage = multer.memoryStorage();
 var upload = multer({ storage: storage });
+var upload2 = multer({ storage: storage });
 
 const face_auth_serverBaseUrl = `${process.env.ML_SO_IO_SERVER_BASE_D}:${process.env.ML_SO_IO_SERVER_PORT}`;
 const fo_serverBaseUrl = `${process.env.ML_forbidden_objectURL}`; //fo:forbidden object
@@ -73,68 +75,84 @@ const gesture_serverBaseUrl = `${process.env.ML_gestureURL}`; //gesture:gesture}
  *
  *
  */
-router.put("/record/secondary", upload.single("file"), async (req, res) => {
-    simpleFinalMWDecorator(res, async () => {
-        const fileInfo: ExamFileInfo = {
-            examId: req.body.examId,
-            chunkIndex: parseInt(req.body.chunckIndex),
-            lastChunk: req.body.lastChunk == "true",
-            chunk: req.file.buffer,
-            chunkStartTime: parseInt(req.body.chunkStartTime),
-            chunkEndTime: parseInt(req.body.chunkEndTime),
-        };
-
-        console.debug(`uploading from secondary ${fileInfo.chunkIndex}`);
-        console.debug(fileInfo);
-
+open_router_secondary.put(
+    "/record/secondary",
+    upload2.single("chuck"),
+    async (req, res) => {
+        console.log(req.file);
+        console.log(req.body);
         const userId = req.body.userId;
-        const source_number = 2;
+        let studentExam: StudentsExamData;
+        try {
+            studentExam = await new ExamsLogicImpl().getStudentExam(
+                userId,
+                req.body.examId
+            );
+            // check the secret
+            if (req.body.secret !== studentExam.secondary_secret) {
+                throw new Error("wrong secret");
+            }
 
-        const studentExam = await new ExamsLogicImpl().getStudentExam(
-            userId,
-            fileInfo.examId
-        );
-        // check the secret
-        if (req.body.secret !== studentExam) {
-            res.status(400).send({ success: false, message: "invalid secret" });
+        } catch (error: any) {
+            if (error.message === "wrong secret") {
+                res.status(400).send({ success: false, message: "invalid secret" });
+            } else {
+                res.status(400).send({ success: false, message: error.message });
+            }
             return;
         }
-        // save to 2nd recording
-        const examLogic: ExamsLogic = new ExamsLogicImpl();
+        simpleFinalMWDecorator(res, async () => {
+            const fileInfo: ExamFileInfo = {
+                examId: req.body.examId,
+                chunkIndex: parseInt(req.body.chunckIndex),
+                lastChunk: req.body.lastChunk == "true",
+                chunk: req.file.buffer,
+                chunkStartTime: parseInt(req.body.chunkStartTime),
+                chunkEndTime: parseInt(req.body.chunkEndTime),
+            };
 
-        const filePath = await examLogic.saveRecording(
-            fileInfo.chunk as Buffer,
-            fileInfo.examId,
-            req.body.userId,
-            fileInfo.chunkIndex as number,
-            source_number
-        );
+            console.debug(`uploading from secondary ${fileInfo.chunkIndex}`);
 
-        // update time in student exam
-        studentExam.last_record_secondary = new Date();
-        examLogic.saveStudentExam(studentExam);
 
-        // send to ML forbidden object
-        const duration = fileInfo.chunkEndTime - fileInfo.chunkStartTime;
-        const portion_args: [string, number, number] = [
-            filePath,
-            fileInfo.chunkStartTime,
-            duration,
-        ];
-        const clipped_path = await get_video_portion(...portion_args);
+            const source_number = 2;
 
-        // save the path in cache
-        // witch will delete it after certain time
-        videoCache.set(cacheKey(...portion_args), clipped_path);
 
-        // send to forbidden object ML
-        sendExamFile(
-            req.body.userId,
-            fo_serverBaseUrl,
-            fileInfo,
-            clipped_path,
-            report_res_forbidden_objects
-        );
+            // save to 2nd recording
+            const examLogic: ExamsLogic = new ExamsLogicImpl();
+
+            const filePath = await examLogic.saveRecording(
+                fileInfo.chunk as Buffer,
+                fileInfo.examId,
+                req.body.userId,
+                fileInfo.chunkIndex as number,
+                source_number
+            );
+
+            // update time in student exam
+            studentExam.last_record_secondary = new Date();
+            examLogic.saveStudentExam(studentExam);
+
+            // send to ML forbidden object
+            const duration = fileInfo.chunkEndTime - fileInfo.chunkStartTime;
+            const portion_args: [string, number, number] = [
+                filePath,
+                fileInfo.chunkStartTime,
+                duration,
+            ];
+            const clipped_path = await get_video_portion(...portion_args);
+
+            // save the path in cache
+            // witch will delete it after certain time
+            videoCache.set(cacheKey(...portion_args), clipped_path);
+
+            // send to forbidden object ML
+            sendExamFile(
+                req.body.userId,
+                fo_serverBaseUrl,
+                fileInfo,
+                clipped_path,
+                report_res_forbidden_objects
+            );
     });
 });
 
@@ -530,4 +548,4 @@ router.delete("/:examId", async (req, res) => {
     });
 });
 
-export default router;
+export { router as default, open_router_secondary };
