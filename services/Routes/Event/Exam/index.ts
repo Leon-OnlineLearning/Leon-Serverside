@@ -425,6 +425,7 @@ router.get("/:examId/:userId/isLive", async (req, res) => {
     });
 });
 
+// TODO check recording is live
 router.post(
     "/questions/current",
     onlyStudents,
