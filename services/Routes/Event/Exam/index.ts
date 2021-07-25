@@ -420,10 +420,14 @@ router.get("/:examId", async (req, res) => {
         const user = req.user as userTockenData;
         if (user.role === UserTypes.STUDENT) {
             const studentId = user.id;
-            await new QuestionLogicImpl().initiateExam(
-                req.params.examId,
-                studentId
-            );
+            try {
+                await logic.getStudentExam(studentId, exam.id);
+            } catch (error) {
+                await new QuestionLogicImpl().initiateExam(
+                    req.params.examId,
+                    studentId
+                );
+            }
         }
         return exam;
     });
