@@ -92,12 +92,17 @@ open_router_secondary.put(
             if (req.body.secret !== studentExam.secondary_secret) {
                 throw new Error("wrong secret");
             }
-
         } catch (error: any) {
             if (error.message === "wrong secret") {
-                res.status(400).send({ success: false, message: "invalid secret" });
+                res.status(400).send({
+                    success: false,
+                    message: "invalid secret",
+                });
             } else {
-                res.status(400).send({ success: false, message: error.message });
+                res.status(400).send({
+                    success: false,
+                    message: error.message,
+                });
             }
             return;
         }
@@ -113,9 +118,7 @@ open_router_secondary.put(
 
             console.debug(`uploading from secondary ${fileInfo.chunkIndex}`);
 
-
             const source_number = 2;
-
 
             // save to 2nd recording
             const examLogic: ExamsLogic = new ExamsLogicImpl();
@@ -153,8 +156,9 @@ open_router_secondary.put(
                 clipped_path,
                 report_res_forbidden_objects
             );
-    });
-});
+        });
+    }
+);
 
 /**
  * save exam recording
