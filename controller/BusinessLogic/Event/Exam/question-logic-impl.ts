@@ -28,7 +28,7 @@ export default class QuestionLogicImpl implements QuestionLogic {
         studentExam.exam = Promise.resolve(exam);
 
         studentExam = await getRepository(StudentsExamData).save(studentExam);
-        console.debug(`student${studentId} started exam ${examId}`);
+        console.debug(`student${studentId} initialized exam ${examId}`);
         return studentExam;
     }
 

@@ -109,7 +109,7 @@ export default class ExamsLogicImpl implements ExamsLogic {
         const student = await getRepository(Student).findOne(studentId);
         if (!student) throw new UserInputError("Invalid student id");
         const exam = await getRepository(Exam).findOne(examId);
-        if (!exam) throw new UserInputError("Invalid student id");
+        if (!exam) throw new UserInputError("Invalid exam id");
         const studentExam = await getRepository(StudentsExamData).findOne({
             where: {
                 student,
@@ -201,8 +201,8 @@ export default class ExamsLogicImpl implements ExamsLogic {
     }
 
     async getExamByStudentId(studentId: string): Promise<Exam[]> {
-        const studnetLogic = new StudentLogicImpl();
-        const courses = await studnetLogic.getAllCourses(studentId);
+        const studentLogic = new StudentLogicImpl();
+        const courses = await studentLogic.getAllCourses(studentId);
         let exams: Array<Exam> = [];
 
         for (const course of courses) {

@@ -144,7 +144,7 @@ router.put("/record/secondary", upload.single("file"), async (req, res) => {
  * req body must contain
  * - usedId 
  * - examId
- * - chunckIndex : number of current chunk
+ * - chunkIndex : number of current chunk
  * - chuck : actual recorded chunk in webm format
  // TODO add parser to validate the exam info fields
  */
@@ -212,7 +212,7 @@ router.put(
             videoCache.set(cacheKey(...portion_args), clipped_path);
 
             // send to face_auth ML server
-
+            // TODO don't send if exam didn't started yet
             const embedding: Embedding = await new StudentLogicImpl().getEmbedding(
                 req.body.userId
             );
@@ -259,7 +259,7 @@ type PartSpecType = {
 };
 
 /**
- * mark portion of the vedio as life check and report it to ML service
+ * mark portion of the video as life check and report it to ML service
  */
 router.put("/liveness", async (req, res) => {
     simpleFinalMWDecorator(res, async () => {
@@ -318,8 +318,9 @@ router.get("/video", onlyStudents, async (req, res) => {
     console.debug(partSpec);
     const filePath = get_primary_video_path(partSpec.userId, partSpec.examId);
 
+    // TODO get report of secondary camera
     // check from cache
-    let cliped_path: string;
+    let clipped_path: string;
     const portion_args: [string, number, number] = [
         filePath,
         partSpec.startingTime,
@@ -327,17 +328,17 @@ router.get("/video", onlyStudents, async (req, res) => {
     ];
     let temp = videoCache.get(cacheKey(...portion_args));
     if (temp) {
-        cliped_path = temp as string;
+        clipped_path = temp as string;
     } else {
-        cliped_path = await get_video_portion(
+        clipped_path = await get_video_portion(
             filePath,
             partSpec.startingTime,
             partSpec.duration
         );
-        videoCache.set(cacheKey(...portion_args), cliped_path);
+        videoCache.set(cacheKey(...portion_args), clipped_path);
     }
 
-    const stat = fs.statSync(cliped_path);
+    const stat = fs.statSync(clipped_path);
     const fileSize = stat.size;
 
     const range = req.headers.range;
@@ -345,12 +346,12 @@ router.get("/video", onlyStudents, async (req, res) => {
         const parts = range.replace(/bytes=/, "").split("-");
         const start = parseInt(parts[0], 10);
         const end = parts[1] ? parseInt(parts[1], 10) : fileSize - 1;
-        const chunksize = end - start + 1;
+        const chunk_size = end - start + 1;
         const file = fs.createReadStream(filePath, { start, end });
         const head = {
             "Content-Range": `bytes ${start}-${end}/${fileSize}`,
             "Accept-Ranges": "bytes",
-            "Content-Length": chunksize,
+            "Content-Length": chunk_size,
             "Content-Type": "video/mp4",
         };
         res.writeHead(206, head);
@@ -371,7 +372,7 @@ router.get("/student/:studentId", onlyStudents, async (req, res) => {
     simpleFinalMWDecorator(res, async () => {
         const examLogic: ExamsLogic = new ExamsLogicImpl();
         const exams = await examLogic.getExamByStudentId(studentId);
-        console.debug(`availabe exams ${exams.length}`);
+        console.debug(`available exams ${exams.length}`);
         return exams;
     });
 });
