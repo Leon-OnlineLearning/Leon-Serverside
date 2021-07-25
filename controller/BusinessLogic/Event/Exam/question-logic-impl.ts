@@ -9,7 +9,7 @@ import ExamsLogicImpl from "./exam-logic-impl";
 import QuestionLogic from "./question-logic";
 
 export default class QuestionLogicImpl implements QuestionLogic {
-    async startExam(
+    async initiateExam(
         examId: string,
         studentId: string
     ): Promise<StudentsExamData> {

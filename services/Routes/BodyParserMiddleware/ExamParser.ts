@@ -110,7 +110,7 @@ export async function getQuestionParser(
         );
     } catch (error: any) {
         if (error.message === "User didn't attend exam") {
-            studentExam = await new QuestionLogicImpl().startExam(
+            studentExam = await new QuestionLogicImpl().initiateExam(
                 req.body.examId,
                 req.body.studentId
             );

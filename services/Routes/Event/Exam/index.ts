@@ -398,6 +398,15 @@ router.get("/:examId", async (req, res) => {
     simpleFinalMWDecorator(res, async () => {
         const logic: ExamsLogic = new ExamsLogicImpl();
         const exam = await logic.getExamById(req.params.examId);
+
+        const user = req.user as userTockenData;
+        if (user.role === UserTypes.STUDENT) {
+            const studentId = user.id;
+            await new QuestionLogicImpl().initiateExam(
+                req.params.examId,
+                studentId
+            );
+        }
         return exam;
     });
 });
