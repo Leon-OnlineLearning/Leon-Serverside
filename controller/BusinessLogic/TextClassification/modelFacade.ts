@@ -150,7 +150,12 @@ export class ModelsFacadeImpl implements ModelsFacade {
                 );
                 return data;
             })
-            .catch((err) => console.error(err));
+            .catch((err) => {
+                if (err.response) {
+                    console.debug(err.response);
+                }
+                console.log(`error sending video to ${url}`);
+            });
     }
 
     async requestRaise(modelId: string, to: string): Promise<any> {
