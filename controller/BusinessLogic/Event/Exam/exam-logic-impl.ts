@@ -8,7 +8,10 @@ const appendFile = promises.appendFile;
 const writeFile = promises.writeFile;
 import { join } from "path";
 import StudentLogicImpl from "@controller/BusinessLogic/User/Student/students-logic-impl";
-import { get_video_path } from "@services/Routes/Event/Exam/recording_utils";
+import {
+    get_video_path,
+    isRecordLive,
+} from "@services/Routes/Event/Exam/recording_utils";
 import CourseLogicImpl from "@controller/BusinessLogic/Course/courses-logic-impl";
 import StudentsExamData from "@models/JoinTables/StudentExam";
 import Student from "@models/Users/Student";
@@ -224,15 +227,16 @@ export default class ExamsLogicImpl implements ExamsLogic {
         chunk: Buffer,
         examId: string,
         userId: string,
-        chunckIndex: number
+        chunkIndex: number,
+        source_number: number
     ): Promise<string> {
         let video_dir = join(upload_folder, examId);
-
+        // TODO mark time in exam last active
         await mkdir(video_dir, { recursive: true });
 
         // TODO make sure the chunk order is right
-        const filePath = get_video_path(userId, examId);
-        if (chunckIndex == 0) {
+        const filePath = get_video_path(userId, examId, source_number);
+        if (chunkIndex == 0) {
             await writeFile(filePath, chunk);
         } else {
             await appendFile(filePath, chunk);

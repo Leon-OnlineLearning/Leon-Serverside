@@ -28,8 +28,9 @@ import Embedding from "@models/Users/Embedding";
 import ReportLogic from "@controller/BusinessLogic/Report/report-logic";
 import { ReportLogicImpl } from "@controller/BusinessLogic/Report/report-logic-impl";
 import {
-    get_video_path,
+    get_primary_video_path,
     get_video_portion,
+    isRecordLive,
     report_not_live,
     report_res_face_auth,
     report_res_forbidden_objects,
@@ -39,6 +40,9 @@ import fs from "fs";
 import NodeCache from "node-cache";
 import QuestionLogicImpl from "@controller/BusinessLogic/Event/Exam/question-logic-impl";
 import UserInputError from "@services/utils/UserInputError";
+import StudentsExamData from "@models/JoinTables/StudentExam";
+import { userTockenData } from "../event.routes";
+import UserTypes from "@models/Users/UserTypes";
 
 const videoCache = new NodeCache({ stdTTL: 60 * 60 });
 videoCache.on("del", (key, val) => {
@@ -63,6 +67,77 @@ var upload = multer({ storage: storage });
 const face_auth_serverBaseUrl = `${process.env.ML_SO_IO_SERVER_BASE_D}:${process.env.ML_SO_IO_SERVER_PORT}`;
 const fo_serverBaseUrl = `${process.env.ML_forbidden_objectURL}`; //fo:forbidden object
 const gesture_serverBaseUrl = `${process.env.ML_gestureURL}`; //gesture:gesture}
+
+/**
+ * save exam recording secondary camera
+ *
+ *
+ */
+router.put("/record/secondary", upload.single("file"), async (req, res) => {
+    simpleFinalMWDecorator(res, async () => {
+        const fileInfo: ExamFileInfo = {
+            examId: req.body.examId,
+            chunkIndex: parseInt(req.body.chunckIndex),
+            lastChunk: req.body.lastChunk == "true",
+            chunk: req.file.buffer,
+            chunkStartTime: parseInt(req.body.chunkStartTime),
+            chunkEndTime: parseInt(req.body.chunkEndTime),
+        };
+
+        console.debug(`uploading from secondary ${fileInfo.chunkIndex}`);
+        console.debug(fileInfo);
+
+        const userId = req.body.userId;
+        const source_number = 2;
+
+        const studentExam = await new ExamsLogicImpl().getStudentExam(
+            userId,
+            fileInfo.examId
+        );
+        // check the secret
+        if (req.body.secret !== studentExam) {
+            res.status(400).send({ success: false, message: "invalid secret" });
+            return;
+        }
+        // save to 2nd recording
+        const examLogic: ExamsLogic = new ExamsLogicImpl();
+
+        const filePath = await examLogic.saveRecording(
+            fileInfo.chunk as Buffer,
+            fileInfo.examId,
+            req.body.userId,
+            fileInfo.chunkIndex as number,
+            source_number
+        );
+
+        // update time in student exam
+        studentExam.last_record_secondary = new Date();
+        examLogic.saveStudentExam(studentExam);
+
+        // send to ML forbidden object
+        const duration = fileInfo.chunkEndTime - fileInfo.chunkStartTime;
+        const portion_args: [string, number, number] = [
+            filePath,
+            fileInfo.chunkStartTime,
+            duration,
+        ];
+        const clipped_path = await get_video_portion(...portion_args);
+
+        // save the path in cache
+        // witch will delete it after certain time
+        videoCache.set(cacheKey(...portion_args), clipped_path);
+
+        // send to forbidden object ML
+        sendExamFile(
+            req.body.userId,
+            fo_serverBaseUrl,
+            fileInfo,
+            clipped_path,
+            report_res_forbidden_objects
+        );
+    });
+});
+
 /**
  * save exam recording
  * 
@@ -90,17 +165,21 @@ router.put(
 
             const examLogic: ExamsLogic = new ExamsLogicImpl();
 
+            const source_number = 1;
             // save received chunk
             const filePath = await examLogic.saveRecording(
                 fileInfo.chunk as Buffer,
                 fileInfo.examId,
                 req.body.userId,
-                fileInfo.chunkIndex as number
+                fileInfo.chunkIndex as number,
+                source_number
             );
 
             // update time in student exam
-            const studentExam = await examLogic.getStudentExam(req.body.userId,
-                fileInfo.examId);
+            const studentExam = await examLogic.getStudentExam(
+                req.body.userId,
+                fileInfo.examId
+            );
             studentExam.last_record_primary = new Date();
             examLogic.saveStudentExam(studentExam);
 
@@ -149,15 +228,6 @@ router.put(
             } else {
                 console.error("no embedding for student");
             }
-
-            // send to forbidden object ML
-            sendExamFile(
-                req.body.userId,
-                fo_serverBaseUrl,
-                fileInfo,
-                clipped_path,
-                report_res_forbidden_objects
-            );
         });
     }
 );
@@ -207,7 +277,7 @@ router.put("/liveness", async (req, res) => {
             examId,
         };
 
-        const filePath = get_video_path(studentId, examId);
+        const filePath = get_primary_video_path(studentId, examId);
 
         const duration = fileInfo.chunkEndTime - fileInfo.chunkStartTime;
         const portion_args: [string, number, number] = [
@@ -246,7 +316,7 @@ router.get("/video", onlyStudents, async (req, res) => {
         examId: req.query.examId as string,
     };
     console.debug(partSpec);
-    const filePath = get_video_path(partSpec.userId, partSpec.examId);
+    const filePath = get_primary_video_path(partSpec.userId, partSpec.examId);
 
     // check from cache
     let cliped_path: string;
@@ -305,6 +375,24 @@ router.get("/student/:studentId", onlyStudents, async (req, res) => {
         return exams;
     });
 });
+
+router.get(
+    "/secondarySecret/:examId/:studentId",
+    onlyStudents,
+    async (req, res) => {
+        simpleFinalMWDecorator(res, async () => {
+            // TODO check timing
+            const examLogic: ExamsLogic = new ExamsLogicImpl();
+            const studentExam = await examLogic.getStudentExam(
+                req.params.studentId,
+                req.params.examId
+            );
+
+            // generate random string as secret
+            return studentExam.secondary_secret;
+        });
+    }
+);
 
 router.get("/:examId", async (req, res) => {
     simpleFinalMWDecorator(res, async () => {

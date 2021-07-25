@@ -37,6 +37,11 @@ export default class StudentsExamData {
     @Column({ nullable: true })
     videoPath: string;
 
+    @Column({ nullable: true })
+    secondary_secret: string; // secret for secondary camera to upload
+
+    @Column({ nullable: true })
+    secondary_videoPath: string; // secondary camera video path
 
     @Column({ nullable: true })
     last_record_primary: Date;

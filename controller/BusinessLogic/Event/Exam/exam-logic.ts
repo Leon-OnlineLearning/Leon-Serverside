@@ -17,7 +17,8 @@ export default interface ExamsLogic {
         chunk: Buffer,
         examId: string,
         userId: string,
-        chunkIndex: number
+        chunkIndex: number,
+        source_number: number
     ): Promise<string>;
     storeExamTextClassificationResult(
         studentId: string,
@@ -46,4 +47,8 @@ export default interface ExamsLogic {
         endingAt: string
     ): Promise<Exam[]>;
     postExamProcessing(examId: string, studentId: string): Promise<void>;
+    isRecordLive(
+        studentExam: StudentsExamData
+    ): { primary: boolean; secondary: boolean };
+    saveStudentExam(studentExam: StudentsExamData): Promise<StudentsExamData>;
 }

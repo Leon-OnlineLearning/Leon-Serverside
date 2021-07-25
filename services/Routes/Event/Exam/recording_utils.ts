@@ -141,8 +141,18 @@ export async function get_video_portion(
 let upload_folder =
     process.env["UPLOADED_RECORDING_PATH"] || "/static/recording";
 
-export function get_video_path(userId: string, examId: string) {
+export function get_primary_video_path(userId: string, examId: string) {
+    return get_video_path(userId, examId, 1);
+}
+
+export function get_video_path(
+    userId: string,
+    examId: string,
+    source_number: number
+) {
     let video_dir = join(upload_folder, examId);
+    return join(video_dir, `${userId}_${source_number}.webm`);
+}
 
 export function isRecordLive(chunk_duration: number, last_record: number) {
     const now = new Date().getTime();
