@@ -37,6 +37,14 @@ export default class StudentsExamData {
     @Column({ nullable: true })
     videoPath: string;
 
+
+    @Column({ nullable: true })
+    last_record_primary: Date;
+
+    @Column({ nullable: true })
+    last_record_secondary: Date;
+
+
     @Column({ default: -1 })
     currentQuestionIndex: number; // question index currently being solved
 

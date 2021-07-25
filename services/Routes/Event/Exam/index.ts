@@ -98,6 +98,13 @@ router.put(
                 fileInfo.chunkIndex as number
             );
 
+            // update time in student exam
+            const studentExam = await examLogic.getStudentExam(req.body.userId,
+                fileInfo.examId);
+            studentExam.last_record_primary = new Date();
+            examLogic.saveStudentExam(studentExam);
+
+
             if (fileInfo.lastChunk) {
                 console.debug("has last chuck?", fileInfo.lastChunk);
                 const studentLogic: StudentLogic = new StudentLogicImpl();

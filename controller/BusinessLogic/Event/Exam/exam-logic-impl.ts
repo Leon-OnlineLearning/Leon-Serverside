@@ -23,6 +23,46 @@ import { TestExamVideo } from "@controller/BusinessLogic/TextClassification/Test
 let upload_folder =
     process.env["UPLOADED_RECORDING_PATH"] || "/static/recording";
 export default class ExamsLogicImpl implements ExamsLogic {
+    isRecordLive(studentExam: StudentsExamData) {
+        // TODO move this some where general
+        const record_chunk_length = 6; // seconds
+
+        record_chunk_length * 1000;
+
+        const isPrimaryLive =
+            Boolean(studentExam.last_record_primary) &&
+            isRecordLive(
+                record_chunk_length,
+                studentExam.last_record_primary.getTime()
+            );
+        const isSecondaryLive =
+            Boolean(studentExam.last_record_secondary) &&
+            isRecordLive(
+                record_chunk_length,
+                studentExam.last_record_secondary.getTime()
+            );
+
+        console.debug(`now ${new Date().getTime()}`);
+        console.debug(
+            `last_record_primary: ${studentExam.last_record_primary?.getTime()}`
+        );
+        console.debug(
+            `last_record_primary: ${studentExam.last_record_primary}`
+        );
+        console.debug(
+            `last_record_secondary: ${studentExam.last_record_secondary}`
+        );
+        console.debug(
+            `back ${{
+                primary: isPrimaryLive,
+                secondary: isSecondaryLive,
+            }}`
+        );
+        return {
+            primary: isPrimaryLive,
+            secondary: isSecondaryLive,
+        };
+    }
     async postExamProcessing(examId: string, studentId: string): Promise<void> {
         // get the latest model
         // get course id for exam
@@ -120,6 +160,9 @@ export default class ExamsLogicImpl implements ExamsLogic {
         return res;
     }
 
+    async saveStudentExam(studentExam: StudentsExamData) {
+        return await getRepository(StudentsExamData).save(studentExam);
+    }
     async getExamById(examId: string): Promise<Exam> {
         const res = await getRepository(Exam).findOne(examId);
         if (res) return res;

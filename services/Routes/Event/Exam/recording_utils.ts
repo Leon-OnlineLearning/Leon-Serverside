@@ -143,5 +143,9 @@ let upload_folder =
 
 export function get_video_path(userId: string, examId: string) {
     let video_dir = join(upload_folder, examId);
-    return join(video_dir, `${userId}.webm`);
+
+export function isRecordLive(chunk_duration: number, last_record: number) {
+    const now = new Date().getTime();
+    const diff = now - last_record;
+    return diff < chunk_duration * 3 * 1000;
 }
