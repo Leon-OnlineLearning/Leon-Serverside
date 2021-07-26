@@ -34,6 +34,9 @@ export default class StudentsExamData {
     })
     testingStatus: TestRequestStatus;
 
+    @Column({ default: false })
+    isExamFinished: boolean;
+
     @Column({ nullable: true })
     videoPath: string;
 

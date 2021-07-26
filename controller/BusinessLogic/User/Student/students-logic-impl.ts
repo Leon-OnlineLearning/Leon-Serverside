@@ -16,6 +16,7 @@ import StudentLectureAttendance from "@models/JoinTables/StudentLectureAttended"
 import Embedding from "@models/Users/Embedding";
 import EventslogicImpl from "@controller/BusinessLogic/Event/events-logic-impl";
 import UserTypes from "@models/Users/UserTypes";
+import ExamsLogicImpl from "@controller/BusinessLogic/Event/Exam/exam-logic-impl";
 
 export default class StudentLogicImpl implements StudentLogic {
     async setEmbedding(studentId: string, vector: number[]): Promise<void> {
@@ -214,17 +215,10 @@ export default class StudentLogicImpl implements StudentLogic {
         examId: string,
         examVideoUrl: string
     ): Promise<StudentsExamData> {
-        const student = await getRepository(Student).findOne(studentId);
-        if (!student) {
-            throw new UserInputError("Student is not found");
-        }
-        const exam = await getRepository(Exam).findOne(examId);
-        if (!exam) {
-            throw new UserInputError("Exam is not found");
-        }
-        const studentExam = new StudentsExamData();
-        studentExam.exam = Promise.resolve(exam);
-        studentExam.student = student;
+        const studentExam = await new ExamsLogicImpl().getStudentExam(
+            studentId,
+            examId
+        );
         studentExam.videoPath = examVideoUrl;
         return await getRepository(StudentsExamData).save(studentExam);
     }

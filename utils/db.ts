@@ -33,10 +33,10 @@ const exams = {
                 "choice four",
             ],
         },
-        {
-            questionText: "question text needs single choice ",
-            questionType: "Image",
-        },
+        // {
+        //     questionText: "question text needs single choice ",
+        //     questionType: "Image",
+        // },
     ],
     mark: 5,
     title: "Quiz on software engineering may 2020",
