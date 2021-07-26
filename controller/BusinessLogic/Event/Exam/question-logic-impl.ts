@@ -7,9 +7,10 @@ import UserInputError from "@services/utils/UserInputError";
 import { getRepository, Index } from "typeorm";
 import ExamsLogicImpl from "./exam-logic-impl";
 import QuestionLogic from "./question-logic";
+import { randomBytes } from "crypto";
 
 export default class QuestionLogicImpl implements QuestionLogic {
-    async startExam(
+    async initiateExam(
         examId: string,
         studentId: string
     ): Promise<StudentsExamData> {
@@ -27,8 +28,10 @@ export default class QuestionLogicImpl implements QuestionLogic {
         }
         studentExam.exam = Promise.resolve(exam);
 
+        studentExam.secondary_secret = randomBytes(16).toString("hex");
+
         studentExam = await getRepository(StudentsExamData).save(studentExam);
-        console.debug(`student${studentId} started exam ${examId}`);
+        console.debug(`student${studentId} initialized exam ${examId}`);
         return studentExam;
     }
 

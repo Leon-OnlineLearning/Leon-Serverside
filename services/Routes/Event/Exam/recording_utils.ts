@@ -24,7 +24,7 @@ export const report_not_live: ExamChunkResultCallback = async (
 };
 
 /**
- * call back funcntion for ML file sender that process response and dicide wither it should save it in db or not
+ * call back function for ML file sender that process response and decide wither it should save it in db or not
  * @param userId
  * @param examId
  * @param res response from ML server either the face match user of not
@@ -41,7 +41,7 @@ export const report_res_face_auth: ExamChunkResultCallback = async (
     const matching = res.matched;
     console.debug(
         `face auth form ${chunkStartTime}s to ${chunkEndTime} result is ${
-            matching ? "same face" : "diffrent face"
+            matching ? "same face" : "different face"
         } `
     );
 
@@ -62,7 +62,7 @@ export const report_res_face_auth: ExamChunkResultCallback = async (
 };
 
 /**
- * call back funcntion for ML file sender that process response and dicide wither it should save it in db or not
+ * call back function for ML file sender that process response and decide wither it should save it in db or not
  * @param userId
  * @param examId
  * @param res response from ML server either the face match user of not
@@ -101,10 +101,10 @@ export const report_res_forbidden_objects: ExamChunkResultCallback = async (
 };
 /**
  * clip video to smaller part
- * @param fullVideo path to full vedio
+ * @param fullVideo path to full video
  * @param startTime required start time
- * @param duration the duration reqired
- * @returns path for cliped video from start plus duration
+ * @param duration the duration required
+ * @returns path for clipped video from start plus duration
  */
 export async function get_video_portion(
     fullVideo: string,
@@ -141,7 +141,21 @@ export async function get_video_portion(
 let upload_folder =
     process.env["UPLOADED_RECORDING_PATH"] || "/static/recording";
 
-export function get_video_path(userId: string, examId: string) {
+export function get_primary_video_path(userId: string, examId: string) {
+    return get_video_path(userId, examId, 1);
+}
+
+export function get_video_path(
+    userId: string,
+    examId: string,
+    source_number: number
+) {
     let video_dir = join(upload_folder, examId);
-    return join(video_dir, `${userId}.webm`);
+    return join(video_dir, `${userId}_${source_number}.webm`);
+}
+
+export function isRecordLive(chunk_duration: number, last_record: number) {
+    const now = new Date().getTime();
+    const diff = now - last_record;
+    return diff < chunk_duration * 3 * 1000;
 }

@@ -8,7 +8,10 @@ const appendFile = promises.appendFile;
 const writeFile = promises.writeFile;
 import { join } from "path";
 import StudentLogicImpl from "@controller/BusinessLogic/User/Student/students-logic-impl";
-import { get_video_path } from "@services/Routes/Event/Exam/recording_utils";
+import {
+    get_video_path,
+    isRecordLive,
+} from "@services/Routes/Event/Exam/recording_utils";
 import CourseLogicImpl from "@controller/BusinessLogic/Course/courses-logic-impl";
 import StudentsExamData from "@models/JoinTables/StudentExam";
 import Student from "@models/Users/Student";
@@ -23,6 +26,46 @@ import { TestExamVideo } from "@controller/BusinessLogic/TextClassification/Test
 let upload_folder =
     process.env["UPLOADED_RECORDING_PATH"] || "/static/recording";
 export default class ExamsLogicImpl implements ExamsLogic {
+    isRecordLive(studentExam: StudentsExamData) {
+        // TODO move this some where general
+        const record_chunk_length = 6; // seconds
+
+        record_chunk_length * 1000;
+
+        const isPrimaryLive =
+            Boolean(studentExam.last_record_primary) &&
+            isRecordLive(
+                record_chunk_length,
+                studentExam.last_record_primary.getTime()
+            );
+        const isSecondaryLive =
+            Boolean(studentExam.last_record_secondary) &&
+            isRecordLive(
+                record_chunk_length,
+                studentExam.last_record_secondary.getTime()
+            );
+
+        console.debug(`now ${new Date().getTime()}`);
+        console.debug(
+            `last_record_primary: ${studentExam.last_record_primary?.getTime()}`
+        );
+        console.debug(
+            `last_record_primary: ${studentExam.last_record_primary}`
+        );
+        console.debug(
+            `last_record_secondary: ${studentExam.last_record_secondary}`
+        );
+        console.debug(
+            `back ${{
+                primary: isPrimaryLive,
+                secondary: isSecondaryLive,
+            }}`
+        );
+        return {
+            primary: isPrimaryLive,
+            secondary: isSecondaryLive,
+        };
+    }
     async postExamProcessing(examId: string, studentId: string): Promise<void> {
         // get the latest model
         // get course id for exam
@@ -66,7 +109,7 @@ export default class ExamsLogicImpl implements ExamsLogic {
         const student = await getRepository(Student).findOne(studentId);
         if (!student) throw new UserInputError("Invalid student id");
         const exam = await getRepository(Exam).findOne(examId);
-        if (!exam) throw new UserInputError("Invalid student id");
+        if (!exam) throw new UserInputError("Invalid exam id");
         const studentExam = await getRepository(StudentsExamData).findOne({
             where: {
                 student,
@@ -120,6 +163,9 @@ export default class ExamsLogicImpl implements ExamsLogic {
         return res;
     }
 
+    async saveStudentExam(studentExam: StudentsExamData) {
+        return await getRepository(StudentsExamData).save(studentExam);
+    }
     async getExamById(examId: string): Promise<Exam> {
         const res = await getRepository(Exam).findOne(examId);
         if (res) return res;
@@ -155,8 +201,8 @@ export default class ExamsLogicImpl implements ExamsLogic {
     }
 
     async getExamByStudentId(studentId: string): Promise<Exam[]> {
-        const studnetLogic = new StudentLogicImpl();
-        const courses = await studnetLogic.getAllCourses(studentId);
+        const studentLogic = new StudentLogicImpl();
+        const courses = await studentLogic.getAllCourses(studentId);
         let exams: Array<Exam> = [];
 
         for (const course of courses) {
@@ -181,15 +227,16 @@ export default class ExamsLogicImpl implements ExamsLogic {
         chunk: Buffer,
         examId: string,
         userId: string,
-        chunckIndex: number
+        chunkIndex: number,
+        source_number: number
     ): Promise<string> {
         let video_dir = join(upload_folder, examId);
-
+        // TODO mark time in exam last active
         await mkdir(video_dir, { recursive: true });
 
         // TODO make sure the chunk order is right
-        const filePath = get_video_path(userId, examId);
-        if (chunckIndex == 0) {
+        const filePath = get_video_path(userId, examId, source_number);
+        if (chunkIndex == 0) {
             await writeFile(filePath, chunk);
         } else {
             await appendFile(filePath, chunk);
