@@ -19,12 +19,21 @@ export default abstract class TestingQuery {
     }> {
         const modelFacade: ModelsFacade = new ModelsFacadeImpl();
         const relations = await modelFacade.getRelations(this.model.id);
+        let goodClasses = {};
+        Object.keys(this.model.state.Classes).forEach((key) => {
+            if (this.model.state.Classes[key] !== "testing") {
+                goodClasses = {
+                    ...goodClasses,
+                    [key]: this.model.state.Classes[key],
+                };
+            }
+        });
         return {
             modelId: this.model.id,
             prediction_model_path: `${getBaseURL()}${
                 this.model.predictionModelPath
             }`,
-            dictionary_classes: this.model.state.Classes,
+            dictionary_classes: goodClasses,
             relations,
         };
     }

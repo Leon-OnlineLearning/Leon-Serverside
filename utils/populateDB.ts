@@ -173,7 +173,7 @@ export default async function populateDB() {
     console.debug(`created test file linked to the model`, _file1.id);
 
     textClassifierFiles[2].filePath = `${baseTextClassificationPath}testing/movies_(1).txt-related1622946144869.txt`;
-    const _file2 = await tcLogic.createFile(textClassifierFiles[0]);
+    const _file2 = await tcLogic.createFile(textClassifierFiles[2]);
     tcLogic.linkFileToModel(
         _file2.id,
         fakeTCModel.id,
@@ -183,7 +183,7 @@ export default async function populateDB() {
     console.debug(`created test file linked to the model`, _file2.id);
 
     textClassifierFiles[3].filePath = `${baseTextClassificationPath}testing/movies_(1).txt-related1622946144869.txt`;
-    const _file3 = await tcLogic.createFile(textClassifierFiles[0]);
+    const _file3 = await tcLogic.createFile(textClassifierFiles[3]);
     tcLogic.linkFileToModel(
         _file3.id,
         fakeTCModel.id,
@@ -193,14 +193,14 @@ export default async function populateDB() {
     console.debug(`created test file linked to the model`, _file3.id);
 
     textClassifierFiles[4].filePath = `${baseTextClassificationPath}testing/movies_(1).txt-related1622946144869.txt`;
-    const _file4 = await tcLogic.createFile(textClassifierFiles[0]);
+    const _file4 = await tcLogic.createFile(textClassifierFiles[4]);
     tcLogic.linkFileToModel(
         _file4.id,
         fakeTCModel.id,
         FileType.TEST,
         "testing"
     );
-    console.debug(`created test file linked to the model`, _file3.id);
+    console.debug(`created test file linked to the model`, _file4.id);
 
     // // create sub model
     // const fakeSubModel = new TextClassificationModel();
