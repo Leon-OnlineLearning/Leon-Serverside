@@ -119,7 +119,7 @@ export default async function populateDB() {
 
     // create fake models (not suitable for machine learning)
     const fakeTCModel = new TextClassificationModel();
-    fakeTCModel.name = "fake tc model";
+    fakeTCModel.name = "model b03073e0-6f55-4b49-8041-5693d1513923";
     fakeTCModel.id = "b03073e0-6f55-4b49-8041-5693d1513923";
     const baseTextClassificationPath = `static/textclassification/`;
     const modelBaseURL = `${baseTextClassificationPath}models/`;
@@ -147,6 +147,9 @@ export default async function populateDB() {
     const textClassifierFiles = [
         new TextClassificationFile(),
         new TextClassificationFile(),
+        new TextClassificationFile(),
+        new TextClassificationFile(),
+        new TextClassificationFile(),
     ];
     textClassifierFiles[0].filePath = `${baseTextClassificationPath}testing/movies_(1).txt-related1622946144869.txt`;
     const _file0 = await tcLogic.createFile(textClassifierFiles[0]);
@@ -154,8 +157,9 @@ export default async function populateDB() {
         _file0.id,
         fakeTCModel.id,
         FileType.NON_RELATED,
-        "asd"
+        "General Common Sentences"
     );
+
     console.debug(`created test file linked to the model`, _file0.id);
 
     textClassifierFiles[1].filePath = `${baseTextClassificationPath}related/hello_world.pdf-related1622485489250.pdf`;
@@ -164,37 +168,67 @@ export default async function populateDB() {
         _file1.id,
         fakeTCModel.id,
         FileType.RELATED,
-        "asdasd"
+        "security"
     );
     console.debug(`created test file linked to the model`, _file1.id);
 
-    // create sub model
-    const fakeSubModel = new TextClassificationModel();
-    fakeSubModel.id = "34f151ad-cfe7-4679-bb85-249c99273329";
-    fakeSubModel.predictionModelPath = `${modelBaseURL}${fakeSubModel.id}/prediction_model_${fakeSubModel.id}.pkl`;
-    fakeSubModel.trainingModelPath = `${modelBaseURL}${fakeSubModel.id}/models/training_model_${fakeSubModel.id}.pth`;
+    textClassifierFiles[2].filePath = `${baseTextClassificationPath}testing/movies_(1).txt-related1622946144869.txt`;
+    const _file2 = await tcLogic.createFile(textClassifierFiles[0]);
+    tcLogic.linkFileToModel(
+        _file2.id,
+        fakeTCModel.id,
+        FileType.NON_RELATED,
+        "Physics"
+    );
+    console.debug(`created test file linked to the model`, _file2.id);
 
-    let subState: any = await readFile(
-        `${__dirname}/../static/textclassification/models/${fakeSubModel.id}/state_${fakeSubModel.id}.json`,
-        {
-            encoding: "utf-8",
-        }
+    textClassifierFiles[3].filePath = `${baseTextClassificationPath}testing/movies_(1).txt-related1622946144869.txt`;
+    const _file3 = await tcLogic.createFile(textClassifierFiles[0]);
+    tcLogic.linkFileToModel(
+        _file3.id,
+        fakeTCModel.id,
+        FileType.RELATED,
+        "Common Sentences During Exam"
     );
-    subState = JSON.parse(subState); // that's why i didn't use the normal create subModule function (the state is already ready)
-    subState.Classes = state.Classes;
-    fakeSubModel.state = subState;
-    fakeSubModel.superModel = fakeTCModel;
-    fakeSubModel.primeModelId = fakeTCModel.id;
-    fakeSubModel.name = "sub_module_" + Date.now() + "_for_" + fakeTCModel.name;
-    fakeSubModel.dataClassificationModelPath =
-        fakeTCModel.dataClassificationModelPath;
-    fakeSubModel.dataLanguageModelPath = fakeTCModel.dataLanguageModelPath;
-    fakeSubModel.state = fakeTCModel.state;
-    const createdFakeSubModule = await new ModelLogicImpl().addModelInCourse(
-        fakeSubModel,
-        sample_course.id
+    console.debug(`created test file linked to the model`, _file3.id);
+
+    textClassifierFiles[4].filePath = `${baseTextClassificationPath}testing/movies_(1).txt-related1622946144869.txt`;
+    const _file4 = await tcLogic.createFile(textClassifierFiles[0]);
+    tcLogic.linkFileToModel(
+        _file4.id,
+        fakeTCModel.id,
+        FileType.TEST,
+        "testing"
     );
-    console.debug(`created fake sub module ${createdFakeSubModule.id}`);
+    console.debug(`created test file linked to the model`, _file3.id);
+
+    // // create sub model
+    // const fakeSubModel = new TextClassificationModel();
+    // fakeSubModel.id = "34f151ad-cfe7-4679-bb85-249c99273329";
+    // fakeSubModel.predictionModelPath = `${modelBaseURL}${fakeSubModel.id}/prediction_model_${fakeSubModel.id}.pkl`;
+    // fakeSubModel.trainingModelPath = `${modelBaseURL}${fakeSubModel.id}/models/training_model_${fakeSubModel.id}.pth`;
+
+    // let subState: any = await readFile(
+    //     `${__dirname}/../static/textclassification/models/${fakeSubModel.id}/state_${fakeSubModel.id}.json`,
+    //     {
+    //         encoding: "utf-8",
+    //     }
+    // );
+    // subState = JSON.parse(subState); // that's why i didn't use the normal create subModule function (the state is already ready)
+    // subState.Classes = state.Classes;
+    // fakeSubModel.state = subState;
+    // fakeSubModel.superModel = fakeTCModel;
+    // fakeSubModel.primeModelId = fakeTCModel.id;
+    // fakeSubModel.name = "sub_module_" + Date.now() + "_for_" + fakeTCModel.name;
+    // fakeSubModel.dataClassificationModelPath =
+    //     fakeTCModel.dataClassificationModelPath;
+    // fakeSubModel.dataLanguageModelPath = fakeTCModel.dataLanguageModelPath;
+    // fakeSubModel.state = fakeTCModel.state;
+    // const createdFakeSubModule = await new ModelLogicImpl().addModelInCourse(
+    //     fakeSubModel,
+    //     sample_course.id
+    // );
+    // console.debug(`created fake sub module ${createdFakeSubModule.id}`);
 
     const fakeLecture = new Lecture();
     fakeLecture.course = sample_course;
