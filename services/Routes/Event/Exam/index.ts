@@ -79,8 +79,6 @@ open_router_secondary.put(
     "/record/secondary",
     upload2.single("chuck"),
     async (req, res) => {
-        console.log(req.file);
-        console.log(req.body);
         const userId = req.body.userId;
         let studentExam: StudentsExamData;
         try {
@@ -156,6 +154,8 @@ open_router_secondary.put(
                 clipped_path,
                 report_res_forbidden_objects
             );
+            // TODO if exam done send done
+            // if (studentExam.testingStatus
         });
     }
 );
