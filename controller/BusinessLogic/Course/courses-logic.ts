@@ -11,7 +11,7 @@ export default interface CoursesLogic {
     getAllCourses(): Promise<Course[]>;
     getAllExamsByCourse(courseId: string): Promise<Exam[]>;
     addExamToCourse(courseId: string, examId: any): Promise<void>;
-    getLecturesForCourse(courseId: string): any;
+    getLecturesForCourse(courseId: string): Promise<Lecture[]>;
     addLectureToCourse(courseId: string, lectureId: any): Promise<void>;
     createCourse(course: Course): Promise<Course>;
     deleteCourseById(courseId: string): Promise<void>;

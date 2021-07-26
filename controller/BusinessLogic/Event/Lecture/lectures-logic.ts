@@ -20,4 +20,7 @@ export default interface LecturesLogic {
     getRemoteRecording(lectureId: string): Promise<string>;
     clearRemoteRecording(lectureId: string): Promise<void>;
     listRemoteRecordings(): Promise<string[]>;
+    getLecturesTranscriptByCourseId(
+        courseId: string
+    ): Promise<LectureTranscript[]>;
 }

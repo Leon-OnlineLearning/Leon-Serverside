@@ -52,6 +52,7 @@ describe("Creating reports", () => {
             endTime.setHours(endTime.getHours() + 3);
             exam.endTime = endTime;
             exam.mark = 7;
+            exam.duration = 360;
             exam = await examLogic.createExam(exam);
             // create start time and interval
             const interval = 10;
@@ -91,7 +92,7 @@ describe("Creating reports", () => {
             expect(finalReport[1].startingFrom).toEqual(40);
         } catch (e) {
             console.error(e);
-            expect(false).toBeTruthy;
+            expect(false).toBeTruthy();
         }
     });
 });
