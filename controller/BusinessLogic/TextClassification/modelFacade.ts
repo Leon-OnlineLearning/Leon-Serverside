@@ -226,6 +226,10 @@ export class ModelsFacadeImpl implements ModelsFacade {
         let res: any = { modelId, dictionary_classes: {} };
         for (let className of classNames) {
             if (className.className !== "testing") {
+                console.log(
+                    "class name that is not testing is",
+                    className.className
+                );
                 const paths = await this.getFilePathsByClassName(
                     className.className
                 );
