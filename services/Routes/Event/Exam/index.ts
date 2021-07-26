@@ -43,6 +43,7 @@ import UserInputError from "@services/utils/UserInputError";
 import StudentsExamData from "@models/JoinTables/StudentExam";
 import { userTockenData } from "../event.routes";
 import UserTypes from "@models/Users/UserTypes";
+import examLogicImpl from "@controller/BusinessLogic/Event/Exam/exam-logic-impl";
 
 const videoCache = new NodeCache({ stdTTL: 60 * 60 });
 videoCache.on("del", (key, val) => {
@@ -154,6 +155,14 @@ open_router_secondary.put(
                 clipped_path,
                 report_res_forbidden_objects
             );
+
+            if (studentExam.isExamFinished == true) {
+                // return exam done to client
+                return {
+                    examDone: true,
+                };
+            }
+
             // TODO if exam done send done
             // if (studentExam.testingStatus
         });
@@ -217,6 +226,7 @@ router.put(
                     req.body["examId"],
                     req.body["userId"]
                 );
+                new examLogicImpl().setDone(studentExam);
             }
 
             // get playable buffer of received chunk
@@ -494,6 +504,8 @@ router.post("/questions/next", onlyStudents, answerParser, async (req, res) => {
             nextQReq.studentExam.currentQuestionIndex ===
             nextQReq.exam.questions?.length - 1
         ) {
+            console.debug("last question");
+            new examLogicImpl().setDone(nextQReq.studentExam);
             return "done";
         }
 

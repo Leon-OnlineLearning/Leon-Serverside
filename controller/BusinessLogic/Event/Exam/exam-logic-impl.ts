@@ -26,6 +26,12 @@ import { TestExamVideo } from "@controller/BusinessLogic/TextClassification/Test
 let upload_folder =
     process.env["UPLOADED_RECORDING_PATH"] || "/static/recording";
 export default class ExamsLogicImpl implements ExamsLogic {
+    async setDone(studentExam: StudentsExamData) {
+        console.debug(`setting exam done ${studentExam.id}`);
+        studentExam.isExamFinished = true;
+        await this.saveStudentExam(studentExam);
+    }
+
     isRecordLive(studentExam: StudentsExamData) {
         // TODO move this some where general
         const record_chunk_length = 6; // seconds
