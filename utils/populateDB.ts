@@ -231,7 +231,6 @@ export default async function populateDB() {
     // console.debug(`created fake sub module ${createdFakeSubModule.id}`);
 
     const fakeLecture = new Lecture();
-    fakeLecture.course = sample_course;
     fakeLecture.title = "blah blah";
     fakeLecture.startTime = _time_after_now(0);
     fakeLecture.duration = 60;
@@ -240,8 +239,12 @@ export default async function populateDB() {
 
     const lecture = await new LecturesLogicImpl().createLecture(fakeLecture);
     console.debug(`created lecture ${lecture.id}`);
-    new ProfessorLogicImpl().assignLectureToProfessor(
+    await new ProfessorLogicImpl().assignLectureToProfessor(
         sample_professor.id,
+        fakeLecture.id
+    );
+    await new CourseLogicImpl().addLectureToCourse(
+        sample_course.id,
         fakeLecture.id
     );
     /**
