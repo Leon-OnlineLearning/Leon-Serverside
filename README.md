@@ -20,14 +20,6 @@ bash run_migrations.sh
 ```
 to create migrations check _create migrations_ section in `CONTRIBUTION.md` file
 
-## Testing
-## Jest tests
-### How to?
-- run `npm test`
-## Postman tess
-### How to?
-- Install postman
-- Set an environment with `baseUrl` variable to the server url
-- Import collection @ `test/integration/postman/Leon.postman_collection.json`
-- Run the collection in order
-- Set back and watch the results 😁
+## Running
+You can build the compose here if you don't want to build the entire application in the leon-all repo
+
