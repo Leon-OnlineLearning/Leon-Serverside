@@ -1,51 +1,24 @@
-# Leon-Serverside Dev
+# Leon-Serverside (Core)
+This is the coordinator service that cares about the communication details and handles the business logic in the process.
 ![testing status](http://github.com/Leon-OnlineLearning/Leon-Serverside/actions/workflows/testing.yml/badge.svg) ![linter](https://img.shields.io/badge/Linter-prettier-blue)
-## NOTE: Download the model/sub model files and extract them to there place in `/static`
-[model](https://drive.google.com/file/d/133utos3wheEW0VJWBPXGZ7MrvsY-s8iC/view?usp=sharing)
 
+## Getting started
+To start the development enviroment you need to do few steps to get the e2e experience to work as expected 
+### Download the text classificaion model
+Download the [model files](https://drive.google.com/file/d/133utos3wheEW0VJWBPXGZ7MrvsY-s8iC/view?usp=sharing) and extract them to `/static/textclassification/models/`
 <!-- [sub model](https://drive.google.com/file/d/1wla44u3vOHCqdhoOSAJfqfjPMVbZwxce/view?usp=sharing) -->
 
-## .env Example
-```
-SERVER_PORT=
-CONNECTION_POOL_SIZE=
-JWT_SECRET=
-JWT_REFRESH_SECRET=
-INVALID_TOKEN_SERVER=
-INVALID_TOKEN_PORT=
-GOOGLE_OAUTH2_CLIENT_ID=
-GOOGLE_OAUTH2_CLIENT_SECRET=
-SYNC_DB=1 or 0
-populateDB=1 or 0
-BLOCK_ON_ERRORS= 1 or 0
-DATABASE_NAME=
-DB_USERNAME=
-DB_PASSWORD=
-HOST=
-DATABASE_PORT=
-UPLOADED_LECTURES_PATH=
-SERVER_BASE_DOMAIN=
-ML_SO_IO_SERVER_PORT=
-ML_SO_IO_SERVER_BASE_D=
-UPLOADED_RELATED_TRAINING_PATH=
-UPLOADED_NON_RELATED_TRAINING_PATH=
-TXT_CLASSIFICATION_TEST_PATH=
-LECTURES_TRANSCRIPT_STORAGE=
-LECTURES_FILES_STORAGE=
-```
+### create a .env file 
+copy the `.env.docker` as `.env` and add the paramters according to your needed configurations.
 
-## Migraitons
-To run migration on you local environment use this command
+### Migraitons
+To run migration on you local environment use the run migration script
+
+**Note:** don't forget to update `ormconfig.json` to match your environment currently it is setup to be used for CI
 ```bash
-ts-node -r tsconfig-paths/register ./node_modules/.bin/typeorm migration:run
-# For some reason i can't pass the -n in the scripts
-# to generate migraiotn use this command
-ts-node -r tsconfig-paths/register ./node_modules/.bin/typeorm migration:generate -n $MIGRATION_NAME
+bash run_migrations.sh
 ```
-
-## Text classification Model
-you should download the text classification model from [here](https://drive.google.com/file/d/1vzKS674MLBxK_TcY7NAteV3ptonEJROb/view?usp=sharing) and extract it to `static/textclassification/models`
-if you want to populate the text classification model
+see creating migration in `CONTRIBUTION.md` file
 
 ## Testing
 ## Jest tests
