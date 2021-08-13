@@ -18,7 +18,7 @@ To run migration on you local environment use the run migration script
 ```bash
 bash run_migrations.sh
 ```
-to create migrations check _create\_migrations_ section in `CONTRIBUTION.md` file
+to create migrations check _create migrations_ section in `CONTRIBUTION.md` file
 
 ## Testing
 ## Jest tests
