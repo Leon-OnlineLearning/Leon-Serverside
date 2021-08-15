@@ -1,5 +1,6 @@
 # Leon-Serverside (Core)
 This is the coordinator service that takes care of the communication details and handles the business logic in the process.
+
 ![testing status](http://github.com/Leon-OnlineLearning/Leon-Serverside/actions/workflows/testing.yml/badge.svg) ![linter](https://img.shields.io/badge/Linter-prettier-blue)
 
 ## Getting started
