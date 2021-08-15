@@ -7,3 +7,24 @@
 ```
 bash ./create_migration.sh <migration_name>
 ```
+## Testing guide
+1) Make sure that your branches are covered
+2) Avoid using postman for testing we are in the process of migrating from it to superttest 
+### Test running
+1) to run jest tests 
+```
+npm run test
+```
+2) to run postman tests 
+
+    2.1. set the baseUrl variable in your enviroment 
+
+    2.2. load the the collection in `integration/postman`
+
+    2.3. run tests
+
+## Troubleshooting
+Please post the full log of the error with a summary for you scenario. you can get the backend log with 
+```
+docker-compose logs backend
+```
