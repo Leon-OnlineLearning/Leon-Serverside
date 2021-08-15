@@ -19,7 +19,7 @@ To run migration on you local environment use the run migration script
 ```bash
 bash run_migrations.sh
 ```
-to create migrations check _create migrations_ section in `CONTRIBUTION.md` file
+to create migrations check _create migrations_ section in [`CONTRIBUTION.md`](https://github.com/Leon-OnlineLearning/Leon-Serverside/blob/main/CONTRIBUTION.md) file
 
 ## Running
 You can build the compose here if you don't want to build the entire application in the leon-all repo
