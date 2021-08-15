@@ -2,7 +2,7 @@
 This is the coordinator service that takes care of the communication details and handles the business logic in the process.
 
 ![testing status](http://github.com/Leon-OnlineLearning/Leon-Serverside/actions/workflows/testing.yml/badge.svg) ![linter](https://img.shields.io/badge/Linter-prettier-blue)
-
+![Licencse](https://img.shields.io/badge/license-CCO-red)
 ## Getting started
 To start the development enviroment you need to do few steps to get the e2e experience to work as expected 
 ### Download the text classificaion model
